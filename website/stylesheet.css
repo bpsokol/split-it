@@ -72,6 +72,18 @@ div.label {
     background-color:#f2f2f2;
 }
 
+.left {
+    float: left;
+    display: inline-block;
+    width: 10%;
+}
+
+.right {
+    float: right;
+    display: inline-block;
+    width: 10%;
+}
+
 #menudown {
     position: absolute;
     list-style: none;
@@ -104,6 +116,16 @@ div.label {
     background-color: #fff;
 }
 
+#menudown li a:current {
+    color: #c00;
+    background-color: #fff;
+}
+
+#scale_small_img {
+    width: 20%;
+    height: auto;
+}
+
 #scale_img {
     width: 70%;
     height: auto;
@@ -114,9 +136,26 @@ div.label {
     height: auto;
 }
 
+td.narrow {
+    width: 10%;
+}
+
+.wide {
+    width:80%;
+}
+
+
 #links {
     text-align: center;
     color: black;
+}
+
+a:link, a:visited {
+    color: black;
+}
+
+a:hover {
+    color: #c00;
 }
 
 div.extensions {
