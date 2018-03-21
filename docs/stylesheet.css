@@ -1,0 +1,171 @@
+﻿body {
+    margin: 0 200px 10px 200px;
+    font-family: Arial,Helvettica,sans-serif;
+    color: white;
+    background-color: black;
+    font-size: 1em;
+    padding-left: .5%;
+    padding-right: .5%;
+}
+
+body:before { 
+  display: block; 
+  content: " "; 
+  margin-top: -285px; 
+  height: 285px; 
+  visibility: hidden; 
+}
+
+header {
+    background-color: #424242;
+    color: white;
+    padding-bottom: 3px;
+    text-align: center;
+}
+
+h2 {
+    padding: 10px 0 10px 10px;
+    background-color: #424242;
+    color: white;
+    text-align: center;
+}
+
+h3 {
+    padding: 5px 0 5px 5px;
+    background-color: #424242;
+    color: white;
+    text-align: center;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.container {
+    background-color: white;
+}
+
+.containerTitle {
+    padding: 0 10px 10px 10px;
+}
+
+.containerText {
+    background-color: white;
+    color: black;
+    padding: 3px 10px 10px 10px;
+}
+
+div.label { 
+    display: inline-block;
+    position: fixed;
+    list-style: none;
+    left: .5%;
+    top: 1px;
+    height: auto;
+    width: 15%;
+    margin: 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: .9em;
+    background-color:#f2f2f2;
+}
+
+.left {
+    float: left;
+    display: inline-block;
+    width: 10%;
+}
+
+.right {
+    float: right;
+    display: inline-block;
+    width: 10%;
+}
+
+#menudown {
+    position: absolute;
+    list-style: none;
+    margin: 20px 0 0 0;
+    padding: 0;
+    height: 150px;
+    width: 185px;
+}
+
+#menudown li {
+    border-width: 1px;
+    border-color: #ccc;
+    text-align: left;
+    background-color: #424242;
+    height: 56px;
+    border-top-style: solid;
+    border-left-style: solid;
+}
+
+#menudown li a {
+    display: block;
+    padding: 20px 8px 20px 8px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+#menudown li a:hover {
+    color: #c00;
+    background-color: #fff;
+}
+
+#menudown li a:current {
+    color: #c00;
+    background-color: #fff;
+}
+
+#scale_small_img {
+    width: 20%;
+    height: auto;
+}
+
+#scale_img {
+    width: 70%;
+    height: auto;
+}
+
+#scale_wide_img {
+    width: 95%;
+    height: auto;
+}
+
+td.narrow {
+    width: 10%;
+}
+
+.wide {
+    width:80%;
+}
+
+
+#links {
+    text-align: center;
+    color: black;
+}
+
+a:link, a:visited {
+    color: black;
+}
+
+a:hover {
+    color: #c00;
+}
+
+div.extensions {
+    padding-left:20px;
+}
+
+div.extensions p {
+    margin: 0;
+}
+
+.indent {
+    padding-left: 30px;
+}
