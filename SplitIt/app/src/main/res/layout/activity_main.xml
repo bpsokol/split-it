@@ -31,7 +31,7 @@
         android:layout_marginRight="148dp"
         android:layout_marginStart="148dp"
         android:layout_marginTop="8dp"
-        android:text="Login"
+        android:text="Login or Register"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
