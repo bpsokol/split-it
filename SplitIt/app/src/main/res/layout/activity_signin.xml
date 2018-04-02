@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/user_profile"
-        android:layout_width="265dp"
+        android:layout_width="fill_parent"
         android:layout_height="35dp"
         android:layout_marginBottom="1dp"
         android:layout_marginEnd="15dp"
@@ -43,31 +43,36 @@
     <Button
         android:id="@+id/sign_out"
         style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-        android:layout_width="180dp"
+        android:layout_width="167dp"
         android:layout_height="60dp"
         android:layout_marginBottom="69dp"
         android:layout_marginTop="30dp"
-        android:text="Sign Out"
         android:gravity="center"
+        android:text="@string/sign_out"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/delete_user"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account_settings" />
+        app:layout_constraintTop_toBottomOf="@+id/account_settings"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/delete_user"
         style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-        android:layout_width="180dp"
+        android:layout_width="167dp"
         android:layout_height="60dp"
         android:layout_marginBottom="69dp"
         android:layout_marginTop="30dp"
-        android:text="Delete User"
         android:gravity="center"
+        android:text="@string/delete_user"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/sign_out"
-        app:layout_constraintTop_toBottomOf="@+id/account_settings" />
+        app:layout_constraintTop_toBottomOf="@+id/account_settings"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/account_settings"
@@ -75,8 +80,8 @@
         android:layout_width="360dp"
         android:layout_height="56dp"
         android:layout_marginTop="30dp"
-        android:text="Account Settings"
         android:gravity="center"
+        android:text="@string/account_settings"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,8 +93,8 @@
         android:layout_width="360dp"
         android:layout_height="60dp"
         android:layout_marginTop="30dp"
-        android:text="Group Management"
         android:gravity="center"
+        android:text="@string/group_management"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -101,8 +106,8 @@
         android:layout_width="360dp"
         android:layout_height="57dp"
         android:layout_marginTop="50dp"
-        android:text="Scan Receipt"
         android:gravity="center"
+        android:text="@string/scan_receipt"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
