@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    
+    <string name="app_name">ExtendedSample</string>
+    <string name="settings">Settings</string>
+    <string name="picker_activity">Picker Activity</string>
+    <string name="cropped">Cropped</string>
+    <string name="full_screen_scan_view">Full Screen</string>
+    <string name="scandit_url">www.scandit.com</string>
+    <string name="scaled">Scaled</string>
+</resources>

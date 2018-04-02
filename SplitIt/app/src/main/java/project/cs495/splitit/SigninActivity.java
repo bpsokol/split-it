@@ -3,6 +3,8 @@ package project.cs495.splitit;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -23,15 +25,19 @@ import com.microblink.Media;
 import com.microblink.Retailer;
 import com.microblink.ScanOptions;
 import com.microblink.ScanResults;
+import com.scandit.barcodepicker.ScanditLicense;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = SigninActivity.class.getSimpleName();
     private static final int SCAN_RECEIPT_REQUEST = 201;
+    private static final String SCANDIT_KEY = "1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM";
+    private static final int CAMERA_PERMISSION_REQUEST = 7;
     private TextView profileName;
     private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ScanditLicense.setAppKey(SCANDIT_KEY);
         auth = FirebaseAuth.getInstance();
         if(!isUserLogin()){signOut();}
         setContentView(R.layout.activity_signin);
@@ -76,7 +82,7 @@ public class SigninActivity extends AppCompatActivity {
         scanReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                scanReceipt();
+                getCameraPermissions();
             }
         });
     }
@@ -92,6 +98,16 @@ public class SigninActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                scanReceipt();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
     private void scanReceipt() {
         ScanOptions scanOptions = ScanOptions.newBuilder()
                 .retailer( Retailer.UNKNOWN )
@@ -128,6 +144,19 @@ public class SigninActivity extends AppCompatActivity {
         FirebaseUser mUser = auth.getCurrentUser();
         if(mUser != null){
             profileName.setText(TextUtils.isEmpty(mUser.getDisplayName())? "No name found" : mUser.getDisplayName());
+        }
+    }
+
+    private void getCameraPermissions() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (this.checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                this.requestPermissions(new String[] {android.Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
+            } else {
+                scanReceipt();
+            }
+        }
+        else {
+            scanReceipt();
         }
     }
 }

@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:scandit="http://schemas.mirasense.com">
+    
+    
+    <PreferenceCategory 
+        android:title="Activity Configuration">
+	    <CheckBoxPreference
+	        android:key="rotate_enabled"
+	        android:title="Rotate with device"
+	        android:summary="Rotates the SDK according to the current device orientation."
+	        android:defaultValue="true" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="Barcode Decoder Configuration">
+		<CheckBoxPreference
+			android:key="hd_mode_enabled"
+			android:title="Resolution"
+			android:summary="Enable High Density scanning mode"
+			android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="ean13_and_upc12_enabled"
+	        android:title="EAN-13 &amp; UPC-A"
+	        android:summary="Enable EAN-13 and UPC-A decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="ean8_enabled"
+	        android:title="EAN-8"
+	        android:summary="Enable EAN-8 decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="upce_enabled"
+	        android:title="UPC-E"
+	        android:summary="Enable UPC-E decoding."
+	        android:defaultValue="true" />
+		<CheckBoxPreference
+			android:key="two_digit_add_on_enabled"
+			android:title="Two-Digit Add-on"
+			android:summary="Enable decoding of two-digit add-ons for EAN/UPC codes."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="five_digit_add_on_enabled"
+			android:title="Five-Digit Add-on"
+			android:summary="Enable decoding of five-digit add-ons for EAN/UPC codes."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="code11_enabled"
+			android:title="Code 11"
+			android:summary="Enable Code 11 decoding."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="code25_enabled"
+			android:title="Code 25"
+			android:summary="Enable Code 25 decoding."
+			android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="code39_enabled"
+	        android:title="Code 39"
+	        android:summary="Enable Code 39 decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="code93_enabled"
+	        android:title="Code 93"
+	        android:summary="Enable Code 93 decoding."
+	        android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="code128_enabled"
+			android:title="Code 128"
+			android:summary="Enable Code 128 decoding."
+			android:defaultValue="true" />
+		<CheckBoxPreference
+			android:key="itf_enabled"
+			android:title="Interleaved-Two-of-Five (ITF)"
+			android:summary="Enable ITF decoding."
+			android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="msi_plessey_enabled"
+	        android:title="MSI Plessey"
+	        android:summary="Enable MSI Plessey decoding."
+	        android:defaultValue="false" />
+	    <ListPreference
+	        android:key="msi_plessey_checksum"
+	        android:title="MSI Plessey Checksum"
+	        android:dependency="msi_plessey_enabled"
+	        android:dialogTitle="Choose a checksum type"
+	        android:entries="@array/msi_plessey_checksum_entries"
+	        android:entryValues="@array/msi_plessey_checksum_entry_values"
+	        android:defaultValue="1" />
+	    <CheckBoxPreference
+	        android:key="databar_enabled"
+	        android:title="GS1 DataBar"
+	        android:summary="Enable GS1 DataBar decoding."
+	        android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="databar_expanded_enabled"
+	        android:title="GS1 DataBar Expanded"
+	        android:summary="Enable GS1 DataBar Expanded decoding."
+	        android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="databar_limited_enabled"
+			android:title="GS1 DataBar Limited"
+			android:summary="Enable GS1 DataBar Limited decoding."
+			android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="codabar_enabled"
+	        android:title="Codabar"
+	        android:summary="Enable Codabar decoding."
+	        android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="qr_enabled"
+	        android:title="QR Code"
+	        android:summary="Enable QR Code decoding."
+	        android:defaultValue="true" />
+		<CheckBoxPreference
+			android:key="inverse_recognition_qr"
+			android:title="Color-Inverted QR Code"
+			android:summary="Decode white on black QR codes."
+			android:defaultValue="false"
+			android:dependency="qr_enabled" />
+		<CheckBoxPreference
+			android:key="micro_qr_enabled"
+			android:title="Micro QR Code"
+			android:summary="Enable Micro QR Code decoding."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="inverse_recognition_micro_qr"
+			android:title="Color-Inverted Micro QR Code"
+			android:summary="Decode white on black Micro QR codes."
+			android:defaultValue="false"
+			android:dependency="micro_qr_enabled" />
+	    <CheckBoxPreference
+	        android:key="data_matrix_enabled"
+	        android:title="Data Matrix"
+	        android:summary="Enable Data Matrix decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="inverse_recognition_data_matrix"
+	        android:title="Color-Inverted Data Matrix"
+	        android:summary="Decode white on black Data Matrix codes."
+	        android:defaultValue="false" 
+	        android:dependency="data_matrix_enabled" />
+	    <CheckBoxPreference
+	        android:key="pdf417_enabled"
+	        android:title="PDF417"
+	        android:summary="Enable PDF417 decoding."
+	        android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="micro_pdf417_enabled"
+	        android:title="MicroPDF417"
+	        android:summary="Enable MicroPDF417 decoding."
+	        android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="aztec_enabled"
+			android:title="Aztec Code"
+			android:summary="Enable Aztec Code decoding."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="maxicode_enabled"
+			android:title="MaxiCode"
+			android:summary="Enable MaxiCode decoding."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="rm4scc_enabled"
+			android:title="RM4SCC"
+			android:summary="Enable RM4SCC decoding."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="kix_enabled"
+			android:title="KIX"
+			android:summary="Enable KIX decoding."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="dotcode_enabled"
+			android:title="DotCode"
+			android:summary="Enable DotCode decoding."
+			android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="inverse_recognition_dotcode"
+            android:title="Color-Inverted DotCode"
+            android:summary="Decode white on black DotCodes"
+            android:defaultValue="false"
+            android:dependency="dotcode_enabled" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="Scanning Area">
+		<CheckBoxPreference
+			android:key="restrict_scanning_area"
+			android:title="Restrict Scanning Area"
+			android:summary="Reduces the area that is scanned for barcodes to the given hot spot dimensions and adjusts its vertical position. "
+			android:defaultValue="false" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="hot_spot_width"
+            android:title="Hot Spot Width"
+            android:summary="The width of the hot spot."
+            android:defaultValue="100"
+			android:dependency="restrict_scanning_area"
+            android:max="100"
+            scandit:min="0"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="2" />
+        <com.scandit.extendedsample.util.SeekBarPreference
+            android:key="hot_spot_height"
+            android:title="Hot Spot Height"
+            android:summary="The height of the active scanning area."
+            android:dependency="restrict_scanning_area"
+            android:defaultValue="25"
+            android:max="100"
+            scandit:min="0"
+            scandit:interval="1"
+            scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="2" />
+		<com.scandit.extendedsample.util.SeekBarPreference
+			android:key="hot_spot_y"
+			android:title="Hot Spot Y"
+			android:summary="The relative y coordinate of the center of the active scanning area."
+			android:defaultValue="50"
+			android:dependency="restrict_scanning_area"
+			android:max="100"
+			scandit:min="0"
+			scandit:interval="1"
+			scandit:unitsLeft=""
+			scandit:unitsRight=""
+			scandit:fractionDigits="2" />
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:title="Viewfinder">
+		<ListPreference
+			android:key="viewfinder_style"
+			android:title="GUI Style"
+			android:dialogTitle="Choose the style of the viewfinder"
+			android:entries="@array/viewfinder_style_entries"
+			android:entryValues="@array/viewfinder_style_entry_values"
+			android:defaultValue="0" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="viewfinder_width"
+            android:title="Width (Portrait)"
+            android:summary="The relative width of the viewfinder in portrait mode."
+            android:dependency="viewfinder_style"
+            android:defaultValue="70"
+            android:max="90"
+            scandit:min="10"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="2" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="viewfinder_height"
+            android:title="Height (Portrait)"
+            android:summary="The relative height of the viewfinder in portrait mode."
+            android:dependency="viewfinder_style"
+            android:defaultValue="30"
+            android:max="90"
+            scandit:min="10"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="2" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="viewfinder_landscape_width"
+            android:title="Width (Landscape)"
+            android:summary="The relative width of the viewfinder in landscape mode."
+            android:dependency="viewfinder_style"
+            android:defaultValue="40"
+            android:max="90"
+            scandit:min="10"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="2" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="viewfinder_landscape_height"
+            android:title="Height (Landscape)"
+            android:summary="The relative height of the viewfinder in landscape mode."
+            android:dependency="viewfinder_style"
+            android:defaultValue="30"
+            android:max="90"
+            scandit:min="10"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="2" />
+	</PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="Feedback">
+	    <CheckBoxPreference
+	        android:key="beep_enabled"
+	        android:title="Beep"
+	        android:summary="Plays a beep sound when a code is recognized."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="vibrate_enabled"
+	        android:title="Vibrate"
+	        android:summary="Vibrates when a code is recognized."
+	        android:defaultValue="false" />
+    </PreferenceCategory>
+	
+    <PreferenceCategory 
+        android:title="Torch Button">
+	    <CheckBoxPreference
+	        android:key="torch_enabled"
+	        android:title="Visible"
+	        android:summary="Shows a button to turn the torch off and on."
+	        android:defaultValue="true" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="torch_button_x"
+            android:title="Left Margin"
+            android:summary="The left margin of the torch button."
+            android:dependency="torch_enabled"
+            android:defaultValue="15"
+            android:max="100"
+            scandit:min="0"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="0" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="torch_button_y"
+            android:title="Top Margin"
+            android:summary="The top margin of the torch button."
+            android:dependency="torch_enabled"
+            android:defaultValue="15"
+            android:max="100"
+            scandit:min="0"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="0" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="Camera Switch Button">
+	    <ListPreference
+	        android:key="camera_switch_visibility"
+	        android:title="Visibility"
+	        android:dialogTitle="Choose when the switch button should be visible"
+	        android:entries="@array/camera_switch_visibility_entries"
+	        android:entryValues="@array/camera_switch_visibility_entry_values"
+	        android:defaultValue="0" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="camera_switch_button_x"
+            android:title="Right Margin"
+            android:summary="The right margin of the camera switch button."
+            android:dependency="camera_switch_visibility"
+            android:defaultValue="15"
+            android:max="100"
+            scandit:min="0"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="0" />
+       	<com.scandit.extendedsample.util.SeekBarPreference
+           	android:key="camera_switch_button_y"
+            android:title="Top Margin"
+            android:summary="The top margin of the camera switch button."
+            android:dependency="camera_switch_visibility"
+            android:defaultValue="15"
+            android:max="100"
+            scandit:min="0"
+            scandit:interval="1"
+           	scandit:unitsLeft=""
+            scandit:unitsRight=""
+            scandit:fractionDigits="0" />
+    </PreferenceCategory>
+    
+</PreferenceScreen>

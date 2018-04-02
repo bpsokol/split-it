@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CaseSample</string>
+    <string name="stand_by_state">StandBy</string>
+    <string name="active_state">Active</string>
+    <string name="off_state">Off</string>
+    <string name="initializing_camera">Initializing settings…</string>
+    <string name="scan_button">Scan</string>
+    <string name="matrix_scan_button">Matrix Scan</string>
+</resources>
