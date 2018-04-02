@@ -11,4 +11,5 @@
     <string name="delete_user">DELETE USER</string>
     <string name="sign_out_error">Failed to sign out</string>
     <string name="user_deletion_error">Failed to delete user</string>
+    <string name="scan_receipt">Scan Receipt</string>
 </resources>

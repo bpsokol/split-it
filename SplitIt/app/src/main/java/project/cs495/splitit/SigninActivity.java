@@ -1,5 +1,7 @@
 package project.cs495.splitit;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,9 +16,17 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.microblink.EdgeDetectionConfiguration;
+import com.microblink.FrameCharacteristics;
+import com.microblink.IntentUtils;
+import com.microblink.Media;
+import com.microblink.Retailer;
+import com.microblink.ScanOptions;
+import com.microblink.ScanResults;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = SigninActivity.class.getSimpleName();
+    private static final int SCAN_RECEIPT_REQUEST = 201;
     private TextView profileName;
     private FirebaseAuth auth;
     @Override
@@ -62,7 +72,44 @@ public class SigninActivity extends AppCompatActivity {
                 });
             }
         });
+        Button scanReceiptButton = (Button) findViewById(R.id.btn_scan_receipt);
+        scanReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                scanReceipt();
+            }
+        });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if ( requestCode == SCAN_RECEIPT_REQUEST && resultCode == Activity.RESULT_OK ) {
+            ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
+
+            Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
+        }
+    }
+
+    private void scanReceipt() {
+        ScanOptions scanOptions = ScanOptions.newBuilder()
+                .retailer( Retailer.UNKNOWN )
+                .frameCharacteristics( FrameCharacteristics.newBuilder()
+                        .storeFrames( true )
+                        .compressionQuality( 100 )
+                        .externalStorage( false )
+                        .build() )
+                .edgeDetectionConfiguration( EdgeDetectionConfiguration.defaults() )
+                .scanBarcode( true )
+                .logoDetection( true )
+                .build();
+
+        Intent intent = IntentUtils.cameraScan( this, scanOptions );
+
+        startActivityForResult( intent, SCAN_RECEIPT_REQUEST );
+    }
+
     private boolean isUserLogin(){
         if(auth.getCurrentUser() != null){
             return true;
