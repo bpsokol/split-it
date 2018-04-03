@@ -1,0 +1,44 @@
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+        
+    }
+}
+
+// Global settings
+subprojects {
+    repositories {
+        flatDir{
+            dirs '../../ScanditSDK'
+        }
+    }
+    apply plugin: 'com.android.application'
+    ext.global_compileSdkVersion = 26
+    ext.global_buildToolsVersion = "27.0.1"
+
+    ext.global_minSdkVersion = 16
+    ext.global_targetSdkVersion = 26
+
+    dependencies {
+        compile(name:'ScanditBarcodeScanner', ext:'aar')
+        
+    }
+}
+
+// Gradle wrapper task
+// Provides batch script for windows and shell script for Linux and OS-X
+// enabling to run gradle without installation.
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0-rc-3'
+}

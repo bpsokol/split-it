@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:scandit="http://schemas.scandit.com">
+    
+    
+    <PreferenceCategory 
+        android:title="Activity Configuration">
+	    <CheckBoxPreference
+	        android:key="rotate_enabled"
+	        android:title="Rotate with device"
+	        android:summary="Rotates the SDK according to the current device orientation."
+	        android:defaultValue="false" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="Barcode Decoder Configuration">
+	    <CheckBoxPreference
+	        android:key="ean13_and_upc12_enabled"
+	        android:title="EAN-13 &amp; UPC-12"
+	        android:summary="Enable EAN-13 and UPC-12 decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="ean8_enabled"
+	        android:title="EAN-8"
+	        android:summary="Enable EAN-8 decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="upce_enabled"
+	        android:title="UPC-E"
+	        android:summary="Enable UPC-E decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="code39_enabled"
+	        android:title="CODE 39"
+	        android:summary="Enable CODE 39 decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="code93_enabled"
+	        android:title="CODE 93"
+	        android:summary="Enable CODE 93 decoding."
+	        android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="code11_enabled"
+			android:title="CODE 11"
+			android:summary="Enable CODE 11 decoding."
+			android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="code128_enabled"
+	        android:title="CODE 128"
+	        android:summary="Enable CODE 128 decoding."
+	        android:defaultValue="true" />
+		<CheckBoxPreference
+			android:key="code25_enabled"
+			android:title="CODE 25"
+			android:summary="Enable CODE 25 decoding."
+			android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="itf_enabled"
+	        android:title="ITF"
+	        android:summary="Enable ITF decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="msi_plessey_enabled"
+	        android:title="MSI Plessey"
+	        android:summary="Enable MSI Plessey decoding."
+	        android:defaultValue="false" />
+	    <ListPreference
+	        android:key="msi_plessey_checksum"
+	        android:title="MSI Plessey checksum"
+	        android:dependency="msi_plessey_enabled"
+	        android:dialogTitle="Choose a checksum type"
+	        android:entries="@array/msi_plessey_checksum_entries"
+	        android:entryValues="@array/msi_plessey_checksum_entry_values"
+	        android:defaultValue="1" />
+	    <CheckBoxPreference
+	        android:key="databar_enabled"
+	        android:title="GS1 DataBar"
+	        android:summary="Enable GS1 DataBar decoding."
+	        android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="databar_expanded_enabled"
+	        android:title="GS1 DataBar Expanded"
+	        android:summary="Enable GS1 DataBar Expanded decoding."
+	        android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="databar_limited_enabled"
+			android:title="GS1 DataBar Limited"
+			android:summary="Enable GS1 DataBar Limited decoding."
+			android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="codabar_enabled"
+	        android:title="Codabar"
+	        android:summary="Enable Codabar decoding."
+	        android:defaultValue="false" />
+        <CheckBoxPreference
+			android:key="two_digit_add_on_enabled"
+			android:title="Two-Digit Add-on"
+			android:summary="Enable decoding of two-digit add-ons for EAN/UPC codes."
+			android:defaultValue="false" />
+        <CheckBoxPreference
+			android:key="five_digit_add_on_enabled"
+			android:title="Five-Digit Add-on"
+			android:summary="Enable decoding of five-digit add-ons for EAN/UPC codes."
+			android:defaultValue="false" />
+	    <CheckBoxPreference
+	        android:key="qr_enabled"
+	        android:title="QR Code"
+	        android:summary="Enable QR Code decoding."
+	        android:defaultValue="true" />
+		<CheckBoxPreference
+			android:key="inverse_recognition_qr"
+			android:title="Color-inverted QR Code"
+			android:summary="Decode white on black QR Code codes."
+			android:defaultValue="false"
+			android:dependency="qr_enabled" />
+	    <CheckBoxPreference
+	        android:key="data_matrix_enabled"
+	        android:title="Data Matrix"
+	        android:summary="Enable Data Matrix decoding."
+	        android:defaultValue="true" />
+	    <CheckBoxPreference
+	        android:key="inverse_recognition_data_matrix"
+	        android:title="Color-inverted Data Matrix"
+	        android:summary="Decode white on black Data Matrix codes."
+	        android:defaultValue="false" 
+	        android:dependency="data_matrix_enabled" />
+	    <CheckBoxPreference
+	        android:key="pdf417_enabled"
+	        android:title="PDF417"
+	        android:summary="Enable PDF417 decoding."
+	        android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="micro_pdf417_enabled"
+			android:title="MicroPDF417"
+			android:summary="Enable MicroPDF417 decoding."
+			android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="aztec_enabled"
+            android:title="Aztec Code"
+            android:summary="Enable Aztec Code decoding."
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="maxicode_enabled"
+            android:title="MaxiCode"
+            android:summary="Enable MaxiCode decoding."
+            android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="rm4scc_enabled"
+			android:title="RM4SCC"
+			android:summary="Enable RM4SCC decoding."
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:key="kix_enabled"
+			android:title="KIX"
+			android:summary="Enable KIX decoding."
+			android:defaultValue="false" />
+    </PreferenceCategory>
+    
+</PreferenceScreen>

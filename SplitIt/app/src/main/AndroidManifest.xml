@@ -3,6 +3,7 @@
     package="project.cs495.splitit">
 
     <application
+        android:name=".SplitItApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -17,6 +18,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".SigninActivity" />
+        <meta-data
+            android:name="com.microblink.LicenseKey"
+            android:value="2XKPCYNY-VUFWZPCP-C3ZPKC63-36XIAVL6-VGPZA7VJ-T6IH5KM7-SB7KSPYX-CLVR3KAP" />
+        <meta-data
+            android:name="com.microblink.ScanditApiKey"
+            android:value="1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM" />
     </application>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
 </manifest>
