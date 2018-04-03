@@ -78,7 +78,7 @@ public class SigninActivity extends AppCompatActivity {
                 });
             }
         });
-        Button scanReceiptButton = (Button) findViewById(R.id.btn_scan_receipt);
+        Button scanReceiptButton = (Button) findViewById(R.id.scan_receipt);
         scanReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
