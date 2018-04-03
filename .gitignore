@@ -39,6 +39,7 @@ captures/
 .idea/gradle.xml
 .idea/dictionaries
 .idea/libraries
+SplitIt/.idea/caches/build_file_checksums.ser
 **/.idea
 
 # Keystore files
