@@ -143,7 +143,7 @@ public class SigninActivity extends AppCompatActivity {
     private void displayLoginUserProfileName(){
         FirebaseUser mUser = auth.getCurrentUser();
         if(mUser != null){
-            profileName.setText(TextUtils.isEmpty(mUser.getDisplayName())? "No name found" : mUser.getDisplayName());
+            profileName.setText(TextUtils.isEmpty(mUser.getDisplayName())? "No name found" : "Welcome " + mUser.getDisplayName());
         }
     }
 

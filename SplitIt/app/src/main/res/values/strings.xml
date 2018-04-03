@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">Split-It</string>
     <string name="login_button">Login</string>
-    <string name="welcome">Welcome</string>
     <string name="unknown_response">Known response</string>
     <string name="signin_failed">Failed signin</string>
-    <string name="user_profile">Welcome to your profile page</string>
+    <string name="user_profile">Welcome </string>
     <string name="profile_title">User Profile</string>
     <string name="user_name">Username</string>
     <string name="logout">LOGOUT</string>
