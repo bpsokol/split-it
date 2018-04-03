@@ -14,4 +14,9 @@
     <string name="account_settings">Account Settings</string>
     <string name="group_management">Group Management</string>
     <string name="scan_receipt">Scan Receipt</string>
+    <string name="welcome">Welcome to Split-It!</string>
+    <string name="sign_in">SIGN IN</string>
+
+
+
 </resources>
