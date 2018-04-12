@@ -5,14 +5,15 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.UUID;
 
 public class Item implements Entity {
-
+    private UUID itemId;
     private String code;
     private String description;
-    private double price;
+    private float price;
     private int quantity;
-    private double unitPrice;
+    private float unitPrice;
 
-    public Item(String code, String description, double price, int quantity, double unitPrice) {
+    public Item(String code, String description, float price, int quantity, float unitPrice) {
+        this.itemId = UUID.randomUUID();
         this.code = code;
         this.description = description;
         this.price = price;
@@ -34,8 +35,14 @@ public class Item implements Entity {
 
     @Override
     public void commitToDB(DatabaseReference mDatabase) {
-        mDatabase.child("items").child(this.code).setValue(this);
+        DatabaseReference itemsRef = mDatabase.child("items");
+        itemsRef.child(this.itemId.toString()).setValue(this);
     }
+
+    public UUID getItemId() {
+        return itemId;
+    }
+
     public String getCode() {
         return code;
     }
@@ -52,11 +59,11 @@ public class Item implements Entity {
         this.description = description;
     }
 
-    public double getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -68,11 +75,11 @@ public class Item implements Entity {
         this.quantity = quantity;
     }
 
-    public double getUnitPrice() {
+    public float getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(double unitPrice) {
+    public void setUnitPrice(float unitPrice) {
         this.unitPrice = unitPrice;
     }
 }
