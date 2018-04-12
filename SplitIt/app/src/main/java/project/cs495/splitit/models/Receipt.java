@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Receipt implements Entity {
-    private UUID receiptId;
+public class Receipt implements EntityInterface {
+    private String receiptId;
     private String vendor;
     private String datePurchased;
     private List<String> items;
 
-    public Receipt(UUID receiptId, String vendor, String datePurchased, List<String> items) {
+    public Receipt(String receiptId, String vendor, String datePurchased, List<String> items) {
         this.receiptId = receiptId;
         this.vendor = vendor;
         this.datePurchased = datePurchased;
@@ -33,14 +33,14 @@ public class Receipt implements Entity {
 
     @Override
     public void commitToDB(DatabaseReference mDatabase) {
-        mDatabase.child("receipts").child(this.receiptId.toString()).setValue(this);
+        mDatabase.child("receipts").child(this.receiptId).setValue(this);
     }
 
-    public UUID getReceiptId() {
+    public String getReceiptId() {
         return receiptId;
     }
 
-    public void setReceiptId(UUID receiptId) {
+    public void setReceiptId(String receiptId) {
         this.receiptId = receiptId;
     }
 

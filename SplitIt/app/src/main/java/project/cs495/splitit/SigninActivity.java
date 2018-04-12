@@ -1,6 +1,5 @@
 package project.cs495.splitit;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,11 +17,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.microblink.EdgeDetectionConfiguration;
 import com.microblink.FrameCharacteristics;
 import com.microblink.IntentUtils;
@@ -33,8 +28,6 @@ import com.microblink.Retailer;
 import com.microblink.ScanOptions;
 import com.microblink.ScanResults;
 import com.scandit.barcodepicker.ScanditLicense;
-
-import java.util.UUID;
 
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
@@ -106,11 +99,14 @@ public class SigninActivity extends AppCompatActivity {
         if ( requestCode == SCAN_RECEIPT_REQUEST && resultCode == Activity.RESULT_OK ) {
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
-            Receipt receipt = new Receipt(UUID.randomUUID(), brScanResults.merchantName().value(), brScanResults.receiptDate().value(), null);
+            String receiptId = database.child("receipts").push().getKey();
+            Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), null);
             for (Product product : brScanResults.products()) {
-                Item item = new Item(product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
+                String itemId = database.child("items").push().getKey();
+                Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
+                item.addReceiptId(receiptId);
                 item.commitToDB(database);
-                receipt.addItem(item.getItemId().toString());
+                receipt.addItem(item.getItemId());
             }
             receipt.commitToDB(database);
 
@@ -148,10 +144,7 @@ public class SigninActivity extends AppCompatActivity {
     }
 
     private boolean isUserLogin(){
-        if(auth.getCurrentUser() != null){
-            return true;
-        }
-        return false;
+         return auth.getCurrentUser() != null;
     }
     private void signOut(){
         Intent signOutIntent = new Intent(this, MainActivity.class);
