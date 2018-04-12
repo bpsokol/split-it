@@ -18,14 +18,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.microblink.EdgeDetectionConfiguration;
 import com.microblink.FrameCharacteristics;
 import com.microblink.IntentUtils;
 import com.microblink.Media;
+import com.microblink.Product;
 import com.microblink.Retailer;
 import com.microblink.ScanOptions;
 import com.microblink.ScanResults;
 import com.scandit.barcodepicker.ScanditLicense;
+
+import java.util.UUID;
+
+import project.cs495.splitit.models.Item;
+import project.cs495.splitit.models.Receipt;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = SigninActivity.class.getSimpleName();
@@ -92,7 +100,16 @@ public class SigninActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if ( requestCode == SCAN_RECEIPT_REQUEST && resultCode == Activity.RESULT_OK ) {
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
+            Receipt receipt = new Receipt(UUID.randomUUID(), brScanResults.merchantName().toString(), brScanResults.receiptDate().toString(), null);
+            for (Product product : brScanResults.products()) {
+                Item item = new Item(product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
+                item.commitToDB(database);
+                receipt.addItem(item.getCode());
+            }
+            receipt.commitToDB(database);
+
 
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
         }
