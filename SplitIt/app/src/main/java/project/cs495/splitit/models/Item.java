@@ -2,22 +2,26 @@ package project.cs495.splitit.models;
 
 import com.google.firebase.database.DatabaseReference;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class Item implements EntityInterface {
     private String itemId;
-    private List<String> receiptIds;
+    private Map<String, Boolean> receiptIds;
     private String code;
     private String description;
     private float price;
     private int quantity;
     private float unitPrice;
 
+    public Item() {
+        this.receiptIds = new HashMap<>();
+    }
+
     public Item(String itemId, String code, String description, float price, int quantity, float unitPrice) {
         this.itemId = itemId;
-        this.receiptIds = new ArrayList<String>();
+        this.receiptIds = new HashMap<>();
         this.code = code;
         this.description = description;
         this.price = price;
@@ -25,7 +29,7 @@ public class Item implements EntityInterface {
         this.unitPrice = unitPrice;
     }
 
-    public Item(String itemId, List<String> receiptIds, String code, String description, float price, int quantity, float unitPrice) {
+    public Item(String itemId, Map<String, Boolean> receiptIds, String code, String description, float price, int quantity, float unitPrice) {
         this.itemId = itemId;
         this.receiptIds = receiptIds;
         this.code = code;
@@ -50,7 +54,7 @@ public class Item implements EntityInterface {
     @Override
     public void commitToDB(DatabaseReference mDatabase) {
         DatabaseReference itemsRef = mDatabase.child("items");
-        itemsRef.child(this.itemId.toString()).setValue(this);
+        itemsRef.child(this.itemId).setValue(this);
     }
 
     public String getItemId() {
@@ -61,19 +65,19 @@ public class Item implements EntityInterface {
         this.itemId = itemId;
     }
 
-    public List<String> getReceiptIds() {
+    public Map<String, Boolean> getReceiptIds() {
         return receiptIds;
     }
 
     public void addReceiptId(String receiptId) {
-        this.receiptIds.add(receiptId);
+        this.receiptIds.put(receiptId, true);
     }
 
     public void removeReceiptId(String receiptId) {
         this.receiptIds.remove(receiptId);
     }
 
-    public void setReceiptIds(List<String> receiptIds) {
+    public void setReceiptIds(Map<String, Boolean> receiptIds) {
         this.receiptIds = receiptIds;
     }
 

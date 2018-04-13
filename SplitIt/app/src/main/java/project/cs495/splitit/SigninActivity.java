@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,6 +38,7 @@ public class SigninActivity extends AppCompatActivity {
     private static final int SCAN_RECEIPT_REQUEST = 201;
     private static final String SCANDIT_KEY = "1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM";
     private static final int CAMERA_PERMISSION_REQUEST = 7;
+    public static final String EXTRA_RECEIPT_ID = "project.cs495.splitit.RECEIPT_ID";
     private TextView profileName;
     private FirebaseAuth auth;
     @Override
@@ -97,22 +99,32 @@ public class SigninActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if ( requestCode == SCAN_RECEIPT_REQUEST && resultCode == Activity.RESULT_OK ) {
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
-            String receiptId = database.child("receipts").push().getKey();
-            Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), null);
-            for (Product product : brScanResults.products()) {
-                String itemId = database.child("items").push().getKey();
-                Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
-                item.addReceiptId(receiptId);
-                item.commitToDB(database);
-                receipt.addItem(item.getItemId());
-            }
-            receipt.commitToDB(database);
-
-
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
+            String receiptId = parceScanResults(brScanResults);
+            startActivity(buildReceiptViewIntent(receiptId));
         }
+    }
+
+    private String parceScanResults(ScanResults brScanResults) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        String receiptId = database.child("receipts").push().getKey();
+        Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), null);
+        for (Product product : brScanResults.products()) {
+            String itemId = database.child("items").push().getKey();
+            Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
+            item.addReceiptId(receiptId);
+            item.commitToDB(database);
+            receipt.addItem(item.getItemId());
+        }
+        receipt.commitToDB(database);
+        return receiptId;
+    }
+
+    private Intent buildReceiptViewIntent(String receiptId) {
+        Intent intent = new Intent(this, ReceiptViewActivity.class);
+        intent.putExtra(EXTRA_RECEIPT_ID, receiptId);
+        return intent;
     }
 
     @Override

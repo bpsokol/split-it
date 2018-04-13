@@ -2,29 +2,32 @@ package project.cs495.splitit.models;
 
 import com.google.firebase.database.DatabaseReference;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Receipt implements EntityInterface {
     private String receiptId;
     private String vendor;
     private String datePurchased;
-    private List<String> items;
+    private Map<String, Boolean> items;
 
-    public Receipt(String receiptId, String vendor, String datePurchased, List<String> items) {
+    public Receipt() {
+        this.items = new HashMap<>();
+    }
+
+    public Receipt(String receiptId, String vendor, String datePurchased, Map<String, Boolean> items) {
         this.receiptId = receiptId;
         this.vendor = vendor;
         this.datePurchased = datePurchased;
         if (items != null) {
             this.items = items;
         } else {
-            this.items = new ArrayList<String>();
+            this.items = new HashMap<>();
         }
     }
 
     public void addItem(String item) {
-        this.items.add(item);
+        this.items.put(item, true);
     }
 
     public void removeItem(String item) {
@@ -60,11 +63,11 @@ public class Receipt implements EntityInterface {
         this.datePurchased = datePurchased;
     }
 
-    public List<String> getItems() {
+    public Map<String, Boolean> getItems() {
         return items;
     }
 
-    public void setItems(List<String> items) {
+    public void setItems(Map<String, Boolean> items) {
         this.items = items;
     }
 }
