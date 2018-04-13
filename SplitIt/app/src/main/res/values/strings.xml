@@ -16,7 +16,12 @@
     <string name="scan_receipt">Scan Receipt</string>
     <string name="welcome">Welcome to Split-It!</string>
     <string name="sign_in">SIGN IN</string>
-
+    <string name="title_activity_receipt_list_view">ReceiptListViewActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_receipt_view">ReceiptViewActivity</string>
+    <string name="receipt">Receipt</string>
+    <string name="items">items</string>
+    <string name="receipt_ids_path">receiptIds/</string>
 
 
 </resources>
