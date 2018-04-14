@@ -14,11 +14,14 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.Locale;
+import java.util.Currency;
 
 import project.cs495.splitit.models.Item;
 
@@ -78,6 +81,15 @@ public class ReceiptViewActivity extends AppCompatActivity {
         adapter.stopListening();
     }
 
+    private static String TitleCaseString(String s) {
+        String res = "";
+        String[] words = s.split(" ");
+        for(String word: words) {
+            res += Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase() + " ";
+        }
+        return res;
+    }
+
     private class ItemHolder extends RecyclerView.ViewHolder {
         //private TextView itemCode;
         private TextView itemDescription;
@@ -93,11 +105,21 @@ public class ReceiptViewActivity extends AppCompatActivity {
         }
 
         public void bindData(final Item item) {
-            //itemCode.setText(item.getCode());
-            itemDescription.setText(item.getDescription());
-            itemPrice.setText("$" + String.format(Locale.US, "%.2f", item.getPrice()));
+            //Convert item descriptions to title case (first letter of each word is capitalized)
+            String description = item.getDescription();
+            String formattedDescription = TitleCaseString(description);
+            itemDescription.setText(formattedDescription);
+
+            //uses the default locale of the user
+            Currency currency = Currency.getInstance(Locale.getDefault());
+            itemPrice.setText(currency.getSymbol() + String.format(Locale.getDefault(), "%.2f", item.getPrice()));
+
+            //temporary until group members are added to the db
+            FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+            itemAssignee.setText("Assigned to: " + mUser.getDisplayName());
             //itemAssignee.setText("Assigned to: " + item.getUser());
-            itemAssignee.setText("Assigned to: ");
+
+            //itemCode.setText(item.getCode());
         }
     }
 }
