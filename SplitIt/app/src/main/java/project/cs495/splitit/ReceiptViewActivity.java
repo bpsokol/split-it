@@ -79,21 +79,25 @@ public class ReceiptViewActivity extends AppCompatActivity {
     }
 
     private class ItemHolder extends RecyclerView.ViewHolder {
-        private TextView itemCode;
+        //private TextView itemCode;
         private TextView itemDescription;
         private TextView itemPrice;
+        private TextView itemAssignee;
 
         ItemHolder(View view) {
             super(view);
-            itemCode = (TextView) view.findViewById(R.id.item_code);
+            //itemCode = (TextView) view.findViewById(R.id.item_code);
             itemDescription = (TextView) view.findViewById(R.id.item_description);
             itemPrice = (TextView) view.findViewById(R.id.item_price);
+            itemAssignee = (TextView) view.findViewById(R.id.item_assignee);
         }
 
         public void bindData(final Item item) {
-            itemCode.setText(item.getCode());
+            //itemCode.setText(item.getCode());
             itemDescription.setText(item.getDescription());
-            itemPrice.setText(String.format(Locale.US, "%.2f", item.getPrice()));
+            itemPrice.setText("$" + String.format(Locale.US, "%.2f", item.getPrice()));
+            //itemAssignee.setText("Assigned to: " + item.getUser());
+            itemAssignee.setText("Assigned to: ");
         }
     }
 }
