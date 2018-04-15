@@ -38,7 +38,10 @@
         <activity
             android:name=".ReceiptViewActivity"
             android:label="@string/title_activity_receipt_view"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".AccountSettingsActivity" />
+        <activity android:name=".ChangeEmailActivity" />
+        <activity android:name=".ChangeUserActivity"></activity>
     </application>
 
 </manifest>
