@@ -14,6 +14,7 @@ public class Item implements EntityInterface {
     private float price;
     private int quantity;
     private float unitPrice;
+    private String assignedUser;
 
     public Item() {
         this.receiptIds = new HashMap<>();
@@ -39,8 +40,8 @@ public class Item implements EntityInterface {
         this.unitPrice = unitPrice;
     }
 
-    public void assignTo(UUID member) {
-        return;
+    public void assignTo(String member) {
+        setAssignedUser(member);
     }
 
     public void chageToVenmo(double price) {
@@ -119,5 +120,12 @@ public class Item implements EntityInterface {
 
     public void setUnitPrice(float unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public void setAssignedUser(String assignedUser) {
+        this.assignedUser = assignedUser;
+    }
+    public String getAssignedUser() {
+        return assignedUser;
     }
 }

@@ -22,6 +22,8 @@
     <string name="receipt">Receipt</string>
     <string name="items">items</string>
     <string name="receipt_ids_path">receiptIds/</string>
+    <string name="assign_to_user">Assign to User</string>
+    <string name="assign">Assign</string>
 
 
 </resources>
