@@ -4,29 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChangeUserActivity">
+    tools:context=".ReauthenticateActivity">
 
     <EditText
-        android:id="@+id/user_id"
+        android:id="@+id/enter_password"
         android:layout_width="328dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
-        android:hint="Enter new user ID"
-        android:inputType="textPersonName"
+        android:hint="Enter password"
+        android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_done_user"
-        android:layout_width="88dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="377dp"
+        android:id="@+id/button_done_auth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="385dp"
         android:layout_marginEnd="256dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="256dp"
@@ -36,5 +36,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_id" />
+        app:layout_constraintTop_toBottomOf="@+id/enter_password" />
 </android.support.constraint.ConstraintLayout>

@@ -46,10 +46,12 @@ public class SigninActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ScanditLicense.setAppKey(SCANDIT_KEY);
         auth = FirebaseAuth.getInstance();
-        if(!isUserLogin()){signOut();}
+        if (!isUserLogin()) {
+            signOut();
+        }
         setContentView(R.layout.activity_signin);
         setTitle(getString(R.string.profile_title));
-        profileName = (TextView)findViewById(R.id.user_name);
+        profileName = (TextView) findViewById(R.id.user_name);
         displayLoginUserProfileName();
 
         //Scan Receipt
@@ -62,16 +64,16 @@ public class SigninActivity extends AppCompatActivity {
         });
 
         //Account Settings
-        Button accountSettingsButton = (Button)findViewById(R.id.account_settings);
+        Button accountSettingsButton = (Button) findViewById(R.id.account_settings);
         accountSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SigninActivity.this, AccountSettingsActivity.class));
+                startActivity(new Intent(SigninActivity.this, ReauthenticateActivity.class));
             }
         });
 
         //Logout
-        Button logoutButton = (Button)findViewById(R.id.sign_out);
+        Button logoutButton = (Button) findViewById(R.id.sign_out);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,9 +82,9 @@ public class SigninActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
+                                if (task.isSuccessful()) {
                                     signOut();
-                                }else {
+                                } else {
                                     displayMessage(getString(R.string.sign_out_error));
                                 }
                             }
@@ -90,6 +92,12 @@ public class SigninActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        displayLoginUserProfileName();
     }
 
     @Override

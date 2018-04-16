@@ -15,14 +15,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SigninActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".SigninActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.microblink.LicenseKey"
@@ -34,11 +38,18 @@
         <activity
             android:name=".ReceiptViewActivity"
             android:label="@string/title_activity_receipt_view"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AccountSettingsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".AccountSettingsActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ChangeEmailActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ChangeUserActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ChangeEmailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ChangeUserActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ReauthenticateActivity"></activity>
     </application>
 
 </manifest>
