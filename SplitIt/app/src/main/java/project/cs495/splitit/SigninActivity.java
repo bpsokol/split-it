@@ -51,6 +51,26 @@ public class SigninActivity extends AppCompatActivity {
         setTitle(getString(R.string.profile_title));
         profileName = (TextView)findViewById(R.id.user_name);
         displayLoginUserProfileName();
+
+        //Scan Receipt
+        Button scanReceiptButton = (Button) findViewById(R.id.scan_receipt);
+        scanReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getCameraPermissions();
+            }
+        });
+
+        //Account Settings
+        Button accountSettingsButton = (Button)findViewById(R.id.account_settings);
+        accountSettingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SigninActivity.this, AccountSettingsActivity.class));
+            }
+        });
+
+        //Logout
         Button logoutButton = (Button)findViewById(R.id.sign_out);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,29 +89,8 @@ public class SigninActivity extends AppCompatActivity {
                         });
             }
         });
-        Button deleteUserButton = (Button)findViewById(R.id.delete_user);
-        deleteUserButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                auth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            signOut();
-                        }else{
-                            displayMessage(getString(R.string.user_deletion_error));
-                        }
-                    }
-                });
-            }
-        });
-        Button scanReceiptButton = (Button) findViewById(R.id.scan_receipt);
-        scanReceiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getCameraPermissions();
-            }
-        });
+
+        //Manage Receipts
         Button manageReceiptsButton = (Button) findViewById(R.id.manage_receipts);
         manageReceiptsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +98,7 @@ public class SigninActivity extends AppCompatActivity {
                 openReceiptManagement();
             }
         });
+
     }
 
     @Override
