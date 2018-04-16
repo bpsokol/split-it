@@ -24,6 +24,13 @@
     <string name="receipt_ids_path">receiptIds/</string>
     <string name="assign_to_user">Assign to User</string>
     <string name="assign">Assign</string>
+    <string name="enter_password">Enter password</string>
+    <string name="done">Done</string>
+    <string name="enter_new_email">Enter new email address</string>
+    <string name="enter_new_user_name">Enter your name</string>
+    <string name="change_user_name">Change Name</string>
+    <string name="change_email">Change Email</string>
+    <string name="change_password">Change Password</string>
 
 
 </resources>

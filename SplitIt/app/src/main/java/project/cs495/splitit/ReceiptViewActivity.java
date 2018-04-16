@@ -44,7 +44,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         getSupportActionBar().setTitle(R.string.receipt);
 
         Intent intent = getIntent();
-        receiptId = intent.getStringExtra(SigninActivity.EXTRA_RECEIPT_ID);
+        receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         //Query query = mDatabaseReference.child("items").limitToFirst(5);
         Query query = mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true);
