@@ -22,7 +22,7 @@
             android:focusableInTouchMode="true"
             android:ems="10"
             android:hint="@string/enter_new_user_name"
-            android:inputType="textPersonName"
+            android:inputType="textCapWords"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

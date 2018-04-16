@@ -7,10 +7,10 @@
     <string name="profile_title">User Profile</string>
     <string name="user_name">Username</string>
     <string name="logout">LOGOUT</string>
-    <string name="delete_user">Delete User</string>
+    <string name="delete_user">DELETE USER</string>
     <string name="sign_out_error">Failed to sign out</string>
     <string name="user_deletion_error">Failed to delete user</string>
-    <string name="sign_out">Sign Out</string>
+    <string name="sign_out">SIGN OUT</string>
     <string name="account_settings">Account Settings</string>
     <string name="group_management">Group Management</string>
     <string name="scan_receipt">Scan Receipt</string>
@@ -31,6 +31,9 @@
     <string name="change_user_name">Change Name</string>
     <string name="change_email">Change Email</string>
     <string name="change_password">Change Password</string>
+    <string name="full_name">Full name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
 
 
 </resources>

@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -23,24 +25,29 @@ public class AccountSettingsActivity extends AppCompatActivity {
         setTitle("Account Settings");
         auth = FirebaseAuth.getInstance();
 
+        //Fills fields with users current data
+        setTextFields();
+
         //Change User ID
-        Button changeUserButton = (Button)findViewById(R.id.change_user);
+        ImageButton changeUserButton = (ImageButton)findViewById(R.id.change_user);
         changeUserButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(AccountSettingsActivity.this, ChangeUserActivity.class));
             }
         });
+
         //Change Email Address
-        Button changeEmailButton = (Button)findViewById(R.id.change_email);
+        ImageButton changeEmailButton = (ImageButton)findViewById(R.id.change_email);
         changeEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(AccountSettingsActivity.this, ChangeEmailActivity.class));
             }
         });
+
         //Change Password
-        Button changePasswordButton = (Button)findViewById(R.id.change_password);
+        ImageButton changePasswordButton = (ImageButton)findViewById(R.id.change_password);
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +67,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                         });
             }
         });
+
         //Logout
         Button logoutButton = (Button)findViewById(R.id.sign_out);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -79,6 +87,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                         });
             }
         });
+
         //DeleteUser
         Button deleteUserButton = (Button)findViewById(R.id.delete_user);
         deleteUserButton.setOnClickListener(new View.OnClickListener() {
@@ -99,12 +108,32 @@ public class AccountSettingsActivity extends AppCompatActivity {
             }
         });
     }
+
     private void signOut(){
         Intent signOutIntent = new Intent(this, SignInActivity.class);
         startActivity(signOutIntent);
         finish();
     }
+
     private void displayMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    private void setTextFields() {
+        //Load user data into fields
+        TextView user_name = (TextView) findViewById(R.id.user_name);
+        user_name.setText(auth.getCurrentUser().getDisplayName());
+
+        TextView user_email = (TextView) findViewById(R.id.user_email);
+        user_email.setText(auth.getCurrentUser().getEmail());
+
+        TextView user_password = (TextView) findViewById(R.id.user_password);
+        user_password.setText("password");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setTextFields();
     }
 }

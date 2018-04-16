@@ -23,7 +23,7 @@ public class ChangeUserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_user);
-        setTitle("Change User ID");
+        setTitle("Change Name");
         Button buttonDone = (Button)findViewById(R.id.button_done_user);
         buttonDone.setOnClickListener(new View.OnClickListener() {
             @Override
