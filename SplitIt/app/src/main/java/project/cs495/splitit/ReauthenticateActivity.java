@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -53,19 +54,21 @@ public class ReauthenticateActivity extends AppCompatActivity {
         final TextView password = (TextView)findViewById(R.id.enter_password);
         final String userEmail = user.getEmail();
         final CharSequence userPassword = password.getText();
-        AuthCredential credential = EmailAuthProvider.getCredential(userEmail, userPassword.toString());
-        user.reauthenticate(credential)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            startActivity(new Intent(ReauthenticateActivity.this, AccountSettingsActivity.class));
-                            finish();
-                        } else {
-                            password.setText("");
-                            Toast.makeText(getApplicationContext(),"Authentication failed!",Toast.LENGTH_LONG).show();
+        if(userPassword.length() != 0) {
+            AuthCredential credential = EmailAuthProvider.getCredential(userEmail, userPassword.toString());
+            user.reauthenticate(credential)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                startActivity(new Intent(ReauthenticateActivity.this, AccountSettingsActivity.class));
+                                finish();
+                            } else {
+                                password.setText("");
+                                Toast.makeText(getApplicationContext(),"Authentication failed!",Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 }

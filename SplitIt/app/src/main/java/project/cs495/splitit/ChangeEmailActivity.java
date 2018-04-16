@@ -45,19 +45,21 @@ public class ChangeEmailActivity extends AppCompatActivity {
 
     private void updateEmail() {
         TextView textEmail = (TextView)findViewById(R.id.email_address);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String newEmail = textEmail.getText().toString();
-        user.updateEmail(newEmail)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Failed to change Email!", Toast.LENGTH_SHORT).show();
+        if (textEmail.getText().length() != 0) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            String newEmail = textEmail.getText().toString();
+            user.updateEmail(newEmail)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Failed to change Email!", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 }
