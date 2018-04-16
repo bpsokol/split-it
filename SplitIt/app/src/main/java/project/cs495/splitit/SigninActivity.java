@@ -90,6 +90,7 @@ public class SigninActivity extends AppCompatActivity {
             }
         });
 
+
         //Manage Receipts
         Button manageReceiptsButton = (Button) findViewById(R.id.manage_receipts);
         manageReceiptsButton.setOnClickListener(new View.OnClickListener() {
