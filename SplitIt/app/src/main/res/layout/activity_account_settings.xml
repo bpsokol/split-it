@@ -18,11 +18,8 @@
 
             <TextView
                 android:id="@+id/full_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="16dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginLeft="21dp"
                 android:layout_marginRight="16dp"
@@ -42,10 +39,6 @@
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignTop="@+id/full_name"
                 android:layout_marginLeft="21dp"
                 android:layout_marginStart="21dp"
                 android:layout_marginTop="0dp"
@@ -59,9 +52,6 @@
                 android:id="@+id/change_user"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/user_name"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="0dp"
@@ -69,7 +59,7 @@
                 android:adjustViewBounds="false"
                 android:background="@android:color/transparent"
                 android:cropToPadding="false"
-                app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
+                app:srcCompat="@drawable/ic_mode_edit_black_24dp" android:contentDescription="@string/edit_button" />
         </LinearLayout>
 
         <LinearLayout
@@ -79,11 +69,8 @@
 
             <TextView
                 android:id="@+id/email"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="16dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginLeft="21dp"
                 android:layout_marginRight="16dp"
@@ -103,10 +90,6 @@
                 android:id="@+id/user_email"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignTop="@+id/full_name"
                 android:layout_marginLeft="21dp"
                 android:layout_marginStart="21dp"
                 android:layout_marginTop="0dp"
@@ -120,9 +103,6 @@
                 android:id="@+id/change_email"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/user_name"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="0dp"
@@ -130,7 +110,7 @@
                 android:adjustViewBounds="false"
                 android:background="@android:color/transparent"
                 android:cropToPadding="false"
-                app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
+                app:srcCompat="@drawable/ic_mode_edit_black_24dp" android:contentDescription="@string/edit_button" />
         </LinearLayout>
 
         <LinearLayout
@@ -140,11 +120,8 @@
 
             <TextView
                 android:id="@+id/password"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="16dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginLeft="21dp"
                 android:layout_marginRight="16dp"
@@ -164,10 +141,6 @@
                 android:id="@+id/user_password"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignTop="@+id/full_name"
                 android:layout_marginLeft="21dp"
                 android:layout_marginStart="21dp"
                 android:layout_marginTop="0dp"
@@ -182,9 +155,6 @@
                 android:id="@+id/change_password"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/user_name"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="0dp"
@@ -192,7 +162,7 @@
                 android:adjustViewBounds="false"
                 android:background="@android:color/transparent"
                 android:cropToPadding="false"
-                app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
+                app:srcCompat="@drawable/ic_mode_edit_black_24dp" android:contentDescription="@string/edit_button" />
         </LinearLayout>
 
         <LinearLayout

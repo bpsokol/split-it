@@ -1,11 +1,13 @@
 package project.cs495.splitit;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_RECEIPT_ID = "project.cs495.splitit.RECEIPT_ID";
     private TextView profileName;
     private FirebaseAuth auth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,5 +196,11 @@ public class MainActivity extends AppCompatActivity {
         else {
             scanReceipt();
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }
