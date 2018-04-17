@@ -47,4 +47,6 @@
     <string name="create_successful">Create successfully</string>
     <string name="empty_warning">You should input every field</string>
     <string name="view_receipts">View Receipts</string>
+    <string name="title_activity_receipt_list_view">ReceiptListViewActivity</string>
+    <string name="title_activity_receipt_view">ReceiptViewActivity</string>
 </resources>
