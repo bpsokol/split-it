@@ -43,10 +43,15 @@ public class ManageReceiptActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance().getReference();
         setContentView(R.layout.activity_manage_receipts);
 
+        final ListView listv = (ListView)findViewById(R.id.receipt_list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.receipt_list_item,R.id.txt,receiptInfo);
+        listv.setAdapter(adapter);
+        listv.setOnItemClickListener(new ItemList());
+        adapter.notifyDataSetChanged();
+
         database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //System.out.println("Split-it is working...");
                 for (DataSnapshot childSnapshot: dataSnapshot.child("receipts").getChildren()){
                     String vendor = childSnapshot.child("vendor").getValue(String.class);
                     String date = childSnapshot.child("datePurchased").getValue(String.class);
@@ -55,8 +60,8 @@ public class ManageReceiptActivity extends AppCompatActivity {
                     receiptDisplayText = vendor + " | " + date;
                     receiptInfo.add(receiptDisplayText);
                     receiptIDArray.add(id);
+                    listv.invalidateViews();
                 }
-                //System.out.println(arr);
             }
 
             @Override
@@ -64,11 +69,6 @@ public class ManageReceiptActivity extends AppCompatActivity {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
-
-        ListView listv = (ListView)findViewById(R.id.receipt_list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.receipt_list_item,R.id.txt,receiptInfo);
-        listv.setAdapter(adapter);
-        listv.setOnItemClickListener(new ItemList());
 
         Button goBackButton = (Button) findViewById(R.id.go_back);
         goBackButton.setOnClickListener(new View.OnClickListener() {
@@ -93,8 +93,6 @@ public class ManageReceiptActivity extends AppCompatActivity {
         receiptIDArray.remove(currReceiptIndex);
         receiptInfo.remove(currReceiptIndex);
         Toast.makeText(ManageReceiptActivity.this, "Removed receipt!", Toast.LENGTH_LONG).show();
-        finish();
-        startActivity(getIntent());
     }
     class ItemList implements AdapterView.OnItemClickListener{
         public void onItemClick(AdapterView<?> parent, View view, int position, long id){
