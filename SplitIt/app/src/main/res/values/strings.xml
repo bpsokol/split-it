@@ -26,4 +26,6 @@
     <string name="edit_group_name">Enter a group name</string>
     <string name="edit_last_name">Enter your last name</string>
     <string name="edit_first_name">Enter your first name</string>
+    <string name="create_successful">Create successfully</string>
+    <string name="empty_warning">You should input every field</string>
 </resources>
