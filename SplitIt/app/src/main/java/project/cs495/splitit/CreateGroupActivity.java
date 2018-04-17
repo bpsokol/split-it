@@ -8,12 +8,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.UUID;
 
 public class CreateGroupActivity extends AppCompatActivity {
     private FirebaseAuth auth;
@@ -66,14 +67,20 @@ public class CreateGroupActivity extends AppCompatActivity {
         String gName = groupName.getText().toString();
         String fName = firstName.getText().toString();
         String lName = lastName.getText().toString();
-        String groupId = mDatabase.child("groups").push().getKey();
-        GroupOwner manager = new GroupOwner(auth.getInstance().getCurrentUser().getUid(),fName+lName);
-        Group group = new Group(groupId,gName,manager.getManagerUID(),manager.getManagerName(),null);
-        group.addMember(manager.getManagerName());
-        group.commitToDB(mDatabase);
-        Intent createIntent =  new Intent(this, GroupManageActivity.class);
-        startActivity(createIntent);
-        finish();
+        if (isEmpty(gName) || isEmpty(fName) || isEmpty(lName)) {
+            displayMessage(getString(R.string.empty_warning));
+        }
+        else {
+            String groupId = mDatabase.child("groups").push().getKey();
+            GroupOwner manager = new GroupOwner(auth.getCurrentUser().getUid(), fName + " " + lName);
+            Group group = new Group(groupId, gName, manager.getManagerUID(), manager.getManagerName(), null);
+            group.addMember(manager.getManagerName());
+            group.commitToDB(mDatabase);
+            Intent createIntent = new Intent(this, GroupManageActivity.class);
+            startActivity(createIntent);
+            finish();
+            displayMessage(getString(R.string.create_successful));
+        }
     }
 
     private void cancel() {
@@ -82,4 +89,15 @@ public class CreateGroupActivity extends AppCompatActivity {
         finish();
     }
 
+    private boolean isEmpty(String str) {
+        if (str == null)
+            return true;
+        else if (str.trim().length() == 0)
+            return true;
+        return false;
+    }
+
+    private void displayMessage(String message){
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
 }

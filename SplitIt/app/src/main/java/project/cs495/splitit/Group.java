@@ -2,21 +2,21 @@ package project.cs495.splitit;
 
 import com.google.firebase.database.DatabaseReference;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Group implements EntityInterface{
     private String groupId;
     private String groupName;
     private String managerUID;
     private String managerName;
-    private Map<String,Boolean> members;
+    private List<String> members;
 
     public Group() {
-        this.members = new HashMap<>();
+        this.members = new ArrayList<>();
     }
 
-    public Group(String groupId, String groupName, String managerUID, String managerName, Map<String,Boolean> member) {
+    public Group(String groupId, String groupName, String managerUID, String managerName, List<String> member) {
         this.groupId = groupId;
         this.groupName = groupName;
         this.managerUID = managerUID;
@@ -24,7 +24,7 @@ public class Group implements EntityInterface{
         if (member != null) {
             this.members = member;
         } else {
-            this.members = new HashMap<>();
+            this.members = new ArrayList<>();
         }
     }
 
@@ -60,16 +60,16 @@ public class Group implements EntityInterface{
         this.managerName = managerName;
     }
 
-    public Map<String, Boolean> getMember() {
+    public List<String> getMember() {
         return members;
     }
 
-    public void setMember(HashMap<String,Boolean> member) {
+    public void setMember(ArrayList<String> member) {
         this.members = member;
     }
 
     public void addMember(String member) {
-        this.members.put(member,true);
+        this.members.add(member);
     }
 
     public void removeMember(String member) {
@@ -78,6 +78,6 @@ public class Group implements EntityInterface{
 
     @Override
     public void commitToDB(DatabaseReference mDatabase) {
-        mDatabase.child("receipts").child(this.groupId).setValue(this);
+        mDatabase.child("groups").child(this.groupId).setValue(this);
     }
 }
