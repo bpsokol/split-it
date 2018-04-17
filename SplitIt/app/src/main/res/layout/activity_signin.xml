@@ -41,21 +41,33 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/delete_user"
-        style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-        android:layout_width="167dp"
+        android:id="@+id/scan_receipt"
+        style="@style/FirebaseUI.Button.AccountChooser.FacebookButton"
+        android:layout_width="330dp"
         android:layout_height="60dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
         android:gravity="center"
-        android:text="@string/delete_user"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/scan_receipt"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <Button
+        android:id="@+id/group_management"
+        style="@style/FirebaseUI.Button.AccountChooser.FacebookButton"
+        android:layout_width="330dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="@string/group_management"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/sign_out"
-        app:layout_constraintTop_toBottomOf="@+id/account_settings"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scan_receipt" />
 
     <Button
         android:id="@+id/account_settings"
@@ -72,30 +84,35 @@
         app:layout_constraintTop_toBottomOf="@+id/group_management" />
 
     <Button
-        android:id="@+id/group_management"
+        android:id="@+id/manage_receipts"
         style="@style/FirebaseUI.Button.AccountChooser.FacebookButton"
         android:layout_width="360dp"
         android:layout_height="60dp"
         android:layout_marginTop="30dp"
         android:gravity="center"
-        android:text="@string/group_management"
+        android:text="Manage Receipts"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scan_receipt" />
+        app:layout_constraintTop_toBottomOf="@+id/account_settings" />
 
     <Button
-        android:id="@+id/scan_receipt"
-        style="@style/FirebaseUI.Button.AccountChooser.FacebookButton"
-        android:layout_width="360dp"
-        android:layout_height="57dp"
-        android:layout_marginTop="108dp"
+        android:id="@+id/sign_out"
+        style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
+        android:layout_width="167dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="30dp"
         android:gravity="center"
-        android:text="@string/scan_receipt"
+        android:text="@string/sign_out"
         android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_name" />
+        app:layout_constraintTop_toBottomOf="@+id/account_settings"
+        app:layout_constraintVertical_bias="1.0" />
+
 </android.support.constraint.ConstraintLayout>

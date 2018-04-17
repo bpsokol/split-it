@@ -91,6 +91,17 @@ public class SigninActivity extends AppCompatActivity {
                 groupManagement();
             }
         });
+
+
+        //Manage Receipts
+        Button manageReceiptsButton = (Button) findViewById(R.id.manage_receipts);
+        manageReceiptsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openReceiptManagement();
+            }
+        });
+
     }
 
     @Override
@@ -102,6 +113,12 @@ public class SigninActivity extends AppCompatActivity {
 
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
         }
+    }
+
+    private void openReceiptManagement(){
+        Intent manageReceiptsIntent = new Intent(SigninActivity.this, ManageReceiptActivity.class);
+        startActivity(manageReceiptsIntent);
+        finish();
     }
 
     @Override
