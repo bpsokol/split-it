@@ -31,13 +31,13 @@
             android:layout_height="wrap_content">
 
             <android.support.design.widget.TabItem
-                android:id="@+id/group_management_tab"
+                android:id="@+id/view_receipts_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/view_receipts" />
 
             <android.support.design.widget.TabItem
-                android:id="@+id/account_settings_tab"
+                android:id="@+id/group_management_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/group_management" />
