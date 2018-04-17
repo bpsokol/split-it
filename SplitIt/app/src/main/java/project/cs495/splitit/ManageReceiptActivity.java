@@ -95,7 +95,7 @@ public class ManageReceiptActivity extends AppCompatActivity {
     }
 
     public void viewReceipt(){
-        SigninActivity.RECEIPT_ID = receiptIDArray.get(currReceiptIndex);
+        MainActivity.RECEIPT_ID = receiptIDArray.get(currReceiptIndex);
         startActivity(new Intent(ManageReceiptActivity.this, ReceiptViewActivity.class));
     }
 
@@ -115,7 +115,7 @@ public class ManageReceiptActivity extends AppCompatActivity {
         }
     }
     private void openHomePage(){
-        Intent homePageIntent = new Intent(ManageReceiptActivity.this, SigninActivity.class);
+        Intent homePageIntent = new Intent(ManageReceiptActivity.this, MainActivity.class);
         startActivity(homePageIntent);
         finish();
     }
