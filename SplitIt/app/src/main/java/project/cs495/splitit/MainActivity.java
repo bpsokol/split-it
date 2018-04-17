@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
          return auth.getCurrentUser() != null;
     }
     private void signOut(){
-        Intent signOutIntent = new Intent(this, SignInActivity.class);
+        Intent signOutIntent = new Intent(this, SigninActivity.class);
         startActivity(signOutIntent);
         finish();
     }

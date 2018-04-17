@@ -10,8 +10,8 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class SignInActivity extends AppCompatActivity {
-    private static final String TAG = SignInActivity.class.getSimpleName();
+public class SigninActivity extends AppCompatActivity {
+    private static final String TAG = SigninActivity.class.getSimpleName();
     private static final String PATH_TOS = "";
     private Button loginButton;
     private FirebaseAuth auth;
@@ -54,7 +54,7 @@ public class SignInActivity extends AppCompatActivity {
         return false;
     }
     private void loginUser(){
-        Intent loginIntent = new Intent(SignInActivity.this, MainActivity.class);
+        Intent loginIntent = new Intent(SigninActivity.this, MainActivity.class);
         startActivity(loginIntent);
         finish();
     }

@@ -148,7 +148,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     };
 
     private void signOut(){
-        Intent signOutIntent = new Intent(this, SignInActivity.class);
+        Intent signOutIntent = new Intent(this, SigninActivity.class);
         startActivity(signOutIntent);
         finish();
     }

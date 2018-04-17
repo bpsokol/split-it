@@ -23,7 +23,7 @@
             android:value="1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM" />
 
         <activity
-            android:name=".SignInActivity"
+            android:name=".SigninActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
