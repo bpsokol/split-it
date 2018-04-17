@@ -6,20 +6,23 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.multidex.MultiDex;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.microblink.EdgeDetectionConfiguration;
@@ -53,54 +56,36 @@ public class MainActivity extends AppCompatActivity {
             signOut();
         }
         setContentView(R.layout.activity_main);
-        setTitle(getString(R.string.profile_title));
-        profileName = (TextView) findViewById(R.id.user_name);
-        displayLoginUserProfileName();
+        setTitle(getString(R.string.home));
 
-        //Scan Receipt
-        Button scanReceiptButton = (Button) findViewById(R.id.scan_receipt);
-        scanReceiptButton.setOnClickListener(new View.OnClickListener() {
+        //Tabbed activity implementation
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+        ImageButton btn = (ImageButton) findViewById(R.id.scan_receipt);
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getCameraPermissions();
             }
         });
-
-        //Account Settings
-        Button accountSettingsButton = (Button) findViewById(R.id.account_settings);
-        accountSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, ReauthenticateActivity.class));
-            }
-        });
-
-        //Logout
-        Button logoutButton = (Button) findViewById(R.id.sign_out);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AuthUI.getInstance()
-                        .signOut(MainActivity.this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    signOut();
-                                } else {
-                                    displayMessage(getString(R.string.sign_out_error));
-                                }
-                            }
-                        });
-            }
-        });
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        displayLoginUserProfileName();
         if(!isUserLogin()) {
             signOut();
         }
@@ -178,12 +163,6 @@ public class MainActivity extends AppCompatActivity {
     private void displayMessage(String message){
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
-    private void displayLoginUserProfileName(){
-        FirebaseUser mUser = auth.getCurrentUser();
-        if(mUser != null){
-            profileName.setText(TextUtils.isEmpty(mUser.getDisplayName())? "No name found" : "Welcome " + mUser.getDisplayName());
-        }
-    }
 
     private void getCameraPermissions() {
         if (Build.VERSION.SDK_INT >= 23) {
@@ -202,5 +181,118 @@ public class MainActivity extends AppCompatActivity {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
+    }
+
+    private void accountSettings() {
+        Intent accountSetingsIntent = new Intent(MainActivity.this,ReauthenticateActivity.class);
+        startActivity(accountSetingsIntent);
+    }
+
+
+    //Tabbed activity implementation
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link FragmentPagerAdapter} derivative, which will keep every
+     * loaded fragment in memory. If this becomes too memory intensive, it
+     * may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the account_settings_menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.account_settings_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            accountSettings();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public PlaceholderFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        //TODO: Change layout activity once created
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            if(getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
+                View rootView = inflater.inflate(R.layout.activity_receipt_view, container, false);
+                return rootView;
+            }
+            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
+                View rootView = inflater.inflate(R.layout.activity_receipt_view, container, false);
+                return rootView;
+            }
+            else {
+                View rootView = inflater.inflate(R.layout.activity_receipt_view, container, false);
+                return rootView;
+            }
+        }
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            return PlaceholderFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return 3;
+        }
     }
 }

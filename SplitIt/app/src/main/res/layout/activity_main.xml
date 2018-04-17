@@ -1,108 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp"
-    tools:context=".MainActivity">
+    android:fitsSystemWindows="true"
+    tools:context="project.cs495.splitit.MainActivity">
 
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="0dp"
-        android:layout_height="38dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center_horizontal"
-        android:text="@string/user_name"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="71dp"
-        android:layout_height="100dp"
-        android:layout_marginEnd="137dp"
-        android:layout_marginLeft="137dp"
-        android:layout_marginRight="137dp"
-        android:layout_marginStart="137dp"
-        android:layout_marginTop="8dp"
-        android:cropToPadding="true"
-        android:gravity="center"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_name"
-        app:srcCompat="@drawable/logo" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="@string/app_name">
 
-    <Button
-        android:id="@+id/sign_out"
-        style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-        android:layout_width="167dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:text="@string/sign_out"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account_settings"
-        app:layout_constraintVertical_bias="1.0" />
+        </android.support.v7.widget.Toolbar>
 
-    <Button
-        android:id="@+id/account_settings"
-        style="@style/FirebaseUI.Button.AccountChooser.FacebookButton"
-        android:layout_width="330dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="24dp"
-        android:gravity="center"
-        android:text="@string/account_settings"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_management" />
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/group_management"
-        style="@style/FirebaseUI.Button.AccountChooser.FacebookButton"
-        android:layout_width="330dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="24dp"
-        android:gravity="center"
-        android:text="@string/group_management"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scan_receipt" />
+            <android.support.design.widget.TabItem
+                android:id="@+id/group_management_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/view_receipts" />
 
-    <Button
+            <android.support.design.widget.TabItem
+                android:id="@+id/account_settings_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/group_management" />
+
+        </android.support.design.widget.TabLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <ImageButton
         android:id="@+id/scan_receipt"
-        style="@style/FirebaseUI.Button.AccountChooser.FacebookButton"
-        android:layout_width="330dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:text="@string/scan_receipt"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-</android.support.constraint.ConstraintLayout>
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/scan_receipt_icon_blue" />
+
+</android.support.design.widget.CoordinatorLayout>

@@ -1,6 +1,6 @@
 <resources>
     <string name="account_settings">Account Settings</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Account Settings</string>
     <string name="app_name">Split-It</string>
     <string name="assign">Assign</string>
     <string name="assign_to_user">Assign to User</string>
@@ -16,11 +16,11 @@
     <string name="enter_password">Enter password</string>
     <string name="full_name">Full name</string>
     <string name="group_management">Group Management</string>
+    <string name="home">Home</string>
     <string name="items">items</string>
     <string name="login_button">Login</string>
     <string name="logout">LOGOUT</string>
     <string name="password">Password</string>
-    <string name="profile_title">User Profile</string>
     <string name="receipt">Receipt</string>
     <string name="receipt_ids_path">receiptIds/</string>
     <string name="scan_receipt">Scan Receipt</string>
@@ -33,6 +33,6 @@
     <string name="unknown_response">Known response</string>
     <string name="user_deletion_error">Failed to delete user</string>
     <string name="user_name">Username</string>
-    <string name="user_profile">Welcome </string>
+    <string name="view_receipts">View Receipts</string>
     <string name="welcome">Welcome to Split-It!</string>
 </resources>
