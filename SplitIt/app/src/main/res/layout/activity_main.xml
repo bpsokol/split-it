@@ -62,4 +62,6 @@
         android:scaleType="fitXY"
         app:srcCompat="@drawable/scan_receipt_icon_blue" />
 
+
 </android.support.design.widget.CoordinatorLayout>
+
