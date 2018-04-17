@@ -1,5 +1,6 @@
 package project.cs495.splitit;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,33 +13,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.microblink.EdgeDetectionConfiguration;
 import com.microblink.FrameCharacteristics;
 import com.microblink.IntentUtils;
 import com.microblink.Media;
-import com.microblink.Product;
 import com.microblink.Retailer;
 import com.microblink.ScanOptions;
 import com.microblink.ScanResults;
 import com.scandit.barcodepicker.ScanditLicense;
-
-import project.cs495.splitit.models.Item;
-import project.cs495.splitit.models.Receipt;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = SigninActivity.class.getSimpleName();
     private static final int SCAN_RECEIPT_REQUEST = 201;
     private static final String SCANDIT_KEY = "1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM";
     private static final int CAMERA_PERMISSION_REQUEST = 7;
-    public static final String EXTRA_RECEIPT_ID = "project.cs495.splitit.RECEIPT_ID";
     private TextView profileName;
     private FirebaseAuth auth;
     @Override
@@ -51,26 +44,6 @@ public class SigninActivity extends AppCompatActivity {
         setTitle(getString(R.string.profile_title));
         profileName = (TextView)findViewById(R.id.user_name);
         displayLoginUserProfileName();
-
-        //Scan Receipt
-        Button scanReceiptButton = (Button) findViewById(R.id.scan_receipt);
-        scanReceiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getCameraPermissions();
-            }
-        });
-
-        //Account Settings
-        Button accountSettingsButton = (Button)findViewById(R.id.account_settings);
-        accountSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(SigninActivity.this, AccountSettingsActivity.class));
-            }
-        });
-
-        //Logout
         Button logoutButton = (Button)findViewById(R.id.sign_out);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +60,35 @@ public class SigninActivity extends AppCompatActivity {
                                 }
                             }
                         });
+            }
+        });
+        Button deleteUserButton = (Button)findViewById(R.id.delete_user);
+        deleteUserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                auth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            signOut();
+                        }else{
+                            displayMessage(getString(R.string.user_deletion_error));
+                        }
+                    }
+                });
+            }
+        });
+        Button scanReceiptButton = (Button) findViewById(R.id.scan_receipt);
+        scanReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getCameraPermissions();
+            }
+        });
+        Button groupManagementButton = (Button) findViewById(R.id.group_management);
+        groupManagementButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                groupManagement();
             }
         });
 
@@ -108,31 +110,9 @@ public class SigninActivity extends AppCompatActivity {
 
         if ( requestCode == SCAN_RECEIPT_REQUEST && resultCode == Activity.RESULT_OK ) {
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
+
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
-            String receiptId = parceScanResults(brScanResults);
-            startActivity(buildReceiptViewIntent(receiptId));
         }
-    }
-
-    private String parceScanResults(ScanResults brScanResults) {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        String receiptId = database.child("receipts").push().getKey();
-        Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), null);
-        for (Product product : brScanResults.products()) {
-            String itemId = database.child("items").push().getKey();
-            Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
-            item.addReceiptId(receiptId);
-            item.commitToDB(database);
-            receipt.addItem(item.getItemId());
-        }
-        receipt.commitToDB(database);
-        return receiptId;
-    }
-
-    private Intent buildReceiptViewIntent(String receiptId) {
-        Intent intent = new Intent(this, ReceiptViewActivity.class);
-        intent.putExtra(EXTRA_RECEIPT_ID, receiptId);
-        return intent;
     }
 
     private void openReceiptManagement(){
@@ -169,8 +149,17 @@ public class SigninActivity extends AppCompatActivity {
         startActivityForResult( intent, SCAN_RECEIPT_REQUEST );
     }
 
+    private void groupManagement() {
+        Intent groupManageIntent = new Intent(SigninActivity.this,GroupManageActivity.class);
+        startActivity(groupManageIntent);
+        finish();
+    }
+
     private boolean isUserLogin(){
-         return auth.getCurrentUser() != null;
+        if(auth.getCurrentUser() != null){
+            return true;
+        }
+        return false;
     }
     private void signOut(){
         Intent signOutIntent = new Intent(this, MainActivity.class);
