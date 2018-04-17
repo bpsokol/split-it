@@ -42,6 +42,7 @@ public class ManageReceiptActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         database = FirebaseDatabase.getInstance().getReference();
         setContentView(R.layout.activity_manage_receipts);
+        setTitle("Receipt Management");
 
         final ListView listv = (ListView)findViewById(R.id.receipt_list);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.receipt_list_item,R.id.txt,receiptInfo);
@@ -84,6 +85,18 @@ public class ManageReceiptActivity extends AppCompatActivity {
                 deleteReceipt();
             }
         });
+        Button viewButton = (Button) findViewById(R.id.view);
+        viewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewReceipt();
+            }
+        });
+    }
+
+    public void viewReceipt(){
+        SigninActivity.RECEIPT_ID = receiptIDArray.get(currReceiptIndex);
+        startActivity(new Intent(ManageReceiptActivity.this, ReceiptViewActivity.class));
     }
 
     public void deleteReceipt(){
@@ -98,8 +111,6 @@ public class ManageReceiptActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id){
             ViewGroup vg = (ViewGroup)view;
             TextView tv = (TextView)vg.findViewById(R.id.txt);
-            //Toast.makeText(ManageReceiptActivity.this, tv.getText().toString(), Toast.LENGTH_LONG).show();
-            //Toast.makeText(ManageReceiptActivity.this, String.valueOf(position), Toast.LENGTH_LONG).show();
             currReceiptIndex = position;
         }
     }

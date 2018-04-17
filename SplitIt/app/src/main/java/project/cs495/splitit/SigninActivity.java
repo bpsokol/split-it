@@ -39,6 +39,7 @@ public class SigninActivity extends AppCompatActivity {
     private static final String SCANDIT_KEY = "1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM";
     private static final int CAMERA_PERMISSION_REQUEST = 7;
     public static final String EXTRA_RECEIPT_ID = "project.cs495.splitit.RECEIPT_ID";
+    public static String RECEIPT_ID;
     private TextView profileName;
     private FirebaseAuth auth;
     @Override
@@ -110,6 +111,7 @@ public class SigninActivity extends AppCompatActivity {
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
             String receiptId = parceScanResults(brScanResults);
+            RECEIPT_ID = receiptId;
             startActivity(buildReceiptViewIntent(receiptId));
         }
     }

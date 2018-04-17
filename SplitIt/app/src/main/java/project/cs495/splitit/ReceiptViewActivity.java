@@ -37,14 +37,14 @@ public class ReceiptViewActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_receipt_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.receipt);
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_receipt_view);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(R.string.receipt);
 
-        Intent intent = getIntent();
-        receiptId = intent.getStringExtra(SigninActivity.EXTRA_RECEIPT_ID);
+            Intent intent = getIntent();
+            receiptId = SigninActivity.RECEIPT_ID; //intent.getStringExtra(SigninActivity.EXTRA_RECEIPT_ID);
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         //Query query = mDatabaseReference.child("items").limitToFirst(5);
         Query query = mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true);
