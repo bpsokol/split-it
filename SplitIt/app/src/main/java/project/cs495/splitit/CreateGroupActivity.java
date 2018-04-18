@@ -19,8 +19,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private TextView profileName;
     private EditText groupName;
-    private EditText lastName;
-    private EditText firstName;
+    private String userName;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
@@ -28,22 +27,14 @@ public class CreateGroupActivity extends AppCompatActivity {
             signOut();
         }
         setContentView(R.layout.activity_create_group);
-        setTitle(getString(R.string.profile_title));
-        profileName = (TextView) findViewById(R.id.user_name);
-        groupName = (EditText) findViewById(R.id.group_name_input);
-        lastName = (EditText) findViewById(R.id.last_name_input);
-        firstName = (EditText) findViewById(R.id.first_name_input);
-        Button createButton = (Button)findViewById(R.id.create);
+        setTitle(getString(R.string.create_group));
+        groupName = (EditText) findViewById(R.id.create_group);
+        userName = auth.getCurrentUser().getDisplayName();
+
+        Button createButton = (Button)findViewById(R.id.button_done_group_create);
         createButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                create(groupName,firstName,lastName);
-            }
-        });
-        Button cancelButton = (Button)findViewById(R.id.cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cancel();
+                create(groupName, userName);
             }
         });
     }
@@ -61,23 +52,19 @@ public class CreateGroupActivity extends AppCompatActivity {
         finish();
     }
 
-    private void create(EditText groupName, EditText firstName, EditText lastName) {
+    private void create(EditText groupName, String userName) {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         String gName = groupName.getText().toString();
-        String fName = firstName.getText().toString();
-        String lName = lastName.getText().toString();
-        if (isEmpty(gName) || isEmpty(fName) || isEmpty(lName)) {
+
+        if (isEmpty(gName)) {
             displayMessage(getString(R.string.empty_warning));
         }
         else {
             String groupId = mDatabase.child("groups").push().getKey();
-            GroupOwner manager = new GroupOwner(auth.getCurrentUser().getUid(), fName + " " + lName);
+            GroupOwner manager = new GroupOwner(auth.getCurrentUser().getUid(), userName);
             Group group = new Group(groupId, gName, manager.getManagerUID(), manager.getManagerName(), null);
             group.addMember(manager.getManagerName());
             group.commitToDB(mDatabase);
-
-            //Intent createIntent = new Intent(CreateGroupActivity.this,GroupManageActivity.class);
-            // CreateGroupActivity.this.startActivity(createIntent);
 
             Intent createIntent = new Intent(CreateGroupActivity.this, MainActivity.class);
             startActivity(createIntent);

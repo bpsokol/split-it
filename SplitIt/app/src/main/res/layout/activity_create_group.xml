@@ -1,140 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ChangeEmailActivity">
 
-    <TextView
-        android:id="@+id/create_group_text"
-        android:layout_width="fill_parent"
-        android:layout_height="38dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_horizontal"
-        android:text="@string/create_group"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/create_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:focusableInTouchMode="true"
+            android:ems="10"
+            android:hint="@string/edit_group_name"
+            android:inputType="textEmailAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/create"
-        style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-        android:layout_width="105dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="36dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginStart="10dp"
-        android:gravity="center"
-        android:text="@string/create"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cancel"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        <Button
+            android:id="@+id/button_done_group_create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/create_group"
+            android:layout_alignRight="@+id/create_group"
+            android:layout_below="@+id/create_group"
+            android:layout_marginTop="24dp"
+            android:text="@string/done"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/create_group" />
 
-    <Button
-        android:id="@+id/cancel"
-        style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-        android:layout_width="105dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="36dp"
-        android:gravity="center"
-        android:text="@string/cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/create"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <TextView
-        android:id="@+id/group_name"
-        android:layout_width="100dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="44dp"
-        android:text="@string/group_name"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.112"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_group_text" />
-
-    <TextView
-        android:id="@+id/manager_last_name"
-        android:layout_width="120dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="36dp"
-        android:text="@string/manager_last_name"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.06"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_name" />
-
-    <TextView
-        android:id="@+id/manager_first_name"
-        android:layout_width="120dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="36dp"
-        android:text="@string/manager_first_name"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.06"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/manager_last_name" />
-
-    <EditText
-        android:id="@+id/group_name_input"
-        android:layout_width="160dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="32dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="@string/edit_group_name"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.653"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_group_text" />
-
-    <EditText
-        android:id="@+id/last_name_input"
-        android:layout_width="160dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="28dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="@string/edit_last_name"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.656"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_name_input" />
-
-    <EditText
-        android:id="@+id/first_name_input"
-        android:layout_width="160dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="@string/edit_first_name"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.656"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/last_name_input" />
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

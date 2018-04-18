@@ -18,7 +18,7 @@
     <string name="edit_group_name">Enter a group name</string>
     <string name="edit_last_name">Enter your last name</string>
     <string name="email">Email</string>
-    <string name="empty_warning">Please fill in all fields</string>
+    <string name="empty_warning">Please choose a group name</string>
     <string name="enter_new_email">Enter new email address</string>
     <string name="enter_new_user_name">Enter your name</string>
     <string name="enter_password">Enter password</string>
