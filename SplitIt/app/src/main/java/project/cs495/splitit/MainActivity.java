@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +13,7 @@ import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView profileName;
     private FirebaseAuth auth;
     private int fabState = 0;
+    private ImageButton fab_plus;
+    private ImageButton fab_scan_receipt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,14 +81,26 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        ImageButton btn = (ImageButton) findViewById(R.id.scan_receipt);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getCameraPermissions();
-            }
-        });
 
+        TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                animateFab(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        };
+
+        fab_plus = (ImageButton) findViewById(R.id.plus_button);
+        fab_scan_receipt = (ImageButton) findViewById(R.id.scan_receipt);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -94,30 +110,32 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageScrolled(int position,
-                                       float positionOffset, int positionOffsetPixels) {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
 
             @Override
             public void onPageSelected(int position) {
                 //This method will be invoked when a new page becomes selected.
                 fabState = position;
+                animateFab(position);
             }
         });
 
-        ImageButton plus = (ImageButton) findViewById(R.id.plus_button);
-        plus.setOnClickListener(new View.OnClickListener() {
+        fab_scan_receipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (fabState == 0) {
-                    //write actions related to page one
+                    getCameraPermissions();
                 }
-                else if (fabState == 1) {
+            }
+        });
+
+        fab_plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (fabState == 1) {
                     Intent createGroupIntent = new Intent(MainActivity.this, CreateGroupActivity.class);
                     MainActivity.this.startActivity(createGroupIntent);
-                }
-                else {
-
                 }
             }
         });
@@ -298,6 +316,24 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {
             // Show 2 total pages. Must match number of items or app will crash on hitting null
             return 2;
+        }
+    }
+
+    private void animateFab(int position) {
+        switch (position) {
+            case 0:
+                fab_scan_receipt.setVisibility(View.VISIBLE);
+                fab_plus.setVisibility(View.INVISIBLE);
+                break;
+            case 1:
+                fab_scan_receipt.setVisibility(View.INVISIBLE);
+                fab_plus.setVisibility(View.VISIBLE);
+                break;
+
+            default:
+                fab_scan_receipt.setVisibility(View.VISIBLE);
+                fab_plus.setVisibility(View.INVISIBLE);
+                break;
         }
     }
 }
