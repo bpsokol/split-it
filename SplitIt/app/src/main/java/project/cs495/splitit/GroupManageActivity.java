@@ -1,12 +1,14 @@
 package project.cs495.splitit;
 
 import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +28,7 @@ public class GroupManageActivity extends Fragment{
     private static int currGroupIndex;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
+        View rootView = inflater.inflate(R.layout.activity_groupmanage, container, false);
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
@@ -35,6 +37,7 @@ public class GroupManageActivity extends Fragment{
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(rootView.getContext(), R.layout.group_list_item,R.id.txt,groupInfo);
         groupList.setAdapter(adapter);
         groupList.setOnItemClickListener(new GroupList());
+        adapter.clear();
         adapter.notifyDataSetChanged();
 
         database.addValueEventListener(new ValueEventListener() {
@@ -55,7 +58,19 @@ public class GroupManageActivity extends Fragment{
             }
         });
 
+        Button createGroupButton = (Button)rootView.findViewById(R.id.create_group);
+        createGroupButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                createGroup();
+            }
+        });
         return rootView;
+    }
+
+    private void createGroup() {
+        Intent createGroupIntent = new Intent(getView().getContext(),CreateGroupActivity.class);
+        startActivity(createGroupIntent);
+        getActivity().finish();
     }
 
     class GroupList implements AdapterView.OnItemClickListener{
@@ -65,4 +80,5 @@ public class GroupManageActivity extends Fragment{
             currGroupIndex = position;
         }
     }
+
 }
