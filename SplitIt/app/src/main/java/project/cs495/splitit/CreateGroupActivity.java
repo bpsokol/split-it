@@ -3,6 +3,7 @@ package project.cs495.splitit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +36,18 @@ public class CreateGroupActivity extends AppCompatActivity {
         createButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 create(groupName, userName);
+            }
+        });
+
+        final TextView textUserID = (TextView)findViewById(R.id.create_group);
+        textUserID.setOnKeyListener(new View.OnKeyListener(){
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event){
+                if(keyCode == event.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
+                    create(groupName, userName);
+                    return true;
+                }
+                return false;
             }
         });
     }
