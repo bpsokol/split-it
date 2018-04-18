@@ -1,9 +1,9 @@
 package project.cs495.splitit;
 
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -12,40 +12,27 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.scandit.barcodepicker.ScanditLicense;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
-import java.util.List;
 
-import project.cs495.splitit.models.Item;
-import project.cs495.splitit.models.Receipt;
-
-
-public class ManageReceiptActivity extends AppCompatActivity {
+public class ManageReceiptActivity extends Fragment {
     private DatabaseReference database;
     private static ArrayList<String> receiptInfo = new ArrayList<String>();
     private static ArrayList<String> receiptIDArray = new ArrayList<String>();
     private String receiptDisplayText;
     private static int currReceiptIndex;
-    protected void onCreate(Bundle savedInstanceState) {
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.activity_manage_receipts, container, false);
         super.onCreate(savedInstanceState);
         database = FirebaseDatabase.getInstance().getReference();
-        setContentView(R.layout.activity_manage_receipts);
-        setTitle("Receipt Management");
 
-        final ListView listv = (ListView)findViewById(R.id.receipt_list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.receipt_list_item,R.id.txt,receiptInfo);
+        final ListView listv = (ListView)rootView.findViewById(R.id.receipt_list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(rootView.getContext(), R.layout.receipt_list_item,R.id.txt,receiptInfo);
         listv.setAdapter(adapter);
         listv.setOnItemClickListener(new ItemList());
         adapter.notifyDataSetChanged();
@@ -71,32 +58,33 @@ public class ManageReceiptActivity extends AppCompatActivity {
             }
         });
 
-        Button goBackButton = (Button) findViewById(R.id.go_back);
+        Button goBackButton = (Button) rootView.findViewById(R.id.go_back);
         goBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openHomePage();
             }
         });
-        Button deleteButton = (Button) findViewById(R.id.delete);
+        Button deleteButton = (Button) rootView.findViewById(R.id.delete);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 deleteReceipt();
             }
         });
-        Button viewButton = (Button) findViewById(R.id.view);
+        Button viewButton = (Button) rootView.findViewById(R.id.view);
         viewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 viewReceipt();
             }
         });
+        return rootView;
     }
 
     public void viewReceipt(){
         MainActivity.RECEIPT_ID = receiptIDArray.get(currReceiptIndex);
-        startActivity(new Intent(ManageReceiptActivity.this, ReceiptViewActivity.class));
+        startActivity(new Intent(getView().getContext(), ReceiptViewActivity.class));
     }
 
     public void deleteReceipt(){
@@ -105,7 +93,7 @@ public class ManageReceiptActivity extends AppCompatActivity {
         dbRef.removeValue();
         receiptIDArray.remove(currReceiptIndex);
         receiptInfo.remove(currReceiptIndex);
-        Toast.makeText(ManageReceiptActivity.this, "Removed receipt!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getView().getContext(), "Removed receipt!", Toast.LENGTH_LONG).show();
     }
     class ItemList implements AdapterView.OnItemClickListener{
         public void onItemClick(AdapterView<?> parent, View view, int position, long id){
@@ -115,9 +103,9 @@ public class ManageReceiptActivity extends AppCompatActivity {
         }
     }
     private void openHomePage(){
-        Intent homePageIntent = new Intent(ManageReceiptActivity.this, MainActivity.class);
+        Intent homePageIntent = new Intent(getView().getContext(), MainActivity.class);
         startActivity(homePageIntent);
-        finish();
+        getActivity().finish();
     }
 
 }

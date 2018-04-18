@@ -20,6 +20,7 @@
     <string name="items">items</string>
     <string name="login_button">Login</string>
     <string name="logout">LOGOUT</string>
+    <string name="manage_receipts">Manage Receipts</string>
     <string name="password">Password</string>
     <string name="receipt">Receipt</string>
     <string name="receipt_ids_path">receiptIds/</string>
@@ -33,6 +34,5 @@
     <string name="unknown_response">Known response</string>
     <string name="user_deletion_error">Failed to delete user</string>
     <string name="user_name">Username</string>
-    <string name="view_receipts">View Receipts</string>
     <string name="welcome">Welcome to Split-It!</string>
 </resources>
