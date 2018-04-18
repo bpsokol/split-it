@@ -136,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
                 if (fabState == 1) {
                     Intent createGroupIntent = new Intent(MainActivity.this, CreateGroupActivity.class);
                     MainActivity.this.startActivity(createGroupIntent);
-                    finish();
                 }
             }
         });

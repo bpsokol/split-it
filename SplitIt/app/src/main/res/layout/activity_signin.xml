@@ -47,6 +47,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/logo" />
+        app:srcCompat="@drawable/logo_green_black" />
 
 </android.support.constraint.ConstraintLayout>
