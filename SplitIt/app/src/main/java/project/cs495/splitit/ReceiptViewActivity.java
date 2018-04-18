@@ -1,9 +1,11 @@
 package project.cs495.splitit;
 
+
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,14 +20,18 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Currency;
 import java.util.Locale;
 
 import project.cs495.splitit.models.Item;
+import project.cs495.splitit.models.Receipt;
 
 public class ReceiptViewActivity extends AppCompatActivity
         implements AssignUserDialogFragment.AssignUserDialogListener{
@@ -34,6 +40,9 @@ public class ReceiptViewActivity extends AppCompatActivity
     private RecyclerView itemRV;
     private FirebaseRecyclerAdapter adapter;
     private String receiptId;
+    private Receipt receipt;
+    private TextView receiptPriceView;
+    private TextView receiptCreatorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +53,9 @@ public class ReceiptViewActivity extends AppCompatActivity
             getSupportActionBar().setTitle(R.string.receipt);
 
             Intent intent = getIntent();
-            receiptId = MainActivity.RECEIPT_ID; //intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
-            //receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
+            receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        //Query query = mDatabaseReference.child("items").limitToFirst(5);
         Query query = mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true);
 
         itemRV = (RecyclerView) findViewById(R.id.item_rv);
@@ -80,6 +87,24 @@ public class ReceiptViewActivity extends AppCompatActivity
         };
         itemRV.setAdapter(adapter);
         itemRV.setLayoutManager(new LinearLayoutManager(this));
+
+        receiptPriceView = findViewById(R.id.receipt_price);
+        receiptCreatorView = findViewById(R.id.receipt_creator);
+        FirebaseDatabase.getInstance().getReference().child(getString(R.string.receipts_path)+receiptId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                receipt = dataSnapshot.getValue(Receipt.class);
+                Currency currency = Currency.getInstance(Locale.getDefault());
+                receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), receipt.getPrice()));
+                // TODO Get creater name from users in database. This will most likely move to a seperate listener
+                receiptCreatorView.setText(String.format("%s: %s", getString(R.string.receipt_creator), "Placeholder Name"));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadReceipt:onCancelled", databaseError.toException());
+            }
+        });
     }
 
     @Override
@@ -144,11 +169,11 @@ public class ReceiptViewActivity extends AppCompatActivity
 
             //uses the default locale of the user
             Currency currency = Currency.getInstance(Locale.getDefault());
-            itemPrice.setText(new StringBuilder().append(currency.getSymbol()).append(String.format(Locale.getDefault(), "%.2f", item.getPrice())).toString());
+            itemPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice())));
 
             //temporary until group members are added to the db
             FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-            itemAssignee.setText(new StringBuilder().append("Assigned to: ").append(mUser.getDisplayName()).toString());
+            itemAssignee.setText(String.format("Assigned to: %s", mUser.getDisplayName()));
         }
     }
 }

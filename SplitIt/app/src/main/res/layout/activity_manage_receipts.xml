@@ -23,65 +23,71 @@
                 android:id="@+id/receipt_list"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
-                android:layout_weight="1"
                 android:layout_marginBottom="20dp"
+                android:layout_weight="1"
                 android:choiceMode="singleChoice"
                 android:listSelector="@android:color/darker_gray" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/modify"
-                    style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Modify"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/receipt_list"
-                    app:layout_constraintVertical_bias="0.453" />
-
-                <Button
-                    android:id="@+id/view"
-                    style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="View"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/receipt_list"
-                    app:layout_constraintVertical_bias="0.512" />
-
-                <Button
-                    android:id="@+id/delete"
-                    style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Delete"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/receipt_list"
-                    app:layout_constraintVertical_bias="0.457" />
-            </LinearLayout>
-
         </LinearLayout>
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginBottom="168dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/modify"
+            style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/modify"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/receipt_list"
+            app:layout_constraintVertical_bias="0.453" />
+
+        <Button
+            android:id="@+id/view"
+            style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/view"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/receipt_list"
+            app:layout_constraintVertical_bias="0.512" />
+
+        <Button
+            android:id="@+id/delete"
+            style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/delete"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/receipt_list"
+            app:layout_constraintVertical_bias="0.457" />
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>

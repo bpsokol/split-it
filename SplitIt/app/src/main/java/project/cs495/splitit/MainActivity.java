@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     private String parceScanResults(ScanResults brScanResults) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         String receiptId = database.child("receipts").push().getKey();
-        Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), null);
+        Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), brScanResults.total().value(), null);
         for (Product product : brScanResults.products()) {
             String itemId = database.child("items").push().getKey();
             Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());

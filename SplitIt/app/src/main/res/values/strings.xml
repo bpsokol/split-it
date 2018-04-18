@@ -34,9 +34,12 @@
     <string name="manager_first_name">Your First Name: </string>
     <string name="manager_last_name">Your Last Name: </string>
     <string name="password">Password</string>
+    <string name="price">Price</string>
     <string name="profile_title">User Profile</string>
     <string name="receipt">Receipt</string>
+    <string name="receipt_creator">Receipt Creator</string>
     <string name="receipt_ids_path">receiptIds/</string>
+    <string name="receipts_path">receipts/</string>
     <string name="scan_receipt">Scan Receipt</string>
     <string name="sign_in">SIGN IN</string>
     <string name="sign_out">SIGN OUT</string>
@@ -49,6 +52,9 @@
     <string name="user_name">Username</string>
     <string name="user_profile">Welcome </string>
     <string name="view_receipts">View Receipts</string>
+    <string name="welcome">Welcome!</string>
     <string name="your_groups">Your Groups</string>
-    <string name="welcome">Welcome </string>
+    <string name="modify">MODIFY</string>
+    <string name="view">VIEW</string>
+    <string name="delete">DELETE</string>
 </resources>

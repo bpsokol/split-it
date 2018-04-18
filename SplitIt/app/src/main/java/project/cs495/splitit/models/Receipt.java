@@ -9,16 +9,19 @@ public class Receipt implements EntityInterface {
     private String receiptId;
     private String vendor;
     private String datePurchased;
+    private String creator;
+    private float price;
     private Map<String, Boolean> items;
 
     public Receipt() {
         this.items = new HashMap<>();
     }
 
-    public Receipt(String receiptId, String vendor, String datePurchased, Map<String, Boolean> items) {
+    public Receipt(String receiptId, String vendor, String datePurchased, float price, Map<String, Boolean> items) {
         this.receiptId = receiptId;
         this.vendor = vendor;
         this.datePurchased = datePurchased;
+        this.price = price;
         if (items != null) {
             this.items = items;
         } else {
@@ -63,11 +66,27 @@ public class Receipt implements EntityInterface {
         this.datePurchased = datePurchased;
     }
 
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
     public Map<String, Boolean> getItems() {
         return items;
     }
 
     public void setItems(Map<String, Boolean> items) {
         this.items = items;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }
