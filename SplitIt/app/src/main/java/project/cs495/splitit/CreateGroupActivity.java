@@ -27,7 +27,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         if (!isUserLogin()) {
             signOut();
         }
-        setContentView(R.layout.activity_creategroup);
+        setContentView(R.layout.activity_create_group);
         setTitle(getString(R.string.profile_title));
         profileName = (TextView) findViewById(R.id.user_name);
         groupName = (EditText) findViewById(R.id.group_name_input);

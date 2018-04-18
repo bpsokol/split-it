@@ -21,14 +21,6 @@ public class GroupManageActivity extends Fragment{
         View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
-
-        Button createGroupButton = (Button)rootView.findViewById(R.id.create_group);
-        createGroupButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                createGroup();
-            }
-        });
-
         return rootView;
     }
 

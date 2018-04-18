@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public static String RECEIPT_ID;
     private TextView profileName;
     private FirebaseAuth auth;
+    private int fabState = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,43 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getCameraPermissions();
+            }
+        });
+
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                //Called when the scroll state changes.
+            }
+
+            @Override
+            public void onPageScrolled(int position,
+                                       float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                //This method will be invoked when a new page becomes selected.
+                fabState = position;
+            }
+        });
+
+        ImageButton plus = (ImageButton) findViewById(R.id.plus_button);
+        plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (fabState == 0) {
+                    //write actions related to page one
+                }
+                else if (fabState == 1) {
+                    Intent createGroupIntent = new Intent(MainActivity.this, CreateGroupActivity.class);
+                    MainActivity.this.startActivity(createGroupIntent);
+                }
+                else {
+
+                }
             }
         });
     }
