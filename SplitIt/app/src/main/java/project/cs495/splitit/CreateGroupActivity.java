@@ -75,8 +75,8 @@ public class CreateGroupActivity extends AppCompatActivity {
         else {
             String groupId = mDatabase.child("groups").push().getKey();
             GroupOwner manager = new GroupOwner(auth.getCurrentUser().getUid(), userName);
-            Group group = new Group(groupId, gName, manager.getManagerUID(), manager.getManagerName(), null);
-            group.addMember(manager.getManagerName());
+            Group group = new Group(groupId, gName, manager.getManagerUID(), manager.getManagerName(), null, null);
+            group.addMember(manager.getManagerName(),manager.getManagerUID());
             group.commitToDB(mDatabase);
 
             Intent createIntent = new Intent(CreateGroupActivity.this, MainActivity.class);

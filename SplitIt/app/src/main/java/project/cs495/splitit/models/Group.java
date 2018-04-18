@@ -11,12 +11,14 @@ public class Group implements EntityInterface{
     private String managerUID;
     private String managerName;
     private List<String> members;
+    private List<String> memberID;
 
     public Group() {
         this.members = new ArrayList<>();
+        this.memberID = new ArrayList<>();
     }
 
-    public Group(String groupId, String groupName, String managerUID, String managerName, List<String> member) {
+    public Group(String groupId, String groupName, String managerUID, String managerName, List<String> member, List<String> memberID) {
         this.groupId = groupId;
         this.groupName = groupName;
         this.managerUID = managerUID;
@@ -25,6 +27,11 @@ public class Group implements EntityInterface{
             this.members = member;
         } else {
             this.members = new ArrayList<>();
+        }
+        if (memberID != null) {
+            this.memberID = memberID;
+        } else {
+            this.memberID = new ArrayList<>();
         }
     }
 
@@ -64,16 +71,26 @@ public class Group implements EntityInterface{
         return members;
     }
 
-    public void setMember(ArrayList<String> member) {
+    public List<String> getMemberID() {
+        return memberID;
+    }
+
+    public void setMemberID(List<String> memberID) {
+        this.memberID = memberID;
+    }
+
+    public void setMember(List<String> member) {
         this.members = member;
     }
 
-    public void addMember(String member) {
+    public void addMember(String member, String memberID) {
         this.members.add(member);
+        this.memberID.add(memberID);
     }
 
-    public void removeMember(String member) {
+    public void removeMember(String member, String memberID) {
         this.members.remove(member);
+        this.memberID.remove(memberID);
     }
 
     @Override

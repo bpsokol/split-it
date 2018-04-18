@@ -30,6 +30,7 @@
             android:layout_below="@+id/your_groups"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="14dp"
+            android:layout_marginBottom="170dp"
             android:choiceMode="singleChoice"
             android:listSelector="@android:color/darker_gray"
             app:layout_constraintEnd_toEndOf="parent"
