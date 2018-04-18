@@ -34,7 +34,7 @@
                 android:id="@+id/group_management_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/view_receipts" />
+                android:text="@string/manage_receipts" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/account_settings_tab"
@@ -55,11 +55,22 @@
         android:id="@+id/scan_receipt"
         android:layout_width="75dp"
         android:layout_height="75dp"
+        android:layout_gravity="start|bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/scan_receipt_icon_blue" />
+
+    <ImageButton
+        android:id="@+id/plus_button"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
         android:layout_gravity="end|bottom"
         android:layout_marginBottom="10dp"
         android:layout_marginRight="10dp"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/scan_receipt_icon_blue" />
+        app:srcCompat="@drawable/plus_button_blue" />
 
 </android.support.design.widget.CoordinatorLayout>

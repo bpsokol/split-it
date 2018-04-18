@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
@@ -44,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String SCANDIT_KEY = "1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM";
     private static final int CAMERA_PERMISSION_REQUEST = 7;
     public static final String EXTRA_RECEIPT_ID = "project.cs495.splitit.RECEIPT_ID";
+    public static String RECEIPT_ID;
     private TextView profileName;
     private FirebaseAuth auth;
+    private int fabState = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +84,43 @@ public class MainActivity extends AppCompatActivity {
                 getCameraPermissions();
             }
         });
+
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                //Called when the scroll state changes.
+            }
+
+            @Override
+            public void onPageScrolled(int position,
+                                       float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                //This method will be invoked when a new page becomes selected.
+                fabState = position;
+            }
+        });
+
+        ImageButton plus = (ImageButton) findViewById(R.id.plus_button);
+        plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (fabState == 0) {
+                    //write actions related to page one
+                }
+                else if (fabState == 1) {
+                    Intent createGroupIntent = new Intent(MainActivity.this, CreateGroupActivity.class);
+                    MainActivity.this.startActivity(createGroupIntent);
+                }
+                else {
+
+                }
+            }
+        });
     }
 
     @Override
@@ -99,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
             String receiptId = parceScanResults(brScanResults);
+            RECEIPT_ID = receiptId;
             startActivity(buildReceiptViewIntent(receiptId));
         }
     }
@@ -106,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     private String parceScanResults(ScanResults brScanResults) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         String receiptId = database.child("receipts").push().getKey();
-        Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), null);
+        Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), brScanResults.total().value(), null);
         for (Product product : brScanResults.products()) {
             String itemId = database.child("items").push().getKey();
             Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
@@ -229,50 +270,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        //TODO: Change layout activity once created
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            if(getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
-                View rootView = inflater.inflate(R.layout.activity_receipt_view, container, false);
-                return rootView;
-            }
-            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
-                View rootView = inflater.inflate(R.layout.activity_receipt_view, container, false);
-                return rootView;
-            }
-            else {
-                View rootView = inflater.inflate(R.layout.activity_receipt_view, container, false);
-                return rootView;
-            }
-        }
-    }
-
-    /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
@@ -284,15 +281,23 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            //return current tab
+            switch (position) {
+                case 0:
+                    ManageReceiptActivity tab1 = new ManageReceiptActivity();
+                    return tab1;
+                case 1:
+                    GroupManageActivity tab2 = new GroupManageActivity();
+                    return tab2;
+                default:
+                    return null;
+            }
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 2 total pages. Must match number of items or app will crash on hitting null
+            return 2;
         }
     }
 }
