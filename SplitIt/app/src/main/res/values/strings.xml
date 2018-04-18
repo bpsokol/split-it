@@ -11,6 +11,7 @@
     <string name="create">Create</string>
     <string name="create_group">Create Group</string>
     <string name="create_successful">Created successfully!</string>
+    <string name="database_error">Database Error</string>
     <string name="delete_user">Delete User</string>
     <string name="done">Done</string>
     <string name="edit_button">Edit Button</string>

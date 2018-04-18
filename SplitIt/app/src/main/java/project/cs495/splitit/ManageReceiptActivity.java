@@ -58,13 +58,6 @@ public class ManageReceiptActivity extends Fragment {
             }
         });
 
-        Button goBackButton = (Button) rootView.findViewById(R.id.go_back);
-        goBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openHomePage();
-            }
-        });
         Button deleteButton = (Button) rootView.findViewById(R.id.delete);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
