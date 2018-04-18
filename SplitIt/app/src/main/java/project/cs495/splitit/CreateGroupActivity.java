@@ -3,18 +3,17 @@ package project.cs495.splitit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import project.cs495.splitit.models.Group;
 
 public class CreateGroupActivity extends AppCompatActivity {
     private FirebaseAuth auth;
@@ -76,7 +75,11 @@ public class CreateGroupActivity extends AppCompatActivity {
             Group group = new Group(groupId, gName, manager.getManagerUID(), manager.getManagerName(), null);
             group.addMember(manager.getManagerName());
             group.commitToDB(mDatabase);
-            Intent createIntent = new Intent(this, GroupManageActivity.class);
+
+            //Intent createIntent = new Intent(CreateGroupActivity.this,GroupManageActivity.class);
+            // CreateGroupActivity.this.startActivity(createIntent);
+
+            Intent createIntent = new Intent(CreateGroupActivity.this, MainActivity.class);
             startActivity(createIntent);
             finish();
             displayMessage(getString(R.string.create_successful));

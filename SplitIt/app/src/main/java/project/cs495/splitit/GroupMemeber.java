@@ -1,5 +1,7 @@
 package project.cs495.splitit;
 
+import project.cs495.splitit.models.User;
+
 public class GroupMemeber {
     private User member;
     private String groupId;

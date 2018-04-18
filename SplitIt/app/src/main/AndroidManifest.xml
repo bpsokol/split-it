@@ -20,8 +20,6 @@
             android:name="com.microblink.ScanditApiKey"
             android:value="1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM" />
 
-        <activity android:name=".ManageReceiptActivity" android:screenOrientation="portrait"/>
-
         <activity
             android:name=".SigninActivity"
             android:screenOrientation="portrait">
@@ -35,15 +33,6 @@
             android:name=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ReceiptViewActivity"
-            android:label="@string/title_activity_receipt_view"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
         <activity
             android:name=".AccountSettingsActivity"
             android:screenOrientation="portrait">
@@ -68,9 +57,26 @@
                 android:value=".AccountSettingsActivity" />
         </activity>
         <activity
+            android:name=".CreateGroupActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
             android:name=".ReauthenticateActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".ReceiptViewActivity"
+            android:label="@string/title_activity_receipt_view"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
