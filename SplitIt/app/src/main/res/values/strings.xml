@@ -12,6 +12,7 @@
     <string name="create_group">Create Group</string>
     <string name="create_successful">Created successfully!</string>
     <string name="database_error">Database Error</string>
+    <string name="delete">DELETE</string>
     <string name="delete_user">Delete User</string>
     <string name="done">Done</string>
     <string name="edit_button">Edit Button</string>
@@ -33,6 +34,7 @@
     <string name="manage_receipts">Manage Receipts</string>
     <string name="manager_first_name">Your First Name: </string>
     <string name="manager_last_name">Your Last Name: </string>
+    <string name="modify">MODIFY</string>
     <string name="password">Password</string>
     <string name="price">Price</string>
     <string name="profile_title">User Profile</string>
@@ -51,10 +53,8 @@
     <string name="user_deletion_error">Failed to delete user</string>
     <string name="user_name">Username</string>
     <string name="user_profile">Welcome </string>
+    <string name="view">VIEW</string>
     <string name="view_receipts">View Receipts</string>
     <string name="welcome">Welcome!</string>
     <string name="your_groups">Your Groups</string>
-    <string name="modify">MODIFY</string>
-    <string name="view">VIEW</string>
-    <string name="delete">DELETE</string>
 </resources>

@@ -35,6 +35,7 @@ public class GroupManageActivity extends Fragment{
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(rootView.getContext(), R.layout.group_list_item,R.id.txt,groupInfo);
         groupList.setAdapter(adapter);
         groupList.setOnItemClickListener(new GroupList());
+        adapter.clear();
         adapter.notifyDataSetChanged();
 
         database.addValueEventListener(new ValueEventListener() {
