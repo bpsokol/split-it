@@ -142,11 +142,11 @@ public class ReceiptViewActivity extends AppCompatActivity
 
             //uses the default locale of the user
             Currency currency = Currency.getInstance(Locale.getDefault());
-            itemPrice.setText(new StringBuilder().append(currency.getSymbol()).append(String.format(Locale.getDefault(), "%.2f", item.getPrice())).toString());
+            itemPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice())));
 
             //temporary until group members are added to the db
             FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-            itemAssignee.setText(new StringBuilder().append("Assigned to: ").append(mUser.getDisplayName()).toString());
+            itemAssignee.setText(String.format("Assigned to: %s", mUser.getDisplayName()));
         }
     }
 }

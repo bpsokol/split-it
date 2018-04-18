@@ -9,6 +9,7 @@ public class Receipt implements EntityInterface {
     private String receiptId;
     private String vendor;
     private String datePurchased;
+    private String creator;
     private Map<String, Boolean> items;
 
     public Receipt() {
@@ -69,5 +70,13 @@ public class Receipt implements EntityInterface {
 
     public void setItems(Map<String, Boolean> items) {
         this.items = items;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }

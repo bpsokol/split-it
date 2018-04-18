@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,6 +35,8 @@ import com.microblink.Retailer;
 import com.microblink.ScanOptions;
 import com.microblink.ScanResults;
 import com.scandit.barcodepicker.ScanditLicense;
+
+import org.jetbrains.annotations.NotNull;
 
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
@@ -98,15 +101,16 @@ public class MainActivity extends AppCompatActivity {
         if ( requestCode == SCAN_RECEIPT_REQUEST && resultCode == Activity.RESULT_OK ) {
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
-            String receiptId = parceScanResults(brScanResults);
+            String receiptId = parseScanResults(brScanResults);
             startActivity(buildReceiptViewIntent(receiptId));
         }
     }
 
-    private String parceScanResults(ScanResults brScanResults) {
+    private String parseScanResults(@NotNull ScanResults brScanResults) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         String receiptId = database.child("receipts").push().getKey();
         Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), null);
+        receipt.setCreator(FirebaseAuth.getInstance().getCurrentUser().getUid());
         for (Product product : brScanResults.products()) {
             String itemId = database.child("items").push().getKey();
             Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
@@ -125,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String permissions[], @NotNull int[] grantResults) {
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 scanReceipt();
