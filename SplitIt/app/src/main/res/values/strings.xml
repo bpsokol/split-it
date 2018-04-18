@@ -35,4 +35,7 @@
     <string name="user_name">Username</string>
     <string name="view_receipts">View Receipts</string>
     <string name="welcome">Welcome to Split-It!</string>
+    <string name="receipts_path">receipts/</string>
+    <string name="price">Price</string>
+    <string name="receipt_creator">Receipt Creator</string>
 </resources>
