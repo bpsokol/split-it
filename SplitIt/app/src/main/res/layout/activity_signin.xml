@@ -24,20 +24,22 @@
         android:id="@+id/login_button"
         style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:minWidth="88dip"
+        android:layout_height="36dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="148dp"
         android:layout_marginStart="148dp"
         android:layout_marginTop="17dp"
+        android:paddingHorizontal="16dp"
         android:text="@string/sign_in"
-        android:textSize="18sp"
+        android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+        app:layout_constraintTop_toBottomOf="@+id/split_it_logo" />
 
     <ImageView
-        android:id="@+id/imageView5"
+        android:id="@+id/split_it_logo"
         android:layout_width="277dp"
         android:layout_height="364dp"
         app:layout_constraintBottom_toTopOf="@+id/login_button"

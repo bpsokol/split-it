@@ -13,7 +13,7 @@
     <string name="create_successful">Created successfully!</string>
     <string name="database_error">Database Error</string>
     <string name="delete">DELETE</string>
-    <string name="delete_user">Delete User</string>
+    <string name="delete_user">DELETE USER</string>
     <string name="done">Done</string>
     <string name="edit_button">Edit Button</string>
     <string name="edit_first_name">Enter your first name</string>
