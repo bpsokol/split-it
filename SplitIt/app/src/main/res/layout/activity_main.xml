@@ -55,9 +55,9 @@
         android:id="@+id/scan_receipt"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_gravity="start|bottom"
+        android:layout_gravity="end|bottom"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         app:srcCompat="@drawable/scan_receipt_icon_blue" />
@@ -71,6 +71,7 @@
         android:layout_marginRight="10dp"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/plus_button_blue" />
+        app:srcCompat="@drawable/plus_button_blue"
+        android:visibility="gone"/>
 
 </android.support.design.widget.CoordinatorLayout>

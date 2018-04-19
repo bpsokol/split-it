@@ -17,6 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GroupManageActivity extends Fragment{
     private FirebaseAuth auth;
@@ -24,6 +25,7 @@ public class GroupManageActivity extends Fragment{
     private static ArrayList<String> groupInfo = new ArrayList<String>();
     private static ArrayList<String> groupIDArray = new ArrayList<String>();
     private static int currGroupIndex;
+    private List<String> memberID = new ArrayList<String>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
@@ -42,10 +44,14 @@ public class GroupManageActivity extends Fragment{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childSnapshot: dataSnapshot.child("groups").getChildren()) {
-                    String groupName = childSnapshot.child("groupName").getValue(String.class);
-                    String groupID = childSnapshot.getKey();
-                    groupInfo.add(groupName);
-                    groupIDArray.add(groupID);
+                    String managerId = childSnapshot.child("managerUID").getValue(String.class);
+                    memberID = (ArrayList) childSnapshot.child("memberID").getValue();
+                    if (managerId.equals(auth.getCurrentUser().getUid()) || memberID.contains(auth.getCurrentUser().getUid())) {
+                        String groupName = childSnapshot.child("groupName").getValue(String.class);
+                        String groupID = childSnapshot.getKey();
+                        groupInfo.add(groupName);
+                        groupIDArray.add(groupID);
+                    }
                     groupList.invalidateViews();
                 }
             }

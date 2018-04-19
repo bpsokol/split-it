@@ -1,32 +1,31 @@
 package project.cs495.splitit.models;
 
-import java.util.UUID;
-
 public class User {
-    private UUID uid;
-    private String lastName;
-    private String firstName;
+    private String uid;
+    private String name;
 
     public User() {
 
     }
 
-    public User(UUID uid, String lName, String fName) {
+    public User(String uid, String name) {
         this.uid = uid;
-        this.lastName = lName;
-        this.firstName = fName;
+        this.name = name;
     }
 
-    public UUID getUid() {
+    public String getUid() {
         return uid;
     }
 
-    public String getLastName() {
-        return lastName;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }
