@@ -1,30 +1,34 @@
 package project.cs495.splitit;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.firebase.database.Query;
+
+import project.cs495.splitit.models.Group;
 
 public class GroupManageActivity extends Fragment{
+    private static final String TAG = "GroupManageActivity";
     private FirebaseAuth auth;
     private DatabaseReference database;
-    private static ArrayList<String> groupInfo = new ArrayList<String>();
-    private static ArrayList<String> groupIDArray = new ArrayList<String>();
+    private FirebaseRecyclerAdapter adapter;
     private static int currGroupIndex;
+    private ImageButton fab_dismiss;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
@@ -32,43 +36,78 @@ public class GroupManageActivity extends Fragment{
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
 
-        final ListView groupList = (ListView)rootView.findViewById(R.id.group_list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(rootView.getContext(), R.layout.group_list_item,R.id.txt,groupInfo);
-        groupList.setAdapter(adapter);
-        groupList.setOnItemClickListener(new GroupList());
-        adapter.clear();
-        adapter.notifyDataSetChanged();
-
-        database.addValueEventListener(new ValueEventListener() {
+        final RecyclerView groupList = (RecyclerView) rootView.findViewById(R.id.group_list);
+        String userID = auth.getCurrentUser().getUid();
+        Query query = database.child("groups").orderByChild("memberID/"+userID).equalTo(true);
+        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Group>()
+                .setQuery(query, Group.class)
+                .build();
+        adapter = new FirebaseRecyclerAdapter<Group, GroupHolder>(options) {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapshot: dataSnapshot.child("groups").getChildren()) {
-                    String managerId = childSnapshot.child("managerUID").getValue(String.class);
-                    List<String> memberID = (List) childSnapshot.child("memberID").getValue();
-                    if (managerId.equals(auth.getCurrentUser().getUid()) || memberID.contains(auth.getCurrentUser().getUid())) {
-                        String groupName = childSnapshot.child("groupName").getValue(String.class);
-                        String groupID = childSnapshot.getKey();
-                        groupInfo.add(groupName);
-                        groupIDArray.add(groupID);
-                    }
-                    groupList.invalidateViews();
-                }
+            protected void onBindViewHolder(@NonNull GroupHolder holder, int position, @NonNull Group model) {
+                holder.bindData(model);
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), getString(R.string.database_error), Toast.LENGTH_LONG).show();
+            public GroupHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.group_list_item, parent, false);
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
+                        currGroupIndex = groupList.getChildAdapterPosition(view);
+                        view.setSelected(true);
+                        Log.d(TAG,String.format("%s: %d", "Current Index", currGroupIndex));
+                    }
+                });
+                return new GroupHolder(view);
+            }
+        };
+
+        fab_dismiss = (ImageButton) rootView.findViewById(R.id.dismiss_button);
+        fab_dismiss.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                dismissGroup();
             }
         });
+
+        groupList.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        groupList.setAdapter(adapter);
 
         return rootView;
     }
 
-    class GroupList implements AdapterView.OnItemClickListener{
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-            ViewGroup vg = (ViewGroup)view;
-            TextView tv = (TextView)vg.findViewById(R.id.txt);
-            currGroupIndex = position;
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
+    public void dismissGroup() {
+        Group group = (Group) adapter.getItem(currGroupIndex);
+        if (auth.getCurrentUser().getUid().equals(group.getManagerUID()))
+            database.child("groups").child(group.getGroupId()).removeValue();
+        else
+            Toast.makeText(getActivity(),R.string.not_manager,Toast.LENGTH_LONG).show();
+    }
+
+    private class GroupHolder extends RecyclerView.ViewHolder {
+        private TextView txt;
+
+        public GroupHolder(View itemView) {
+            super(itemView);
+            txt = itemView.findViewById(R.id.txt);
+        }
+
+        public void bindData(Group model) {
+            txt.setText(model.getGroupName());
         }
     }
 }
