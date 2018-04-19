@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,7 +11,6 @@ import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -35,6 +33,8 @@ import com.microblink.Retailer;
 import com.microblink.ScanOptions;
 import com.microblink.ScanResults;
 import com.scandit.barcodepicker.ScanditLicense;
+
+import org.jetbrains.annotations.NotNull;
 
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
@@ -162,9 +162,10 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         String receiptId = database.child("receipts").push().getKey();
         Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), brScanResults.total().value(), null);
+        receipt.setCreator(auth.getCurrentUser().getUid());
         for (Product product : brScanResults.products()) {
             String itemId = database.child("items").push().getKey();
-            Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
+            Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(), (int) product.quantity().value(), product.unitPrice().value());
             item.addReceiptId(receiptId);
             item.commitToDB(database);
             receipt.addItem(item.getItemId());
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String permissions[], @NotNull int[] grantResults) {
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 scanReceipt();
