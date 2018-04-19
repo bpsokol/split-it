@@ -28,10 +28,9 @@ public class GroupManageActivity extends Fragment{
     private DatabaseReference database;
     private FirebaseRecyclerAdapter adapter;
     private static int currGroupIndex;
-    private ImageButton fab_dismiss;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
+        final View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
@@ -59,18 +58,14 @@ public class GroupManageActivity extends Fragment{
                         currGroupIndex = groupList.getChildAdapterPosition(view);
                         view.setSelected(true);
                         Log.d(TAG,String.format("%s: %d", "Current Index", currGroupIndex));
+                        Group group = (Group) adapter.getItem(currGroupIndex);
+                        GroupDialog groupDialog = new GroupDialog(rootView.getContext(),group);
+                        groupDialog.show();
                     }
                 });
                 return new GroupHolder(view);
             }
         };
-
-        fab_dismiss = (ImageButton) rootView.findViewById(R.id.dismiss_button);
-        fab_dismiss.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                dismissGroup();
-            }
-        });
 
         groupList.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         groupList.setAdapter(adapter);
@@ -88,14 +83,6 @@ public class GroupManageActivity extends Fragment{
     public void onStop() {
         super.onStop();
         adapter.stopListening();
-    }
-
-    public void dismissGroup() {
-        Group group = (Group) adapter.getItem(currGroupIndex);
-        if (auth.getCurrentUser().getUid().equals(group.getManagerUID()))
-            database.child("groups").child(group.getGroupId()).removeValue();
-        else
-            Toast.makeText(getActivity(),R.string.not_manager,Toast.LENGTH_LONG).show();
     }
 
     private class GroupHolder extends RecyclerView.ViewHolder {
