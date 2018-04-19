@@ -152,7 +152,7 @@ public class ManageReceiptActivity extends Fragment {
             vendorName.setText(String.format("%s", receipt.getVendor()));
             date.setText(String.format("%s", receipt.getDatePurchased()));
             Currency currency = Currency.getInstance(Locale.getDefault());
-            totalPrice.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
+            totalPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
         }
     }
 }
