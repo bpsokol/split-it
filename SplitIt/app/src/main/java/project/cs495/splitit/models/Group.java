@@ -67,7 +67,7 @@ public class Group implements EntityInterface{
         this.managerName = managerName;
     }
 
-    public Map<String, Boolean> getMember() {
+    public Map<String, Boolean> getMembers() {
         return members;
     }
 
@@ -79,7 +79,7 @@ public class Group implements EntityInterface{
         this.memberID = memberID;
     }
 
-    public void setMember(Map<String, Boolean> member) {
+    public void setMembers(Map<String, Boolean> member) {
         this.members = member;
     }
 
