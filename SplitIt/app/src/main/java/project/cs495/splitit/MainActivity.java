@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
@@ -15,14 +14,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String SCANDIT_KEY = "1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM";
     private static final int CAMERA_PERMISSION_REQUEST = 7;
     public static final String EXTRA_RECEIPT_ID = "project.cs495.splitit.RECEIPT_ID";
-    public static String RECEIPT_ID;
     private TextView profileName;
     private FirebaseAuth auth;
     private int fabState = 0;
@@ -139,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
             String receiptId = parceScanResults(brScanResults);
-            RECEIPT_ID = receiptId;
             startActivity(buildReceiptViewIntent(receiptId));
         }
     }

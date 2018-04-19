@@ -5,7 +5,6 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,6 +50,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             getSupportActionBar().setTitle(R.string.receipt);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             Intent intent = getIntent();
             receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
