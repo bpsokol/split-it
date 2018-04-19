@@ -58,4 +58,6 @@
     <string name="welcome">Welcome!</string>
     <string name="your_groups">Your Groups</string>
     <string name="archive">ARCHIVE</string>
+    <string name="dismiss">DISMISS</string>
+    <string name="not_manager">You cannot dismiss group</string>
 </resources>
