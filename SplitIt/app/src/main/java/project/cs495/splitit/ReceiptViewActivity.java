@@ -95,7 +95,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 receipt = dataSnapshot.getValue(Receipt.class);
                 Currency currency = Currency.getInstance(Locale.getDefault());
-                receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), receipt.getPrice()));
+                receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
                 // TODO Get creater name from users in database. This will most likely move to a seperate listener
                 receiptCreatorView.setText(String.format("%s: %s", getString(R.string.receipt_creator), "Placeholder Name"));
             }
