@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -43,7 +44,7 @@ public class ManageReceiptActivity extends Fragment {
 
         final RecyclerView receiptRV = rootView.findViewById(R.id.receipt_list);
         database = FirebaseDatabase.getInstance().getReference();
-        Query query = database.child("receipts").orderByKey();
+        Query query = database.child("receipts").orderByChild("creator").equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
         FirebaseRecyclerOptions<Receipt> options = new FirebaseRecyclerOptions.Builder<Receipt>()
                 .setQuery(query, Receipt.class)
                 .build();
