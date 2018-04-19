@@ -5,7 +5,6 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,6 +50,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             getSupportActionBar().setTitle(R.string.receipt);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             Intent intent = getIntent();
             receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
@@ -95,7 +95,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 receipt = dataSnapshot.getValue(Receipt.class);
                 Currency currency = Currency.getInstance(Locale.getDefault());
-                receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), receipt.getPrice()));
+                receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
                 // TODO Get creater name from users in database. This will most likely move to a seperate listener
                 receiptCreatorView.setText(String.format("%s: %s", getString(R.string.receipt_creator), "Placeholder Name"));
             }
