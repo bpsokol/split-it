@@ -134,15 +134,21 @@ public class ManageReceiptActivity extends Fragment {
     }
 
     private class ReceiptHolder extends RecyclerView.ViewHolder {
-        private TextView txt;
+        private TextView vendorName;
+        private TextView date;
+        private TextView totalPrice;
+
         ReceiptHolder(View view) {
             super(view);
-            txt = (TextView) view.findViewById(R.id.txt);
+            vendorName = (TextView) view.findViewById(R.id.vendor);
+            date = (TextView) view.findViewById(R.id.date);
+            totalPrice = (TextView) view.findViewById(R.id.total_price);
         }
 
         public void bindData(final Receipt receipt) {
-            String output = String.format("%s | %s", receipt.getVendor(), receipt.getDatePurchased());
-            txt.setText(output);
+            vendorName.setText(String.format("%s", receipt.getVendor()));
+            date.setText(String.format("%s", receipt.getDatePurchased()));
+            totalPrice.setText(String.format("$%s", receipt.getPrice()));
         }
     }
 }
