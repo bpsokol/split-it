@@ -23,20 +23,14 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="0dp" />
 
-        <ListView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/group_list"
             android:layout_width="389dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/your_groups"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="14dp"
             android:layout_marginBottom="170dp"
-            android:choiceMode="singleChoice"
-            android:listSelector="@android:color/darker_gray"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@id/your_groups"
-            app:layout_constraintTop_toBottomOf="parent" />
+            android:layout_marginTop="14dp" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
