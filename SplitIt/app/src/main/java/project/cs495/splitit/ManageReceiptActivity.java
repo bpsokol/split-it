@@ -22,7 +22,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import project.cs495.splitit.models.Receipt;
 
@@ -148,7 +150,8 @@ public class ManageReceiptActivity extends Fragment {
         public void bindData(final Receipt receipt) {
             vendorName.setText(String.format("%s", receipt.getVendor()));
             date.setText(String.format("%s", receipt.getDatePurchased()));
-            totalPrice.setText(String.format("$%s", receipt.getPrice()));
+            Currency currency = Currency.getInstance(Locale.getDefault());
+            totalPrice.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
         }
     }
 }
