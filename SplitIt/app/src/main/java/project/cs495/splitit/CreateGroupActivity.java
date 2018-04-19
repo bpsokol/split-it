@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import project.cs495.splitit.models.Group;
+import project.cs495.splitit.models.GroupOwner;
 
 public class CreateGroupActivity extends AppCompatActivity {
     private FirebaseAuth auth;
