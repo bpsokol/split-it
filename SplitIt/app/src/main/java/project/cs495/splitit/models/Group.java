@@ -2,23 +2,23 @@ package project.cs495.splitit.models;
 
 import com.google.firebase.database.DatabaseReference;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Group implements EntityInterface{
     private String groupId;
     private String groupName;
     private String managerUID;
     private String managerName;
-    private List<String> members;
-    private List<String> memberID;
+    private Map<String, Boolean> members;
+    private Map<String, Boolean> memberID;
 
     public Group() {
-        this.members = new ArrayList<>();
-        this.memberID = new ArrayList<>();
+        this.members = new HashMap<>();
+        this.memberID = new HashMap<>();
     }
 
-    public Group(String groupId, String groupName, String managerUID, String managerName, List<String> member, List<String> memberID) {
+    public Group(String groupId, String groupName, String managerUID, String managerName, Map<String, Boolean> member, Map<String, Boolean> memberID) {
         this.groupId = groupId;
         this.groupName = groupName;
         this.managerUID = managerUID;
@@ -26,12 +26,12 @@ public class Group implements EntityInterface{
         if (member != null) {
             this.members = member;
         } else {
-            this.members = new ArrayList<>();
+            this.members = new HashMap<>();
         }
         if (memberID != null) {
             this.memberID = memberID;
         } else {
-            this.memberID = new ArrayList<>();
+            this.memberID = new HashMap<>();
         }
     }
 
@@ -67,25 +67,25 @@ public class Group implements EntityInterface{
         this.managerName = managerName;
     }
 
-    public List<String> getMember() {
+    public Map<String, Boolean> getMember() {
         return members;
     }
 
-    public List<String> getMemberID() {
+    public Map<String, Boolean> getMemberID() {
         return memberID;
     }
 
-    public void setMemberID(List<String> memberID) {
+    public void setMemberID(Map<String, Boolean> memberID) {
         this.memberID = memberID;
     }
 
-    public void setMember(List<String> member) {
+    public void setMember(Map<String, Boolean> member) {
         this.members = member;
     }
 
     public void addMember(String member, String memberID) {
-        this.members.add(member);
-        this.memberID.add(memberID);
+        this.members.put(member, true);
+        this.memberID.put(memberID, true);
     }
 
     public void removeMember(String member, String memberID) {
