@@ -10,7 +10,7 @@
     tools:showIn="@layout/activity_receipt_view">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/item_rv"
+        android:id="@+id/group_rv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -19,7 +19,7 @@
     </android.support.v7.widget.RecyclerView>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/receipt_summary_card"
+        android:id="@+id/member_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -29,13 +29,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/receipt_creator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end" />
-
-            <TextView
-                android:id="@+id/receipt_price"
+                android:id="@+id/member_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end" />
