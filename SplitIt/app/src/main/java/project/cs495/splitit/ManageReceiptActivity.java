@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -42,8 +43,8 @@ public class ManageReceiptActivity extends Fragment {
         super.onCreate(savedInstanceState);
 
         final RecyclerView receiptRV = rootView.findViewById(R.id.receipt_list);
-        database = FirebaseDatabase.getInstance().getReference();
-        Query query = database.child("receipts").orderByKey();
+        database = Utils.getDatabaseReference();
+        Query query = database.child("receipts").orderByChild("creator").equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
         FirebaseRecyclerOptions<Receipt> options = new FirebaseRecyclerOptions.Builder<Receipt>()
                 .setQuery(query, Receipt.class)
                 .build();
@@ -151,7 +152,7 @@ public class ManageReceiptActivity extends Fragment {
             vendorName.setText(String.format("%s", receipt.getVendor()));
             date.setText(String.format("%s", receipt.getDatePurchased()));
             Currency currency = Currency.getInstance(Locale.getDefault());
-            totalPrice.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
+            totalPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
         }
     }
 }

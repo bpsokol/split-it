@@ -1,10 +1,10 @@
 package project.cs495.splitit;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,7 +12,6 @@ import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,10 +35,14 @@ import com.microblink.ScanOptions;
 import com.microblink.ScanResults;
 import com.scandit.barcodepicker.ScanditLicense;
 
-import project.cs495.splitit.models.Item;
-import project.cs495.splitit.models.Receipt;
+import org.jetbrains.annotations.NotNull;
 
-public class MainActivity extends AppCompatActivity {
+import project.cs495.splitit.models.GroupReceipt;
+import project.cs495.splitit.models.GroupReceiptBuilder;
+import project.cs495.splitit.models.Item;
+
+public class MainActivity extends AppCompatActivity
+    implements SelectGroupDialogFragment.SelectGroupDialogListener{
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int SCAN_RECEIPT_REQUEST = 201;
     private static final String SCANDIT_KEY = "1yazq+JRXyKsna5JAQq2XRjbK2pgpikQXXSW4RPftsM";
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView profileName;
     private FirebaseAuth auth;
     private int fabState = 0;
+    private String selectedGroupIdForReceipt;
     private ImageButton fab_plus;
     private ImageButton fab_scan_receipt;
 
@@ -122,7 +126,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (fabState == 0) {
-                    getCameraPermissions();
+                    boolean isPermitted = getCameraPermissions();
+                    if (isPermitted) {
+                        assignGroup();
+                    }
                 }
             }
         });
@@ -137,6 +144,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void assignGroup() {
+        DialogFragment dialog = new SelectGroupDialogFragment();
+        dialog.show(getFragmentManager(), SelectGroupDialogFragment.class.getSimpleName());
+    }
+
+    @Override
+    public void onDialogSelectGroup(DialogFragment dialog, String groupId) {
+        selectedGroupIdForReceipt = groupId;
+        scanReceipt();
+    }
+
+    /*@Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+
+    }*/
 
     @Override
     protected void onResume() {
@@ -153,18 +181,26 @@ public class MainActivity extends AppCompatActivity {
         if ( requestCode == SCAN_RECEIPT_REQUEST && resultCode == Activity.RESULT_OK ) {
             ScanResults brScanResults = data.getParcelableExtra( IntentUtils.DATA_EXTRA );
             Media media = data.getParcelableExtra( IntentUtils.MEDIA_EXTRA );
-            String receiptId = parceScanResults(brScanResults);
+            String receiptId = parceScanResults(brScanResults, selectedGroupIdForReceipt);
             startActivity(buildReceiptViewIntent(receiptId));
         }
     }
 
-    private String parceScanResults(ScanResults brScanResults) {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    private String parceScanResults(ScanResults brScanResults, String groupId) {
+        DatabaseReference database = Utils.getDatabaseReference();
         String receiptId = database.child("receipts").push().getKey();
-        Receipt receipt = new Receipt(receiptId, brScanResults.merchantName().value(), brScanResults.receiptDate().value(), brScanResults.total().value(), null);
+        GroupReceipt receipt = new GroupReceiptBuilder()
+                .setGroupId(groupId)
+                .setReceiptId(receiptId)
+                .setCreator(auth.getCurrentUser().getUid())
+                .setVendor(brScanResults.merchantName().value() == null ? "Unknown" : brScanResults.merchantName().value())
+                .setDatePurchased(brScanResults.receiptDate().value())
+                .setPrice(brScanResults.total().value())
+                .setItems(null)
+                .createGroupReceipt();
         for (Product product : brScanResults.products()) {
             String itemId = database.child("items").push().getKey();
-            Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(),(int) product.quantity().value(), product.unitPrice().value());
+            Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(), (int) product.quantity().value(), product.unitPrice().value());
             item.addReceiptId(receiptId);
             item.commitToDB(database);
             receipt.addItem(item.getItemId());
@@ -180,10 +216,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String permissions[], @NotNull int[] grantResults) {
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                scanReceipt();
+                assignGroup();
             }
             return;
         }
@@ -219,17 +255,12 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    private void getCameraPermissions() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (this.checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                this.requestPermissions(new String[] {android.Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
-            } else {
-                scanReceipt();
-            }
+    private boolean getCameraPermissions() {
+        if (Build.VERSION.SDK_INT >= 23 && this.checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            this.requestPermissions(new String[]{android.Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
+            return false;
         }
-        else {
-            scanReceipt();
-        }
+        return true;
     }
 
     @Override

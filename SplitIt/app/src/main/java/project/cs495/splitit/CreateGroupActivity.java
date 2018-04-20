@@ -67,7 +67,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void create(EditText groupName, String userName) {
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mDatabase = Utils.getDatabaseReference();
         String gName = groupName.getText().toString();
 
         if (isEmpty(gName)) {
@@ -85,12 +85,6 @@ public class CreateGroupActivity extends AppCompatActivity {
             finish();
             displayMessage(getString(R.string.create_successful));
         }
-    }
-
-    private void cancel() {
-        Intent cancelIntent = new Intent(this,GroupManageActivity.class);
-        startActivity(cancelIntent);
-        finish();
     }
 
     private boolean isEmpty(String str) {

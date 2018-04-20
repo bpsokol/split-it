@@ -55,7 +55,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             Intent intent = getIntent();
             receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
 
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mDatabaseReference = Utils.getDatabaseReference();
         Query query = mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true);
 
         itemRV = (RecyclerView) findViewById(R.id.item_rv);
@@ -90,7 +90,7 @@ public class ReceiptViewActivity extends AppCompatActivity
 
         receiptPriceView = findViewById(R.id.receipt_price);
         receiptCreatorView = findViewById(R.id.receipt_creator);
-        FirebaseDatabase.getInstance().getReference().child(getString(R.string.receipts_path)+receiptId).addListenerForSingleValueEvent(new ValueEventListener() {
+        Utils.getDatabaseReference().child(getString(R.string.receipts_path)+receiptId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 receipt = dataSnapshot.getValue(Receipt.class);
@@ -119,7 +119,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         adapter.stopListening();
     }
 
-    @Override
+    /*@Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         Log.d(TAG, "user assigned");
     }
@@ -127,7 +127,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         Log.d(TAG, "dialog canceled");
-    }
+    }*/
 
     @Override
     public void onDialogSelectUser(DialogFragment dialog, int i) {

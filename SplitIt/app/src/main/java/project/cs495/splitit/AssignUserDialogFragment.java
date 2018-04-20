@@ -9,8 +9,8 @@ import android.os.Bundle;
 
 public class AssignUserDialogFragment extends DialogFragment {
     public interface AssignUserDialogListener {
-        void onDialogPositiveClick(DialogFragment dialog);
-        void onDialogNegativeClick(DialogFragment dialog);
+        //void onDialogPositiveClick(DialogFragment dialog);
+        //void onDialogNegativeClick(DialogFragment dialog);
         void onDialogSelectUser(DialogFragment dialog, int i);
     }
     AssignUserDialogListener mListener;
@@ -23,8 +23,10 @@ public class AssignUserDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                        mListener.onDialogSelectUser(AssignUserDialogFragment.this, i);
                     }
-                })
-                .setPositiveButton(R.string.assign, new DialogInterface.OnClickListener() {
+                });
+
+                //No need for these buttons currently (saved for possible future use)
+                /*.setPositiveButton(R.string.assign, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mListener.onDialogPositiveClick(AssignUserDialogFragment.this);
@@ -35,7 +37,7 @@ public class AssignUserDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mListener.onDialogNegativeClick(AssignUserDialogFragment.this);
                     }
-                });
+                });*/
         return builder.create();
     }
 
