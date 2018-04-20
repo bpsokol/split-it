@@ -26,8 +26,8 @@ public class SelectGroupDialogFragment extends DialogFragment {
 
     public interface SelectGroupDialogListener {
         void onDialogSelectGroup(DialogFragment dialog, String groupId);
-        void onDialogPositiveClick(DialogFragment dialog);
-        void onDialogNegativeClick(DialogFragment dialog);
+        //void onDialogPositiveClick(DialogFragment dialog);
+        //void onDialogNegativeClick(DialogFragment dialog);
     }
     SelectGroupDialogListener mListener;
 
@@ -59,18 +59,6 @@ public class SelectGroupDialogFragment extends DialogFragment {
             }
         };
         builder.setTitle("Select Group")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mListener.onDialogNegativeClick(SelectGroupDialogFragment.this);
-                    }
-                })
-                .setPositiveButton("Add Group", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mListener.onDialogPositiveClick(SelectGroupDialogFragment.this);
-                    }
-                })
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -78,6 +66,20 @@ public class SelectGroupDialogFragment extends DialogFragment {
                         mListener.onDialogSelectGroup(SelectGroupDialogFragment.this, groupId);
                     }
                 });
+
+                //No need for these buttons currently (saved for possible future use)
+                /*.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mListener.onDialogNegativeClick(SelectGroupDialogFragment.this);
+                    }
+                });
+                .setPositiveButton("Add Group", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mListener.onDialogPositiveClick(SelectGroupDialogFragment.this);
+                    }
+                })*/
                 return builder.create();
     }
 
