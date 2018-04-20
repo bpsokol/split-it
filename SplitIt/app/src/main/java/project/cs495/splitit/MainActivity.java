@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private String parceScanResults(ScanResults brScanResults, String groupId) {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference database = Utils.getDatabaseReference();
         String receiptId = database.child("receipts").push().getKey();
         Receipt receipt = new ReceiptBuilder()
                 .setGroupId(groupId)

@@ -67,7 +67,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void create(EditText groupName, String userName) {
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mDatabase = Utils.getDatabaseReference();
         String gName = groupName.getText().toString();
 
         if (isEmpty(gName)) {
