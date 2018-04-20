@@ -17,8 +17,9 @@ public class Receipt implements EntityInterface {
         this.items = new HashMap<>();
     }
 
-    public Receipt(String receiptId, String vendor, String datePurchased, float price, Map<String, Boolean> items) {
+    public Receipt(String receiptId, String creator, String vendor, String datePurchased, float price, Map<String, Boolean> items) {
         this.receiptId = receiptId;
+        this.creator = creator;
         this.vendor = vendor;
         this.datePurchased = datePurchased;
         this.price = price;
