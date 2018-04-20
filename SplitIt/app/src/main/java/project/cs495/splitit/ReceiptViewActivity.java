@@ -16,11 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +32,7 @@ import java.util.Locale;
 
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
+import project.cs495.splitit.models.User;
 
 public class ReceiptViewActivity extends AppCompatActivity
         implements AssignUserDialogFragment.AssignUserDialogListener, PopupMenu.OnMenuItemClickListener{
@@ -41,6 +42,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     private FirebaseRecyclerAdapter adapter;
     private String receiptId;
     private Receipt receipt;
+    private String currItemId;
     private TextView receiptPriceView;
     private TextView receiptCreatorView;
 
@@ -79,8 +81,13 @@ public class ReceiptViewActivity extends AppCompatActivity
                     public void onClick(View view) {
                         int position = itemRV.getChildAdapterPosition(view);
                         Item item = (Item) adapter.getItem(position);
+                        currItemId = item.getItemId();
                         Log.d(TAG, "Accessing item with description " + item.getDescription());
-                        showDialog();
+                        if (receipt.getCreator().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            showDialog();
+                        } else {
+                            assignToSelf(item);
+                        }
                     }
                 });
                 return new ItemHolder(view);
@@ -91,14 +98,13 @@ public class ReceiptViewActivity extends AppCompatActivity
 
         receiptPriceView = findViewById(R.id.receipt_price);
         receiptCreatorView = findViewById(R.id.receipt_creator);
-        Utils.getDatabaseReference().child(getString(R.string.receipts_path)+receiptId).addListenerForSingleValueEvent(new ValueEventListener() {
+        Utils.getDatabaseReference().child(getString(R.string.receipts_path)+receiptId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 receipt = dataSnapshot.getValue(Receipt.class);
                 Currency currency = Currency.getInstance(Locale.getDefault());
                 receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
-                // TODO Get creater name from users in database. This will most likely move to a seperate listener
-                receiptCreatorView.setText(String.format("%s: %s", getString(R.string.receipt_creator), "Placeholder Name"));
+                setCreatorNameDisplay();
             }
 
             @Override
@@ -106,6 +112,15 @@ public class ReceiptViewActivity extends AppCompatActivity
                 Log.w(TAG, "loadReceipt:onCancelled", databaseError.toException());
             }
         });
+    }
+
+    private ValueEventListener setCreatorNameDisplay() {
+        return mDatabaseReference.child("users").child(receipt.getCreator()).addValueEventListener(new CreatorValueEventListener());
+    }
+
+    private void assignToSelf(Item item) {
+        item.setAssignedUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        item.commitToDB(mDatabaseReference);
     }
 
     @Override
@@ -120,23 +135,25 @@ public class ReceiptViewActivity extends AppCompatActivity
         adapter.stopListening();
     }
 
-    /*@Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        Log.d(TAG, "user assigned");
-    }
-
     @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        Log.d(TAG, "dialog canceled");
-    }*/
-
-    @Override
-    public void onDialogSelectUser(DialogFragment dialog, int i) {
-        Log.d(TAG, "selected " + getResources().getStringArray(R.array.users)[i]);
+    public void onDialogSelectUser(DialogFragment dialog, String userId) {
+        Log.d(TAG, "selected " + userId);
+        mDatabaseReference.child("items").child(currItemId).child("assignedUser").setValue(userId, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public void showDialog() {
         DialogFragment dialog = new AssignUserDialogFragment();
+        Bundle args = new Bundle();
+        args.putString("receiptId", receiptId);
+        args.putString("groupId", receipt.getGroupId());
+        dialog.setArguments(args);
         dialog.show(getFragmentManager(), "AssignUserFragment");
     }
 
@@ -172,9 +189,37 @@ public class ReceiptViewActivity extends AppCompatActivity
             Currency currency = Currency.getInstance(Locale.getDefault());
             itemPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice())));
 
-            //temporary until group members are added to the db
-            FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-            itemAssignee.setText(String.format("Assigned to: %s", mUser.getDisplayName()));
+            //Displays assigned user
+            if (item.getAssignedUser() != null) {
+                mDatabaseReference.child("users").child(item.getAssignedUser()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user = dataSnapshot.getValue(User.class);
+                        itemAssignee.setText(String.format("Assigned to: %s", user.getName()));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            } else {
+                itemAssignee.setText("No User Assigned");
+            }
+        }
+    }
+
+    private class CreatorValueEventListener implements ValueEventListener {
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            User user = dataSnapshot.getValue(User.class);
+            receiptCreatorView.setText(String.format("%s: %s", getString(R.string.receipt_creator), user.getName()));
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
         }
     }
 
