@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity
         scanReceipt();
     }
 
-    @Override
+    /*@Override
     public void onDialogPositiveClick(DialogFragment dialog) {
 
     }
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
 
-    }
+    }*/
 
     @Override
     protected void onResume() {

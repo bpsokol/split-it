@@ -119,7 +119,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         adapter.stopListening();
     }
 
-    @Override
+    /*@Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         Log.d(TAG, "user assigned");
     }
@@ -127,7 +127,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         Log.d(TAG, "dialog canceled");
-    }
+    }*/
 
     @Override
     public void onDialogSelectUser(DialogFragment dialog, int i) {
