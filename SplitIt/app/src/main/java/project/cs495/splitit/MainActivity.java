@@ -37,9 +37,9 @@ import com.scandit.barcodepicker.ScanditLicense;
 
 import org.jetbrains.annotations.NotNull;
 
-import project.cs495.splitit.models.GroupReceipt;
-import project.cs495.splitit.models.GroupReceiptBuilder;
 import project.cs495.splitit.models.Item;
+import project.cs495.splitit.models.Receipt;
+import project.cs495.splitit.models.ReceiptBuilder;
 
 public class MainActivity extends AppCompatActivity
     implements SelectGroupDialogFragment.SelectGroupDialogListener{
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity
     private String parceScanResults(ScanResults brScanResults, String groupId) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         String receiptId = database.child("receipts").push().getKey();
-        GroupReceipt receipt = new GroupReceiptBuilder()
+        Receipt receipt = new ReceiptBuilder()
                 .setGroupId(groupId)
                 .setReceiptId(receiptId)
                 .setCreator(auth.getCurrentUser().getUid())
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity
                 .setDatePurchased(brScanResults.receiptDate().value())
                 .setPrice(brScanResults.total().value())
                 .setItems(null)
-                .createGroupReceipt();
+                .createReceipt();
         for (Product product : brScanResults.products()) {
             String itemId = database.child("items").push().getKey();
             Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(), (int) product.quantity().value(), product.unitPrice().value());

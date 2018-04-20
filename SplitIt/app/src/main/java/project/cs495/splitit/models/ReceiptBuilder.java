@@ -7,6 +7,7 @@ public class ReceiptBuilder {
     protected String vendor;
     protected String datePurchased;
     protected float price;
+    protected String groupId;
     protected Map<String, Boolean> items;
     protected String creator;
 
@@ -35,8 +36,13 @@ public class ReceiptBuilder {
         return this;
     }
 
+    public ReceiptBuilder setGroupId(String groupId) {
+        this.groupId = groupId;
+        return this;
+    }
+
     public Receipt createReceipt() {
-        return new Receipt(receiptId, creator, vendor, datePurchased, price, items);
+        return new Receipt(receiptId, creator, vendor, datePurchased, price, items, groupId);
     }
 
     public ReceiptBuilder setCreator(String creator) {
