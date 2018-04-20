@@ -34,7 +34,7 @@ public class SelectGroupDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        Query query = FirebaseDatabase.getInstance().getReference().child("groups")
+        Query query = Utils.getDatabaseReference().child("groups")
                 .orderByChild("memberID/"+ FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .equalTo(true);
         query.addListenerForSingleValueEvent(new ValueEventListener() {

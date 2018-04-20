@@ -30,7 +30,7 @@ public class GroupManageActivity extends Fragment{
         View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance().getReference();
+        database = Utils.getDatabaseReference();
 
         final RecyclerView groupList = (RecyclerView) rootView.findViewById(R.id.group_list);
         String userID = auth.getCurrentUser().getUid();

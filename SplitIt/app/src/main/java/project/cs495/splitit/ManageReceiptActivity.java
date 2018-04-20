@@ -43,7 +43,7 @@ public class ManageReceiptActivity extends Fragment {
         super.onCreate(savedInstanceState);
 
         final RecyclerView receiptRV = rootView.findViewById(R.id.receipt_list);
-        database = FirebaseDatabase.getInstance().getReference();
+        database = Utils.getDatabaseReference();
         Query query = database.child("receipts").orderByChild("creator").equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
         FirebaseRecyclerOptions<Receipt> options = new FirebaseRecyclerOptions.Builder<Receipt>()
                 .setQuery(query, Receipt.class)
