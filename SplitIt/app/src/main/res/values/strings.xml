@@ -58,4 +58,8 @@
     <string name="welcome">Welcome!</string>
     <string name="your_groups">Your Groups</string>
     <string name="archive">ARCHIVE</string>
+    <string name="menu_modify">Modify</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_view">View</string>
+    <string name="menu_archive">Archive</string>
 </resources>

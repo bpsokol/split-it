@@ -53,7 +53,7 @@
         android:paddingStart="0dp"
         android:paddingTop="15dp" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/item_view_options"
         app:srcCompat="@drawable/menu_vertical"
         android:layout_width="55dp"
@@ -63,5 +63,6 @@
         android:layout_marginRight="8dp"
         android:layout_weight="1"
         android:background="@android:color/transparent"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        android:onClick="showPopup"/>
 </LinearLayout>

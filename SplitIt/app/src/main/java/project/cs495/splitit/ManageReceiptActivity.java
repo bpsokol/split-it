@@ -4,13 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +36,7 @@ import java.util.Locale;
 
 import project.cs495.splitit.models.Receipt;
 
-public class ManageReceiptActivity extends Fragment {
+public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "ManageReceiptActivity";
     private DatabaseReference database;
     private static List<String> receiptInfo = new ArrayList<String>();
@@ -37,9 +44,10 @@ public class ManageReceiptActivity extends Fragment {
     private String receiptDisplayText;
     private static int currReceiptIndex;
     private FirebaseRecyclerAdapter adapter;
+    private View view;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_manage_receipts, container, false);
+        final View rootView = inflater.inflate(R.layout.activity_manage_receipts, container, false);
         super.onCreate(savedInstanceState);
 
         final RecyclerView receiptRV = rootView.findViewById(R.id.receipt_list);
@@ -56,8 +64,10 @@ public class ManageReceiptActivity extends Fragment {
 
             @Override
             public ReceiptHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
+                view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.receipt_list_item, parent, false);
+                final ImageButton menu_options = (ImageButton) view.findViewById(R.id.receipt_list_options);
+
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -67,26 +77,26 @@ public class ManageReceiptActivity extends Fragment {
                         Log.d(TAG, String.format("%s: %d", "Current Index", currReceiptIndex));
                     }
                 });
+
+                menu_options.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        receiptRV.findViewHolderForAdapterPosition(currReceiptIndex).itemView.setSelected(false);
+                        //Call below not working
+                        //currReceiptIndex = receiptRV.getChildAdapterPosition(view);
+                        PopupMenu popup = new PopupMenu(getView().getContext(), view);
+                        popup.setOnMenuItemClickListener(ManageReceiptActivity.this);
+                        MenuInflater inflater = popup.getMenuInflater();
+                        inflater.inflate(R.menu.manage_receipt_menu, popup.getMenu());
+                        popup.show();
+                    }
+                });
+
                 return new ReceiptHolder(view);
             }
         };
         receiptRV.setAdapter(adapter);
         receiptRV.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-
-        Button archiveButton = (Button) rootView.findViewById(R.id.archive);
-        archiveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                archiveReceipt();
-            }
-        });
-        Button viewButton = (Button) rootView.findViewById(R.id.view);
-        viewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewReceipt();
-            }
-        });
         return rootView;
     }
 
@@ -153,6 +163,23 @@ public class ManageReceiptActivity extends Fragment {
             date.setText(String.format("%s", receipt.getDatePurchased()));
             Currency currency = Currency.getInstance(Locale.getDefault());
             totalPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
+        }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.manage_menu_view_receipt:
+                viewReceipt();
+                return true;
+            case R.id.manage_menu_modify_receipt:
+                //TODO: Call modify function
+                return true;
+            case R.id.manage_menu_archive_receipt:
+                archiveReceipt();
+                return true;
+            default:
+                return false;
         }
     }
 }

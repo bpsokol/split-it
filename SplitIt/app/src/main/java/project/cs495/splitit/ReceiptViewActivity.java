@@ -1,16 +1,18 @@
 package project.cs495.splitit;
 
-
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -22,7 +24,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -33,8 +34,8 @@ import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 
 public class ReceiptViewActivity extends AppCompatActivity
-        implements AssignUserDialogFragment.AssignUserDialogListener{
-    private static final String TAG = "ReceiptVeiwActivity";
+        implements AssignUserDialogFragment.AssignUserDialogListener, PopupMenu.OnMenuItemClickListener{
+    private static final String TAG = "ReceiptViewActivity";
     private DatabaseReference mDatabaseReference;
     private RecyclerView itemRV;
     private FirebaseRecyclerAdapter adapter;
@@ -174,6 +175,28 @@ public class ReceiptViewActivity extends AppCompatActivity
             //temporary until group members are added to the db
             FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
             itemAssignee.setText(String.format("Assigned to: %s", mUser.getDisplayName()));
+        }
+    }
+
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(this);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.receipt_menu_options, popup.getMenu());
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_modify_item:
+                //TODO: call modify activity
+                return true;
+            case R.id.menu_delete_item:
+                //TODO: Call delete function
+                return true;
+            default:
+                return false;
         }
     }
 }
