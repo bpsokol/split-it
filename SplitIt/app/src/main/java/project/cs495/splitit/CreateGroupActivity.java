@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.GroupOwner;
@@ -76,9 +75,11 @@ public class CreateGroupActivity extends AppCompatActivity {
         else {
             String groupId = mDatabase.child("groups").push().getKey();
             GroupOwner manager = new GroupOwner(auth.getCurrentUser().getUid(), userName);
-            Group group = new Group(groupId, gName, manager.getManagerUID(), manager.getManagerName(), null, null);
-            group.addMember(manager.getManagerName(),manager.getManagerUID());
+            Group group = new Group(groupId, gName, manager.getName(), manager.getUid(), null, null);
+            group.addMember(manager.getName(),manager.getUid());
             group.commitToDB(mDatabase);
+            manager.addGroup(groupId);
+            manager.addGroupOwned(groupId);
 
             Intent createIntent = new Intent(CreateGroupActivity.this, MainActivity.class);
             startActivity(createIntent);
