@@ -4,8 +4,6 @@
     <group android:id="@+id/group_manage_receipt">
         <item android:id="@+id/manage_menu_view_receipt"
             android:title="@string/menu_view" />
-        <item android:id="@+id/manage_menu_modify_receipt"
-            android:title="@string/menu_modify" />
         <item android:id="@+id/manage_menu_archive_receipt"
             android:title="@string/menu_archive" />
     </group>

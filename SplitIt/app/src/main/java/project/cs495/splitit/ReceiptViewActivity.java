@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -102,11 +103,13 @@ public class ReceiptViewActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 receipt = dataSnapshot.getValue(Receipt.class);
-                if (receipt != null){
-                    Currency currency = Currency.getInstance(Locale.getDefault());
-                    receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
-                    setCreatorNameDisplay();
-                }
+
+                if (receipt == null)
+                    return;
+
+                Currency currency = Currency.getInstance(Locale.getDefault());
+                receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
+                setCreatorNameDisplay();
             }
 
             @Override
@@ -233,11 +236,26 @@ public class ReceiptViewActivity extends AppCompatActivity
         popup.show();
     }
 
+    /*private void modifyItem()
+    {
+        TextView origDescription = (TextView)findViewById(R.id.item_description);
+        TextView origPrice = (TextView)findViewById(R.id.item_price);
+        EditText editDescription = (EditText)findViewById(R.id.edit_item_description);
+        EditText editPrice = (EditText)findViewById(R.id.edit_item_price);
+        editDescription.setText(origDescription.getText());
+        editPrice.setText(origPrice.getText());
+        origDescription.setVisibility(View.INVISIBLE);
+        origPrice.setVisibility(View.INVISIBLE);
+        editDescription.setVisibility(View.VISIBLE);
+        editPrice.setVisibility(View.VISIBLE);
+    }*/
+
+
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_modify_item:
-                //TODO: call modify activity
+                //modifyItem();
                 return true;
             case R.id.menu_delete_item:
                 //TODO: Call delete function

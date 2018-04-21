@@ -155,9 +155,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
             case R.id.manage_menu_view_receipt:
                 viewReceipt();
                 return true;
-            case R.id.manage_menu_modify_receipt:
-                //TODO: Call modify function
-                return true;
             case R.id.manage_menu_archive_receipt:
                 archiveReceipt();
                 return true;
