@@ -63,6 +63,16 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.receipt_list_item, parent, false);
 
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        receiptRV.findViewHolderForAdapterPosition(currReceiptIndex).itemView.setSelected(false);
+                        currReceiptIndex = receiptRV.getChildAdapterPosition(view);
+                        view.setSelected(true);
+                        viewReceipt();
+                    }
+                });
+
                 final ImageButton menu_options = view.findViewById(R.id.receipt_list_options);
 
                 // Use temporary variable to capture value of View
@@ -152,9 +162,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.manage_menu_view_receipt:
-                viewReceipt();
-                return true;
             case R.id.manage_menu_archive_receipt:
                 archiveReceipt();
                 return true;

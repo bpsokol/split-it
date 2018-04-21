@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,14 +26,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.microblink.Product;
 
 import java.util.Currency;
 import java.util.Locale;
 
+import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
+import project.cs495.splitit.models.ReceiptBuilder;
 import project.cs495.splitit.models.User;
 
 public class ReceiptViewActivity extends AppCompatActivity
@@ -46,6 +51,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     private String currItemId;
     private TextView receiptPriceView;
     private TextView receiptCreatorView;
+    private static int currItemIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +75,7 @@ public class ReceiptViewActivity extends AppCompatActivity
 
         adapter = new FirebaseRecyclerAdapter<Item, ItemHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull ItemHolder holder, int position, @NonNull Item model) {
+            protected void onBindViewHolder(@NonNull ItemHolder holder, int currItemIndex, @NonNull Item model) {
                 holder.bindData(model);
             }
 
@@ -80,8 +86,8 @@ public class ReceiptViewActivity extends AppCompatActivity
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        int position = itemRV.getChildAdapterPosition(view);
-                        Item item = (Item) adapter.getItem(position);
+                        currItemIndex = itemRV.getChildAdapterPosition(view);
+                        Item item = (Item) adapter.getItem(currItemIndex);
                         currItemId = item.getItemId();
                         Log.d(TAG, "Accessing item with description " + item.getDescription());
                         if (receipt.getCreator().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
@@ -91,6 +97,26 @@ public class ReceiptViewActivity extends AppCompatActivity
                         }
                     }
                 });
+
+
+                final ImageButton menu_options = view.findViewById(R.id.item_view_options);
+
+                // Use temporary variable to capture value of View
+                final View temp = view;
+                menu_options.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemRV.findViewHolderForAdapterPosition(currItemIndex).itemView.setSelected(false);
+                        currItemIndex = itemRV.getChildAdapterPosition(temp);
+                        view.setSelected(true);
+                        PopupMenu popup = new PopupMenu(view.getContext(), view);
+                        popup.setOnMenuItemClickListener(ReceiptViewActivity.this);
+                        MenuInflater inflater = popup.getMenuInflater();
+                        inflater.inflate(R.menu.receipt_menu_options, popup.getMenu());
+                        popup.show();
+                    }
+                });
+
                 return new ItemHolder(view);
             }
         };
@@ -228,28 +254,32 @@ public class ReceiptViewActivity extends AppCompatActivity
         }
     }
 
-    public void showPopup(View v) {
-        PopupMenu popup = new PopupMenu(this, v);
-        popup.setOnMenuItemClickListener(this);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.receipt_menu_options, popup.getMenu());
-        popup.show();
+    private void modifyItem()
+    {
+        //TODO: create a dialog with description and price and allow user to input new value or convert textview to edittext and allow user to edit on the same screen inside the item
     }
 
-    /*private void modifyItem()
-    {
-        TextView origDescription = (TextView)findViewById(R.id.item_description);
-        TextView origPrice = (TextView)findViewById(R.id.item_price);
-        EditText editDescription = (EditText)findViewById(R.id.edit_item_description);
-        EditText editPrice = (EditText)findViewById(R.id.edit_item_price);
-        editDescription.setText(origDescription.getText());
-        editPrice.setText(origPrice.getText());
-        origDescription.setVisibility(View.INVISIBLE);
-        origPrice.setVisibility(View.INVISIBLE);
-        editDescription.setVisibility(View.VISIBLE);
-        editPrice.setVisibility(View.VISIBLE);
-    }*/
+    private void deleteItem() {
+        final Item item = (Item) adapter.getItem(currItemIndex);
+        final DatabaseReference removeItemFromItemList = FirebaseDatabase.getInstance().getReference("items").child(item.getItemId());
 
+        //TODO: This not accessing element in DB correctly and it is not getting properly deleted
+        final DatabaseReference removeItemFromReceipt = FirebaseDatabase.getInstance().getReference("receipts").child(receipt.getReceiptId()).child("items").child(item.getItemId());
+
+        removeItemFromItemList.removeValue();
+        removeItemFromReceipt.removeValue();
+
+        receipt.setPrice(receipt.getPrice() - item.getPrice());
+        Currency currency = Currency.getInstance(Locale.getDefault());
+        receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
+
+
+        //TODO: Price not updated in DB
+        //final DatabaseReference receiptRef = FirebaseDatabase.getInstance().getReference("receipts").child(receipt.getReceiptId());
+        //receiptRef.setValue((float) receipt.getPrice() - item.getPrice());
+
+        Toast.makeText(ReceiptViewActivity.this, item.getDescription() + " deleted", Toast.LENGTH_LONG).show();
+    }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -258,7 +288,7 @@ public class ReceiptViewActivity extends AppCompatActivity
                 //modifyItem();
                 return true;
             case R.id.menu_delete_item:
-                //TODO: Call delete function
+                deleteItem();
                 return true;
             default:
                 return false;

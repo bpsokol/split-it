@@ -63,6 +63,5 @@
         android:layout_marginRight="8dp"
         android:layout_weight="1"
         android:background="@android:color/transparent"
-        android:scaleType="fitCenter"
-        android:onClick="showPopup"/>
+        android:scaleType="fitCenter" />
 </LinearLayout>

@@ -55,6 +55,16 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.group_list_item, parent, false);
 
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
+                        currGroupIndex = groupList.getChildAdapterPosition(view);
+                        view.setSelected(true);
+                        //viewGroup();
+                    }
+                });
+
                 final ImageButton menu_options = view.findViewById(R.id.group_list_options);
 
                 // Use temporary variable to capture value of View
@@ -107,14 +117,18 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
     }
 
     private void viewGroup() {
-
+        //TODO: Create a dialog box with each users name, user selection is not necessary
     }
 
     private void modifyGroup() {
         Group group = (Group) adapter.getItem(currGroupIndex);
         Intent intent = new Intent(getView().getContext(), GroupModifyActivity.class);
         startActivity(intent);
+        //TODO: The modify activity still needs to be created
     }
+
+    //TODO: Create easy way to add new group members to group
+    //TODO: Figure out how to allow users to find other users and add them to their group
 
     private class GroupHolder extends RecyclerView.ViewHolder {
         private TextView txt;
@@ -132,9 +146,6 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.group_manage_view:
-                viewGroup();
-                return true;
             case R.id.group_manage_modify:
                 modifyGroup();
                 return true;
