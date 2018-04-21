@@ -1,8 +1,11 @@
 package project.cs495.splitit.models;
 
+import android.provider.ContactsContract;
+
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.Map;
+
 
 public class User implements EntityInterface {
     private String uid;
@@ -40,5 +43,17 @@ public class User implements EntityInterface {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Map<String, Boolean> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Map<String, Boolean> groups) {
+        this.groups = groups;
+    }
+
+    public Map<String, Boolean> getUserReceipts() {
+        return userReceipts;
     }
 }
