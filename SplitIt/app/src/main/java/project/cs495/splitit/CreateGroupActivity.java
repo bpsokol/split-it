@@ -14,8 +14,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.GroupOwner;
+import project.cs495.splitit.models.User;
 
 public class CreateGroupActivity extends AppCompatActivity {
     private FirebaseAuth auth;
@@ -79,18 +83,12 @@ public class CreateGroupActivity extends AppCompatActivity {
             Group group = new Group(groupId, gName, manager.getManagerUID(), manager.getManagerName(), null, null);
             group.addMember(manager.getManagerName(),manager.getManagerUID());
             group.commitToDB(mDatabase);
-
+            addGroup(groupId);
             Intent createIntent = new Intent(CreateGroupActivity.this, MainActivity.class);
             startActivity(createIntent);
             finish();
             displayMessage(getString(R.string.create_successful));
         }
-    }
-
-    private void cancel() {
-        Intent cancelIntent = new Intent(this,GroupManageActivity.class);
-        startActivity(cancelIntent);
-        finish();
     }
 
     private boolean isEmpty(String str) {
@@ -103,5 +101,12 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     private void displayMessage(String message){
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public void addGroup(String groupId) {
+        DatabaseReference database = Utils.getDatabaseReference();
+        Map<String, Boolean> group = new HashMap<>();
+        group.put(groupId,true);
+        database.child("users").child(auth.getCurrentUser().getUid()).child("groups").setValue(group);
     }
 }

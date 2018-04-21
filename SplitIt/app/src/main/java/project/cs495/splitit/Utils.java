@@ -1,3 +1,4 @@
+
 package project.cs495.splitit;
 
 import com.google.firebase.database.DatabaseReference;
