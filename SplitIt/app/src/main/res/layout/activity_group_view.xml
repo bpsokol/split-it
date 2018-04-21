@@ -22,5 +22,16 @@
 
     <include layout="@layout/content_group_view" />
 
+    <ImageButton
+        android:id="@+id/add_member"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/plus_button_blue" />
+
 
 </android.support.design.widget.CoordinatorLayout>

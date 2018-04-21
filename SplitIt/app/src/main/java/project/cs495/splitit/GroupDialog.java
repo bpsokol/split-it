@@ -33,6 +33,8 @@ public class GroupDialog extends Dialog {
                     case R.id.dismiss:
                         if (auth.getCurrentUser().getUid().equals(removedGroup.getManagerUID())) {
                             database.child("groups").child(removedGroup.getGroupId()).removeValue();
+                            database.child("users").child("groups").child(removedGroup.getGroupId()).removeValue();
+                            database.child("users").child("groupsOwned").child(removedGroup.getGroupId()).removeValue();
                             dismiss();
                         }
                         else

@@ -66,7 +66,7 @@ public class GroupViewActivity extends AppCompatActivity{
 
             @Override
             public memberHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_view,parent,false);
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.group_list_item,parent,false);
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -100,7 +100,7 @@ public class GroupViewActivity extends AppCompatActivity{
 
         memberHolder(View view) {
             super(view);
-            memberName = (TextView) view.findViewById(R.id.member_name);
+            memberName = (TextView) view.findViewById(R.id.txt);
         }
 
         public void bindData(final User user) {
