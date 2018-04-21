@@ -9,6 +9,9 @@ public class GroupOwner extends User {
 
     private Map<String, Boolean> groupsOwned;
 
+    public GroupOwner() {
+        super();
+    }
     public GroupOwner(String managerUID, String managerName) {
         super(managerUID, managerName);
     }

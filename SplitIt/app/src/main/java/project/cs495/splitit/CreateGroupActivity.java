@@ -11,7 +11,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,27 +71,37 @@ public class CreateGroupActivity extends AppCompatActivity {
         finish();
     }
 
-    private void create(EditText groupName, String userName) {
-        DatabaseReference mDatabase = Utils.getDatabaseReference();
-        String gName = groupName.getText().toString();
+    private void create(EditText groupName, final String userName) {
+        final DatabaseReference mDatabase = Utils.getDatabaseReference();
+        final String gName = groupName.getText().toString();
 
         if (isEmpty(gName)) {
             displayMessage(getString(R.string.empty_warning));
         }
         else {
-            String groupId = mDatabase.child("groups").push().getKey();
-            GroupOwner manager = new GroupOwner(auth.getCurrentUser().getUid(), userName);
-            Group group = new Group(groupId, gName, manager.getUid(), manager.getName(), null, null);
-            group.addMember(manager.getName(),manager.getUid());
-            group.commitToDB(mDatabase);
-            manager.addGroup(groupId);
-            manager.addGroupOwned(groupId);
-            addGroup(groupId);
+            final String groupId = mDatabase.child("groups").push().getKey();
+            String userId = auth.getCurrentUser().getUid();
+            Utils.getDatabaseReference().child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    GroupOwner manager = dataSnapshot.getValue(GroupOwner.class);
+                    Group group = new Group(groupId, gName, manager.getName(), manager.getUid(), null, null);
+                    group.addMember(manager.getName(),manager.getUid());
+                    group.commitToDB(mDatabase);
+                    manager.addGroup(groupId);
+                    manager.addGroupOwned(groupId);
 
-            Intent createIntent = new Intent(CreateGroupActivity.this, MainActivity.class);
-            startActivity(createIntent);
-            finish();
-            displayMessage(getString(R.string.create_successful));
+                    Intent createIntent = new Intent(CreateGroupActivity.this, MainActivity.class);
+                    startActivity(createIntent);
+                    finish();
+                    displayMessage(getString(R.string.create_successful));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 
