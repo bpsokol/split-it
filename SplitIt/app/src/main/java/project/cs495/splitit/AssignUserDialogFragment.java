@@ -37,6 +37,7 @@ public class AssignUserDialogFragment extends DialogFragment {
                     mListener.onDialogSelectUser(AssignUserDialogFragment.this, selectedUser.getUid());
                 }
             });
+
         return builder.create();
     }
 
@@ -61,7 +62,7 @@ public class AssignUserDialogFragment extends DialogFragment {
         try {
             mListener =(AssignUserDialogListener) activity;
         } catch(ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement AssignUserDIalogListener");
+            throw new ClassCastException(activity.toString() + " must implement AssignUserDialogListener");
         }
     }
 

@@ -102,9 +102,11 @@ public class ReceiptViewActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 receipt = dataSnapshot.getValue(Receipt.class);
-                Currency currency = Currency.getInstance(Locale.getDefault());
-                receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
-                setCreatorNameDisplay();
+                if (receipt != null){
+                    Currency currency = Currency.getInstance(Locale.getDefault());
+                    receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
+                    setCreatorNameDisplay();
+                }
             }
 
             @Override

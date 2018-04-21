@@ -39,12 +39,8 @@ import project.cs495.splitit.models.Receipt;
 public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "ManageReceiptActivity";
     private DatabaseReference database;
-    private static List<String> receiptInfo = new ArrayList<String>();
-    private static List<String> receiptIDArray = new ArrayList<String>();
-    private String receiptDisplayText;
     private static int currReceiptIndex;
     private FirebaseRecyclerAdapter adapter;
-    private View view;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.activity_manage_receipts, container, false);
@@ -64,26 +60,19 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
 
             @Override
             public ReceiptHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                view = LayoutInflater.from(parent.getContext())
+                View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.receipt_list_item, parent, false);
-                final ImageButton menu_options = (ImageButton) view.findViewById(R.id.receipt_list_options);
 
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        receiptRV.findViewHolderForAdapterPosition(currReceiptIndex).itemView.setSelected(false);
-                        currReceiptIndex = receiptRV.getChildAdapterPosition(view);
-                        view.setSelected(true);
-                        Log.d(TAG, String.format("%s: %d", "Current Index", currReceiptIndex));
-                    }
-                });
+                final ImageButton menu_options = view.findViewById(R.id.receipt_list_options);
 
+                // Use temporary variable to capture value of View
+                final View temp = view;
                 menu_options.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         receiptRV.findViewHolderForAdapterPosition(currReceiptIndex).itemView.setSelected(false);
-                        //Call below not working
-                        //currReceiptIndex = receiptRV.getChildAdapterPosition(view);
+                        currReceiptIndex = receiptRV.getChildAdapterPosition(temp);
+                        view.setSelected(true);
                         PopupMenu popup = new PopupMenu(getView().getContext(), view);
                         popup.setOnMenuItemClickListener(ManageReceiptActivity.this);
                         MenuInflater inflater = popup.getMenuInflater();
@@ -138,12 +127,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
                 }
             }
         });
-    }
-
-    private void openHomePage(){
-        Intent homePageIntent = new Intent(getView().getContext(), MainActivity.class);
-        startActivity(homePageIntent);
-        getActivity().finish();
     }
 
     private class ReceiptHolder extends RecyclerView.ViewHolder {
