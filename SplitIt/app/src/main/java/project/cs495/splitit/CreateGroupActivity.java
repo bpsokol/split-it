@@ -13,6 +13,9 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.GroupOwner;
 
@@ -80,6 +83,7 @@ public class CreateGroupActivity extends AppCompatActivity {
             group.commitToDB(mDatabase);
             manager.addGroup(groupId);
             manager.addGroupOwned(groupId);
+            addGroup(groupId);
 
             Intent createIntent = new Intent(CreateGroupActivity.this, MainActivity.class);
             startActivity(createIntent);
@@ -104,5 +108,12 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     private void displayMessage(String message){
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public void addGroup(String groupId) {
+        DatabaseReference database = Utils.getDatabaseReference();
+        Map<String, Boolean> group = new HashMap<>();
+        group.put(groupId,true);
+        database.child("users").child(auth.getCurrentUser().getUid()).child("groups").setValue(group);
     }
 }
