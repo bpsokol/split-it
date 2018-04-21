@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ReceiptViewActivity"
-    tools:showIn="@layout/activity_receipt_view">
+    tools:context=".GroupViewActivity"
+    tools:showIn="@layout/activity_group_view">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/group_rv"

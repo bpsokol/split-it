@@ -52,16 +52,15 @@ public class GroupViewActivity extends AppCompatActivity{
         Intent intent = getIntent();
         groupId = intent.getStringExtra(EXTRA_GROUP_ID);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        Query query = mDatabase.child("group").child(groupId).orderByChild("members").equalTo(true);
-
+        Query query = mDatabase.child("users").orderByChild(getString(R.string.groups_path)+groupId).equalTo(true);
         groupRV = (RecyclerView) findViewById(R.id.group_rv);
-        FirebaseRecyclerOptions<String> options = new FirebaseRecyclerOptions.Builder<String>()
-                .setQuery(query, String.class)
+        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
+                .setQuery(query, User.class)
                 .build();
 
-        adapter = new FirebaseRecyclerAdapter<String, memberHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<User, memberHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull memberHolder holder, int position, @NonNull String model) {
+            protected void onBindViewHolder(@NonNull memberHolder holder, int position, @NonNull User model) {
                 holder.bindData(model);
             }
 
@@ -72,7 +71,7 @@ public class GroupViewActivity extends AppCompatActivity{
                     @Override
                     public void onClick(View view) {
                         int position = groupRV.getChildAdapterPosition(view);
-                        String member = (String) adapter.getItem(position);
+                        User member = (User) adapter.getItem(position);
                     }
                 });
                 return new memberHolder(view);
@@ -83,6 +82,19 @@ public class GroupViewActivity extends AppCompatActivity{
 
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
     private class memberHolder extends RecyclerView.ViewHolder {
         private TextView memberName;
 
@@ -91,8 +103,9 @@ public class GroupViewActivity extends AppCompatActivity{
             memberName = (TextView) view.findViewById(R.id.member_name);
         }
 
-        public void bindData(String model) {
-            memberName.setText(model);
+        public void bindData(final User user) {
+            String name = user.getName();
+            memberName.setText(name);
         }
     }
 }

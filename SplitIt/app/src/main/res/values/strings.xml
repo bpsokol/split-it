@@ -41,7 +41,7 @@
     <string name="receipt">Receipt</string>
     <string name="receipt_creator">Receipt Creator</string>
     <string name="receipt_ids_path">receiptIds/</string>
-    <string name="group_ids_path">groupIds</string>
+    <string name="groups_path">groups</string>
     <string name="receipts_path">receipts/</string>
     <string name="scan_receipt">Scan Receipt</string>
     <string name="sign_in">SIGN IN</string>

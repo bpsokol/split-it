@@ -52,6 +52,7 @@ public class GroupDialog extends Dialog {
                 getContext().startActivity(groupViewIntent);
                 Intent intent = buildGroupViewIntent(modifyGroup.getGroupId());
                 getContext().startActivity(intent);
+                dismiss();
             }
         });
 
