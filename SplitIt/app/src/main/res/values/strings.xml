@@ -58,4 +58,15 @@
     <string name="welcome">Welcome!</string>
     <string name="your_groups">Your Groups</string>
     <string name="archive">ARCHIVE</string>
+    <string name="menu_modify">Modify</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_view">View</string>
+    <string name="menu_archive">Archive</string>
+    <string name="title_activity_group_dialog">GroupDialog</string>
+    <string name="title_activity_group_view">GroupViewActivity</string>
+    <string name="dismiss">DISMISS</string>
+    <string name="not_manager">Deletion error! You are not the owner of this group.</string>
+    <string name="group">Group</string>
+    <string name="modify_group">Modify Group</string>
+    <string name="instructions">Tap each item to assign a group member</string>
 </resources>
