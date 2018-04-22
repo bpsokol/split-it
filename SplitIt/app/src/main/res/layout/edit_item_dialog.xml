@@ -33,7 +33,9 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="0dp"
-                android:layout_weight="3" />
+                android:layout_weight="3"
+                android:inputType="textCapWords"
+                android:focusableInTouchMode="true" />
         </LinearLayout>
 
         <LinearLayout
@@ -61,7 +63,8 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="0dp"
-                android:layout_weight="3" />
+                android:layout_weight="3"
+                android:inputType="numberDecimal" />
         </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

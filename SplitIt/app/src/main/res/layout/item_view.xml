@@ -46,12 +46,13 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_weight="10"
-        android:gravity="end"
+        android:gravity="center_vertical|end"
         android:paddingEnd="15dp"
         android:paddingLeft="0dp"
         android:paddingRight="15dp"
         android:paddingStart="0dp"
-        android:paddingTop="15dp" />
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="18sp" />
 
     <ImageButton
         android:id="@+id/item_view_options"

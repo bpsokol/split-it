@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +38,7 @@ import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.User;
 
 public class ReceiptViewActivity extends AppCompatActivity
-        implements AssignUserDialogFragment.AssignUserDialogListener, ModifyItemFragment.ModifyItemFragmentListener, PopupMenu.OnMenuItemClickListener{
+        implements AssignUserDialogFragment.AssignUserDialogListener, ModifyItemFragment.ModifyItemFragmentListener, AddItemFragment.AddItemFragmentListener, PopupMenu.OnMenuItemClickListener{
     private static final String TAG = "ReceiptViewActivity";
     private DatabaseReference mDatabaseReference;
     private RecyclerView itemRV;
@@ -214,6 +215,17 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    public void onDialogAddItem(DialogFragment dialog, String description, float price) {
+        String itemId = mDatabaseReference.child("items").push().getKey();
+        Item item = new Item(itemId, null, description, price, (int) 1, price);
+        item.addReceiptId(receiptId);
+        item.commitToDB(mDatabaseReference);
+        receipt.addItem(item.getItemId());
+        receipt.commitToDB(mDatabaseReference);
+        Toast.makeText(ReceiptViewActivity.this, "Item Added", Toast.LENGTH_SHORT).show();
+    }
+
     public void showDialogAssignUser() {
         DialogFragment dialog = new AssignUserDialogFragment();
         Bundle args = new Bundle();
@@ -224,12 +236,15 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     public static String TitleCaseString(String s) {
-        StringBuilder res = new StringBuilder();
-        String[] words = s.split(" ");
-        for(String word: words) {
-            res.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase()).append(" ");
+        if (s != null) {
+            StringBuilder res = new StringBuilder();
+            String[] words = s.split(" ");
+            for (String word : words) {
+                res.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase()).append(" ");
+            }
+            return res.toString();
         }
-        return res.toString();
+        return s;
     }
 
     private class ItemHolder extends RecyclerView.ViewHolder {
@@ -297,6 +312,14 @@ public class ReceiptViewActivity extends AppCompatActivity
         dialog.show(getSupportFragmentManager(), "ModifyItemFragment");
     }
 
+    private void addItem() {
+        DialogFragment dialog = new AddItemFragment();
+        Bundle args = new Bundle();
+        args.putString("receiptId", receiptId);
+        dialog.setArguments(args);
+        dialog.show(getSupportFragmentManager(), "AddItemFragment");
+    }
+
     private void deleteItem() {
         final Item item = (Item) adapter.getItem(currItemIndex);
         final DatabaseReference removeItemFromItemList = FirebaseDatabase.getInstance().getReference("items").child(item.getItemId());
@@ -317,6 +340,24 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
 
         Toast.makeText(ReceiptViewActivity.this, item.getDescription() + " deleted", Toast.LENGTH_LONG).show();
+    }
+
+    // create an action bar button
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.add_item) {
+            addItem();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

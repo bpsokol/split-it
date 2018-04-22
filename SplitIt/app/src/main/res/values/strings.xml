@@ -1,6 +1,7 @@
 <resources>
     <string name="account_settings">Account Settings</string>
     <string name="action_settings">Account Settings</string>
+    <string name="add_item">Add Item</string>
     <string name="app_name">Split-It</string>
     <string name="archive">ARCHIVE</string>
     <string name="assign">Assign</string>
