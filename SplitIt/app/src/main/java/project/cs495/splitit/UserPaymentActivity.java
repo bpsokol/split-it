@@ -72,22 +72,20 @@ public class UserPaymentActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View listItem = convertView;
-            if(listItem == null)
-                listItem = LayoutInflater.from(mContext).inflate(R.layout.item_view,parent,false);
+            Bill bill = getItem(position);
 
-            Bill currentBill = billList.get(position);
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_view_items, parent, false);
+            }
+            TextView name = (TextView) convertView.findViewById(R.id.manager_name);
+            TextView email = (TextView) convertView.findViewById(R.id.manager_email);
+            TextView amount = (TextView) convertView.findViewById(R.id.amount_owed);
 
-            TextView name = (TextView) listItem.findViewById(R.id.manager_name);
-            name.setText(currentBill.getName());
+            name.setText(bill.getName());
+            email.setText(bill.getEmail());
+            amount.setText(bill.getAmount());
 
-            TextView email = (TextView) listItem.findViewById(R.id.manager_email);
-            email.setText(currentBill.getEmail());
-
-            TextView amount = (TextView) listItem.findViewById(R.id.amount_owed);
-            amount.setText(currentBill.getAmount());
-
-            return listItem;
+            return convertView;
         }
     }
 
