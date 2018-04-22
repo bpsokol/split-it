@@ -2,22 +2,16 @@ package project.cs495.splitit;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -27,71 +21,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class UserPaymentActivity extends AppCompatActivity {
-
-    public class Bill {
-        private String name = "";
-        private String email = "";
-        private String amount = "";
-
-        public Bill(String name, String email, String amount) {
-            this.name = name;
-            this.email = email;
-            this.amount = amount;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setAmount(String amount) {
-            this.amount = amount;
-        }
-
-        public String getAmount() {
-            return amount;
-        }
-    }
-
-    public class BillAdapter extends ArrayAdapter<Bill> {
-
-        public BillAdapter( Context context, ArrayList<Bill> list) {
-            super(context, 0, list);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            Bill bill = getItem(position);
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_view_items, parent, false);
-            }
-            TextView name = (TextView) convertView.findViewById(R.id.manager_name);
-            TextView email = (TextView) convertView.findViewById(R.id.manager_email);
-            Button pay = (Button) convertView.findViewById(R.id.pay_bill);
-
-            name.setText(bill.getName());
-            pay.setText(bill.getAmount());
-            email.setText(bill.getEmail());
-
-            return convertView;
-        }
-    }
 
     private DatabaseReference database;
     private ListView listView;
@@ -118,9 +50,9 @@ public class UserPaymentActivity extends AppCompatActivity {
         database.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                billList.add(new Bill(dataSnapshot.child("managerName").getValue(String.class)
-                        ,dataSnapshot.child("managerEmail").getValue(String.class)
-                        ,dataSnapshot.child("cost").getValue(String.class)));
+                billList.add(new Bill(dataSnapshot.child("name").getValue(String.class)
+                        ,dataSnapshot.child("email").getValue(String.class)
+                        ,dataSnapshot.child("amount").getValue(String.class)));
 
                 adapter.notifyDataSetChanged();
             }
@@ -132,7 +64,7 @@ public class UserPaymentActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                billList.remove(dataSnapshot.getValue(String.class));
+                billList.remove(dataSnapshot.getValue(Bill.class));
 
                 adapter.notifyDataSetChanged();
             }
@@ -161,12 +93,12 @@ public class UserPaymentActivity extends AppCompatActivity {
 
                 builder.setView(billPrompt);
 
-                EditText newName = (EditText) findViewById(R.id.input_manager_name);
-                EditText newEmail = (EditText) findViewById(R.id.input_manager_email);
-                EditText newAmount = (EditText) findViewById(R.id.input_cost);
+                final EditText nameText = (EditText) billPrompt.findViewById(R.id.input_manager_name);
+                final EditText emailText = (EditText) billPrompt.findViewById(R.id.input_manager_email);
+                final EditText amountText = (EditText) billPrompt.findViewById(R.id.input_cost);
 
                 builder
-                        .setCancelable(true)
+                        .setCancelable(false)
                         .setPositiveButton("Save",
                                 new DialogInterface.OnClickListener() {
                                     @Override
@@ -182,10 +114,58 @@ public class UserPaymentActivity extends AppCompatActivity {
                                     }
                                 });
 
-                AlertDialog alertDialog = builder.create();
+                final AlertDialog alertDialog = builder.create();
 
                 alertDialog.show();
+                alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String newName = nameText.getText().toString();
+                        String newEmail = emailText.getText().toString();
+                        String newAmount = amountText.getText().toString();
+
+                        if (isEmpty(newName)) {
+                            displayMessage("Enter a name");
+                            alertDialog.show();
+                        }
+                        else if (isEmpty(newEmail)) {
+                            displayMessage("Enter an email address");
+                            alertDialog.show();
+                        }
+                        else if (isEmpty(newAmount)) {
+                            displayMessage("Enter an amount owed");
+                            alertDialog.show();
+                        }
+                        else {
+                            addBillToDatabase(newName, newEmail, "$" + newAmount);
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+
             }
         });
+    }
+
+    private void addBillToDatabase (String name, String email, String amount) {
+        DatabaseReference ref = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("bills").push();
+        Bill newBill = new Bill(name, email, amount);
+        ref.setValue(newBill);
+    }
+
+    private boolean isEmpty(String str) {
+        if (str == null || str.trim().length() == 0)
+            return true;
+        else
+            return false;
+    }
+
+    private void displayMessage(String message){
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 }
