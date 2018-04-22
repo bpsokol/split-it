@@ -89,7 +89,6 @@ public class MemberAddDialog extends Dialog{
                             break;
                         }
                     }
-                    //Toast.makeText(getContext(), R.string.add_member_error, Toast.LENGTH_SHORT).show();
                     if (!emailFound)
                         Toast.makeText(getContext(), R.string.add_member_error, Toast.LENGTH_SHORT).show();
                 }
