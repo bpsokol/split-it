@@ -1,9 +1,12 @@
 package project.cs495.splitit;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -79,11 +83,11 @@ public class UserPaymentActivity extends AppCompatActivity {
             }
             TextView name = (TextView) convertView.findViewById(R.id.manager_name);
             TextView email = (TextView) convertView.findViewById(R.id.manager_email);
-            TextView amount = (TextView) convertView.findViewById(R.id.amount_owed);
+            Button pay = (Button) convertView.findViewById(R.id.pay_bill);
 
             name.setText(bill.getName());
+            pay.setText(bill.getAmount());
             email.setText(bill.getEmail());
-            amount.setText(bill.getAmount());
 
             return convertView;
         }
@@ -141,6 +145,46 @@ public class UserPaymentActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+        Button addBillButton = (Button)findViewById(R.id.add_bill);
+        final Context context = this;
+
+        addBillButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater li = LayoutInflater.from(context);
+                View billPrompt = li.inflate(R.layout.add_bill_prompt,null);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                builder.setView(billPrompt);
+
+                EditText newName = (EditText) findViewById(R.id.input_manager_name);
+                EditText newEmail = (EditText) findViewById(R.id.input_manager_email);
+                EditText newAmount = (EditText) findViewById(R.id.input_cost);
+
+                builder
+                        .setCancelable(true)
+                        .setPositiveButton("Save",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                AlertDialog alertDialog = builder.create();
+
+                alertDialog.show();
             }
         });
     }
