@@ -178,8 +178,14 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDialogEditItem(DialogFragment dialog, String description, float price) {
+    public void onDialogEditItem(DialogFragment dialog, String description, float price, float origPrice) {
         Log.d(TAG, "edited " + description + price);
+
+        price = Math.max(price, 0);
+        float priceChange = origPrice - price;
+        float currentTotal = receipt.getPrice();
+        float newPrice = currentTotal - priceChange;
+
         mDatabaseReference.child("items").child(currItemId).child("description").setValue(description, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -193,7 +199,16 @@ public class ReceiptViewActivity extends AppCompatActivity
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError == null) {
-                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT);
+                }
+            }
+        });
+
+        mDatabaseReference.child("receipts").child(receiptId).child("price").setValue(newPrice, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT);
                 }
             }
         });
@@ -208,7 +223,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         dialog.show(getSupportFragmentManager(), "AssignUserFragment");
     }
 
-    private static String TitleCaseString(String s) {
+    public static String TitleCaseString(String s) {
         StringBuilder res = new StringBuilder();
         String[] words = s.split(" ");
         for(String word: words) {
@@ -275,7 +290,6 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     private void modifyItem() {
-        //TODO: create a dialog with description and price and allow user to input new value or convert textview to edittext and allow user to edit on the same screen inside the item
         DialogFragment dialog = new ModifyItemFragment();
         Bundle args = new Bundle();
         args.putString("itemId", currItemId);
@@ -292,7 +306,6 @@ public class ReceiptViewActivity extends AppCompatActivity
         removeItemFromReceipt.removeValue();
 
         float newPrice = receipt.getPrice() - item.getPrice();
-        //receipt.setPrice(newPrice);
 
         mDatabaseReference.child("receipts").child(receiptId).child("price").setValue(newPrice, new DatabaseReference.CompletionListener() {
             @Override
