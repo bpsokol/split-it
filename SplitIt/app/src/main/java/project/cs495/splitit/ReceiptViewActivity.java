@@ -1,9 +1,9 @@
 package project.cs495.splitit;
 
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -15,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,15 +28,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.microblink.Product;
 
 import java.util.Currency;
 import java.util.Locale;
 
-import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
-import project.cs495.splitit.models.ReceiptBuilder;
 import project.cs495.splitit.models.User;
 
 public class ReceiptViewActivity extends AppCompatActivity
@@ -209,7 +205,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         args.putString("receiptId", receiptId);
         args.putString("groupId", receipt.getGroupId());
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), "AssignUserFragment");
+        dialog.show(getSupportFragmentManager(), "AssignUserFragment");
     }
 
     private static String TitleCaseString(String s) {
@@ -284,7 +280,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         Bundle args = new Bundle();
         args.putString("itemId", currItemId);
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), "ModifyItemFragment");
+        dialog.show(getSupportFragmentManager(), "ModifyItemFragment");
     }
 
     private void deleteItem() {
