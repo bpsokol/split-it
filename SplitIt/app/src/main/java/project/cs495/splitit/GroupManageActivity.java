@@ -5,17 +5,23 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import project.cs495.splitit.models.Group;
 
@@ -27,7 +33,7 @@ public class GroupManageActivity extends Fragment{
     private static int currGroupIndex;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
+        final View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
         database = Utils.getDatabaseReference();
@@ -51,12 +57,19 @@ public class GroupManageActivity extends Fragment{
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
                         currGroupIndex = groupList.getChildAdapterPosition(view);
+                        view.setSelected(true);
+                        Log.d(TAG,String.format("%s: %d", "Current Index", currGroupIndex));
+                        Group group = (Group) adapter.getItem(currGroupIndex);
+                        GroupDialog groupDialog = new GroupDialog(rootView.getContext(),group);
+                        groupDialog.show();
                     }
                 });
                 return new GroupHolder(view);
             }
         };
+
         groupList.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         groupList.setAdapter(adapter);
 
