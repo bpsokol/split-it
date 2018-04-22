@@ -62,4 +62,8 @@
     <string name="dismiss">DISMISS</string>
     <string name="not_manager">You cannot dismiss group</string>
     <string name="group">Group</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="add">ADD</string>
+    <string name="add_member_error">Email Not Found</string>
+    <string name="adding_empty">Please enter an email</string>
 </resources>

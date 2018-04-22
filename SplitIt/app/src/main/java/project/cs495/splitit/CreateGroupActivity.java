@@ -86,7 +86,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     GroupOwner manager = dataSnapshot.getValue(GroupOwner.class);
-                    Group group = new Group(groupId, gName, manager.getUid(),manager.getName(), null, null);
+                    Group group = new Group(groupId, gName, manager.getUid(),manager.getName(), manager.getEmail(), null, null);
                     group.addMember(manager.getName(),manager.getUid());
                     group.commitToDB(mDatabase);
                     manager.addGroup(groupId);

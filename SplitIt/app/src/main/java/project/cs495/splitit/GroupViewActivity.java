@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -35,11 +36,13 @@ import project.cs495.splitit.models.User;
 import static project.cs495.splitit.GroupDialog.EXTRA_GROUP_ID;
 
 public class GroupViewActivity extends AppCompatActivity{
+    private static final String TAG = "GroupViewActivity";
     private DatabaseReference mDatabase;
     private RecyclerView groupRV;
     private FirebaseRecyclerAdapter adapter;
     private String groupId;
     private Group group;
+    private ImageButton fab_plus;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,9 +83,19 @@ public class GroupViewActivity extends AppCompatActivity{
         groupRV.setAdapter(adapter);
         groupRV.setLayoutManager(new LinearLayoutManager(this));
 
+        fab_plus = (ImageButton) findViewById(R.id.add_member);
+        fab_plus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                openDialog(groupId);
+            }
+        });
+
     }
 
-
+    public void openDialog(String groupId) {
+        MemberAddDialog memberAddDialog = new MemberAddDialog(this,groupId);
+        memberAddDialog.show();
+    }
     @Override
     protected void onStart() {
         super.onStart();

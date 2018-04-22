@@ -12,8 +12,8 @@ public class GroupOwner extends User {
     public GroupOwner() {
         super();
     }
-    public GroupOwner(String managerUID, String managerName) {
-        super(managerUID, managerName);
+    public GroupOwner(String managerUID, String managerName, String managerEmail) {
+        super(managerUID, managerName, managerEmail);
     }
 
     public Map<String, Boolean> getGroupsOwned() {
