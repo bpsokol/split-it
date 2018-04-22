@@ -1,18 +1,22 @@
 package project.cs495.splitit;
 
-
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -33,8 +38,8 @@ import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.User;
 
 public class ReceiptViewActivity extends AppCompatActivity
-        implements AssignUserDialogFragment.AssignUserDialogListener{
-    private static final String TAG = "ReceiptVeiwActivity";
+        implements AssignUserDialogFragment.AssignUserDialogListener, ModifyItemFragment.ModifyItemFragmentListener, AddItemFragment.AddItemFragmentListener, PopupMenu.OnMenuItemClickListener{
+    private static final String TAG = "ReceiptViewActivity";
     private DatabaseReference mDatabaseReference;
     private RecyclerView itemRV;
     private FirebaseRecyclerAdapter adapter;
@@ -43,6 +48,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     private String currItemId;
     private TextView receiptPriceView;
     private TextView receiptCreatorView;
+    private static int currItemIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +72,7 @@ public class ReceiptViewActivity extends AppCompatActivity
 
         adapter = new FirebaseRecyclerAdapter<Item, ItemHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull ItemHolder holder, int position, @NonNull Item model) {
+            protected void onBindViewHolder(@NonNull ItemHolder holder, int currItemIndex, @NonNull Item model) {
                 holder.bindData(model);
             }
 
@@ -77,17 +83,39 @@ public class ReceiptViewActivity extends AppCompatActivity
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        int position = itemRV.getChildAdapterPosition(view);
-                        Item item = (Item) adapter.getItem(position);
+                        currItemIndex = itemRV.getChildAdapterPosition(view);
+                        Item item = (Item) adapter.getItem(currItemIndex);
                         currItemId = item.getItemId();
                         Log.d(TAG, "Accessing item with description " + item.getDescription());
                         if (receipt.getCreator().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            showDialog();
+                            showDialogAssignUser();
                         } else {
                             assignToSelf(item);
                         }
                     }
                 });
+
+
+                final ImageButton menu_options = view.findViewById(R.id.item_view_options);
+
+                // Use temporary variable to capture value of View
+                final View temp = view;
+                menu_options.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemRV.findViewHolderForAdapterPosition(currItemIndex).itemView.setSelected(false);
+                        currItemIndex = itemRV.getChildAdapterPosition(temp);
+                        Item item = (Item) adapter.getItem(currItemIndex);
+                        currItemId = item.getItemId();
+                        view.setSelected(true);
+                        PopupMenu popup = new PopupMenu(view.getContext(), view);
+                        popup.setOnMenuItemClickListener(ReceiptViewActivity.this);
+                        MenuInflater inflater = popup.getMenuInflater();
+                        inflater.inflate(R.menu.receipt_menu_options, popup.getMenu());
+                        popup.show();
+                    }
+                });
+
                 return new ItemHolder(view);
             }
         };
@@ -100,6 +128,10 @@ public class ReceiptViewActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 receipt = dataSnapshot.getValue(Receipt.class);
+
+                if (receipt == null)
+                    return;
+
                 Currency currency = Currency.getInstance(Locale.getDefault());
                 receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
                 setCreatorNameDisplay();
@@ -146,22 +178,80 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
     }
 
-    public void showDialog() {
+    @Override
+    public void onDialogEditItem(DialogFragment dialog, String description, float price, float origPrice) {
+        Log.d(TAG, "edited " + description + price);
+
+        price = Math.max(price, 0);
+        float priceChange = origPrice - price;
+        float currentTotal = receipt.getPrice();
+        float newPrice = currentTotal - priceChange;
+
+        mDatabaseReference.child("items").child(currItemId).child("description").setValue(description, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        mDatabaseReference.child("items").child(currItemId).child("price").setValue(price, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT);
+                }
+            }
+        });
+
+        mDatabaseReference.child("receipts").child(receiptId).child("price").setValue(newPrice, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onDialogAddItem(DialogFragment dialog, String description, float price) {
+        String itemId = mDatabaseReference.child("items").push().getKey();
+        Item item = new Item(itemId, null, description, price, (int) 1, price);
+        item.addReceiptId(receiptId);
+        item.commitToDB(mDatabaseReference);
+        receipt.addItem(item.getItemId());
+        receipt.commitToDB(mDatabaseReference);
+        mDatabaseReference.child("receipts").child(receiptId).child("price").setValue(receipt.getPrice() + price, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Added", Toast.LENGTH_SHORT);
+                }
+            }
+        });
+    }
+
+    public void showDialogAssignUser() {
         DialogFragment dialog = new AssignUserDialogFragment();
         Bundle args = new Bundle();
         args.putString("receiptId", receiptId);
         args.putString("groupId", receipt.getGroupId());
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), "AssignUserFragment");
+        dialog.show(getSupportFragmentManager(), "AssignUserFragment");
     }
 
-    private static String TitleCaseString(String s) {
-        StringBuilder res = new StringBuilder();
-        String[] words = s.split(" ");
-        for(String word: words) {
-            res.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase()).append(" ");
+    public static String TitleCaseString(String s) {
+        if (s != null) {
+            StringBuilder res = new StringBuilder();
+            String[] words = s.split(" ");
+            for (String word : words) {
+                res.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase()).append(" ");
+            }
+            return res.toString();
         }
-        return res.toString();
+        return s;
     }
 
     private class ItemHolder extends RecyclerView.ViewHolder {
@@ -218,6 +308,76 @@ public class ReceiptViewActivity extends AppCompatActivity
         @Override
         public void onCancelled(DatabaseError databaseError) {
 
+        }
+    }
+
+    private void modifyItem() {
+        DialogFragment dialog = new ModifyItemFragment();
+        Bundle args = new Bundle();
+        args.putString("itemId", currItemId);
+        dialog.setArguments(args);
+        dialog.show(getSupportFragmentManager(), "ModifyItemFragment");
+    }
+
+    private void addItem() {
+        DialogFragment dialog = new AddItemFragment();
+        Bundle args = new Bundle();
+        args.putString("receiptId", receiptId);
+        dialog.setArguments(args);
+        dialog.show(getSupportFragmentManager(), "AddItemFragment");
+    }
+
+    private void deleteItem() {
+        final Item item = (Item) adapter.getItem(currItemIndex);
+        final DatabaseReference removeItemFromItemList = FirebaseDatabase.getInstance().getReference("items").child(item.getItemId());
+        final DatabaseReference removeItemFromReceipt = FirebaseDatabase.getInstance().getReference("receipts").child(receipt.getReceiptId()).child("items").child(item.getItemId());
+
+        removeItemFromItemList.removeValue();
+        removeItemFromReceipt.removeValue();
+
+        float newPrice = receipt.getPrice() - item.getPrice();
+
+        mDatabaseReference.child("receipts").child(receiptId).child("price").setValue(newPrice, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT);
+                }
+            }
+        });
+
+        Toast.makeText(ReceiptViewActivity.this, item.getDescription() + " deleted", Toast.LENGTH_LONG).show();
+    }
+
+    // create an action bar button
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.add_item) {
+            addItem();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_modify_item:
+                modifyItem();
+                return true;
+            case R.id.menu_delete_item:
+                deleteItem();
+                return true;
+            default:
+                return false;
         }
     }
 }

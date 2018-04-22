@@ -1,11 +1,11 @@
 package project.cs495.splitit;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
 
@@ -37,6 +37,7 @@ public class AssignUserDialogFragment extends DialogFragment {
                     mListener.onDialogSelectUser(AssignUserDialogFragment.this, selectedUser.getUid());
                 }
             });
+
         return builder.create();
     }
 
@@ -61,7 +62,7 @@ public class AssignUserDialogFragment extends DialogFragment {
         try {
             mListener =(AssignUserDialogListener) activity;
         } catch(ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement AssignUserDIalogListener");
+            throw new ClassCastException(activity.toString() + " must implement AssignUserDialogListener");
         }
     }
 

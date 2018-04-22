@@ -44,7 +44,7 @@ public class Item implements EntityInterface {
         setAssignedUser(member);
     }
 
-    public void chageToVenmo(double price) {
+    public void changeToVenmo(double price) {
         return;
     }
 
@@ -54,8 +54,7 @@ public class Item implements EntityInterface {
 
     @Override
     public void commitToDB(DatabaseReference mDatabase) {
-        DatabaseReference itemsRef = mDatabase.child("items");
-        itemsRef.child(this.itemId).setValue(this);
+        mDatabase.child("items").child(this.itemId).setValue(this);
     }
 
     public String getItemId() {

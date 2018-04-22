@@ -16,6 +16,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.GroupOwner;
 
@@ -82,7 +85,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     GroupOwner manager = dataSnapshot.getValue(GroupOwner.class);
-                    Group group = new Group(groupId, gName, manager.getName(), manager.getUid(), null, null);
+                    Group group = new Group(groupId, gName, manager.getUid(),manager.getName(), null, null);
                     group.addMember(manager.getName(),manager.getUid());
                     group.commitToDB(mDatabase);
                     manager.addGroup(groupId);
@@ -118,5 +121,12 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     private void displayMessage(String message){
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public void addGroup(String groupId) {
+        DatabaseReference database = Utils.getDatabaseReference();
+        Map<String, Boolean> group = new HashMap<>();
+        group.put(groupId,true);
+        database.child("users").child(auth.getCurrentUser().getUid()).child("groups").setValue(group);
     }
 }
