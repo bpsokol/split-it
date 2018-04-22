@@ -21,17 +21,19 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import project.cs495.splitit.models.Group;
 
 public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuItemClickListener{
     private static final String TAG = "GroupManageActivity";
+    public static final String EXTRA_GROUP_ID = "project.cs495.splitit.GROUP_ID";
     private FirebaseAuth auth;
     private DatabaseReference database;
     private FirebaseRecyclerAdapter adapter;
     private static int currGroupIndex;
+    private View view;
+    RecyclerView groupList;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.activity_group_manage, container, false);
@@ -39,7 +41,7 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
         auth = FirebaseAuth.getInstance();
         database = Utils.getDatabaseReference();
 
-        final RecyclerView groupList = (RecyclerView) rootView.findViewById(R.id.group_list);
+        groupList = (RecyclerView) rootView.findViewById(R.id.group_list);
         String userID = auth.getCurrentUser().getUid();
         Query query = database.child("groups").orderByChild("memberID/"+userID).equalTo(true);
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Group>()
@@ -53,19 +55,13 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
 
             @Override
             public GroupHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
+                view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.group_list_item, parent, false);
 
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
-                        currGroupIndex = groupList.getChildAdapterPosition(view);
-                        view.setSelected(true);
-                        Log.d(TAG,String.format("%s: %d", "Current Index", currGroupIndex));
-                        Group group = (Group) adapter.getItem(currGroupIndex);
-                        GroupDialog groupDialog = new GroupDialog(rootView.getContext(),group);
-                        groupDialog.show();
+                        modifyGroup();
                     }
                 });
 
@@ -96,6 +92,12 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
         return rootView;
     }
 
+    private Intent buildGroupViewIntent(String groupId) {
+        Intent intent = new Intent(getContext(),GroupViewActivity.class);
+        intent.putExtra(EXTRA_GROUP_ID,groupId);
+        return intent;
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -109,31 +111,31 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
     }
 
     private void deleteGroup() {
-        Group group = (Group) adapter.getItem(currGroupIndex);
-        final DatabaseReference removeGroup = FirebaseDatabase.getInstance().getReference("groups").child(group.getGroupId());
-        if (auth.getCurrentUser().getUid().equals(group.getManagerUID())) {
-            removeGroup.removeValue();
+        Group removedGroup = (Group) adapter.getItem(currGroupIndex);
+        if (auth.getCurrentUser().getUid().equals(removedGroup.getManagerUID())) {
+            database.child("groups").child(removedGroup.getGroupId()).removeValue();
+            database.child("users").child(auth.getCurrentUser().getUid()).child("groups").child(removedGroup.getGroupId()).removeValue();
+            database.child("users").child(auth.getCurrentUser().getUid()).child("groupsOwned").child(removedGroup.getGroupId()).removeValue();
             currGroupIndex = 0;
-            Toast.makeText(getView().getContext(), group.getGroupName() + " deleted", Toast.LENGTH_LONG).show();
+            Toast.makeText(getView().getContext(), removedGroup.getGroupName() + " deleted", Toast.LENGTH_LONG).show();
         }
         else {
             Toast.makeText(getView().getContext(), R.string.not_manager, Toast.LENGTH_LONG).show();
         }
     }
 
-    private void viewGroup() {
-        //TODO: Create a dialog box with each users name, user selection is not necessary
-    }
-
     private void modifyGroup() {
+        groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
+        currGroupIndex = groupList.getChildAdapterPosition(view);
+        view.setSelected(true);
+        Log.d(TAG,String.format("%s: %d", "Current Index", currGroupIndex));
         Group group = (Group) adapter.getItem(currGroupIndex);
-        Intent intent = new Intent(getView().getContext(), GroupModifyActivity.class);
-        startActivity(intent);
-        //TODO: The modify activity still needs to be created
+        final Group modifyGroup = (Group)group;
+        Intent groupViewIntent = new Intent(getContext(),GroupViewActivity.class);
+        getContext().startActivity(groupViewIntent);
+        Intent intent = buildGroupViewIntent(modifyGroup.getGroupId());
+        getContext().startActivity(intent);
     }
-
-    //TODO: Create easy way to add new group members to group
-    //TODO: Figure out how to allow users to find other users and add them to their group
 
     private class GroupHolder extends RecyclerView.ViewHolder {
         private TextView txt;

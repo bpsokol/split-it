@@ -32,8 +32,7 @@ public class MemberAddDialog extends Dialog{
     private EditText email;
     private FirebaseAuth auth;
     private DatabaseReference database;
-    private String memberName;
-    private String memberID;
+    private boolean emailFound;
 
     public MemberAddDialog(Context context, String groupId) {
         super(context);
@@ -69,6 +68,7 @@ public class MemberAddDialog extends Dialog{
         if (isEmpty(mEmail))
             Toast.makeText(getContext(), R.string.adding_empty, Toast.LENGTH_SHORT).show();
         else {
+            emailFound = false;
             mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -84,11 +84,14 @@ public class MemberAddDialog extends Dialog{
                             mDatabase.child("users").child(user.getUid()).child("groups").updateChildren(addGroup);
                             mDatabase.child("groups").child(groupId).child("members").updateChildren(member);
                             mDatabase.child("groups").child(groupId).child("memberID").updateChildren(memberId);
+                            emailFound = true;
                             dismiss();
                             break;
                         }
                     }
                     //Toast.makeText(getContext(), R.string.add_member_error, Toast.LENGTH_SHORT).show();
+                    if (!emailFound)
+                        Toast.makeText(getContext(), R.string.add_member_error, Toast.LENGTH_SHORT).show();
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
