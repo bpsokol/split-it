@@ -43,26 +43,26 @@
 
     <TextView
         android:id="@+id/item_price"
-        android:layout_width="match_parent"
+        android:layout_width="75dp"
         android:layout_height="70dp"
-        android:layout_weight="10"
-        android:gravity="center_vertical|end"
+        android:minEms="7"
+        android:gravity="center"
         android:paddingEnd="15dp"
         android:paddingLeft="0dp"
         android:paddingRight="15dp"
         android:paddingStart="0dp"
+        android:text="$0.00"
         android:textColor="@android:color/holo_green_dark"
         android:textSize="18sp" />
 
     <ImageButton
         android:id="@+id/item_view_options"
         app:srcCompat="@drawable/menu_vertical"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_weight="1"
         android:background="@android:color/transparent"
         android:scaleType="fitCenter" />
 </LinearLayout>
