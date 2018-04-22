@@ -77,4 +77,9 @@
     <string name="view_receipts">View Receipts</string>
     <string name="welcome">Welcome!</string>
     <string name="your_groups">Your Groups</string>
+    <string name="groups_path">groups/</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="add">ADD</string>
+    <string name="add_member_error">Email not found</string>
+    <string name="adding_empty">Please enter an email</string>
 </resources>

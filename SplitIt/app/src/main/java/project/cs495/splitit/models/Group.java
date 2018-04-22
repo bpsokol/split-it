@@ -10,6 +10,7 @@ public class Group implements EntityInterface{
     private String groupName;
     private String managerUID;
     private String managerName;
+    private String email;
     private Map<String, Boolean> members;
     private Map<String, Boolean> memberID;
 
@@ -18,11 +19,12 @@ public class Group implements EntityInterface{
         this.memberID = new HashMap<>();
     }
 
-    public Group(String groupId, String groupName, String managerUID, String managerName, Map<String, Boolean> member, Map<String, Boolean> memberID) {
+    public Group(String groupId, String groupName, String managerUID, String managerName, String email, Map<String, Boolean> member, Map<String, Boolean> memberID) {
         this.groupId = groupId;
         this.groupName = groupName;
         this.managerUID = managerUID;
         this.managerName = managerName;
+        this.email = email;
         if (member != null) {
             this.members = member;
         } else {
@@ -65,6 +67,14 @@ public class Group implements EntityInterface{
 
     public void setManagerName(String managerName) {
         this.managerName = managerName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Map<String, Boolean> getMembers() {

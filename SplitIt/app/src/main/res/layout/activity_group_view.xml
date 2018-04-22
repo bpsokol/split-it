@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GroupModifyActivity">
+    tools:context=".GroupViewActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,7 +20,18 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_group_modify" />
+    <include layout="@layout/content_group_view" />
+
+    <ImageButton
+        android:id="@+id/add_member"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/plus_button_blue" />
 
 
 </android.support.design.widget.CoordinatorLayout>

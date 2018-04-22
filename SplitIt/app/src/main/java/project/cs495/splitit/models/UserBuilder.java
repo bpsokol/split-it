@@ -5,6 +5,7 @@ import java.util.Map;
 public class UserBuilder {
     private String uid;
     private String name;
+    private String email;
     private Map<String, Boolean> groups;
     private Map<String, Boolean> userReceipts;
 
@@ -15,6 +16,11 @@ public class UserBuilder {
 
     public UserBuilder setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public UserBuilder setEmail(String email) {
+        this.email = email;
         return this;
     }
 
@@ -29,6 +35,6 @@ public class UserBuilder {
     }
 
     public User createUser() {
-        return new User(uid, name, groups, userReceipts);
+        return new User(uid, name, email, groups, userReceipts);
     }
 }

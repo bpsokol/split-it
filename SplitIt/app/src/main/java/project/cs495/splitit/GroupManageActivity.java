@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -61,7 +62,10 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
                         groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
                         currGroupIndex = groupList.getChildAdapterPosition(view);
                         view.setSelected(true);
-                        //viewGroup();
+                        Log.d(TAG,String.format("%s: %d", "Current Index", currGroupIndex));
+                        Group group = (Group) adapter.getItem(currGroupIndex);
+                        GroupDialog groupDialog = new GroupDialog(rootView.getContext(),group);
+                        groupDialog.show();
                     }
                 });
 
