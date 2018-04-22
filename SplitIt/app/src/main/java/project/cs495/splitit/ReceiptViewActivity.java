@@ -41,7 +41,7 @@ import project.cs495.splitit.models.ReceiptBuilder;
 import project.cs495.splitit.models.User;
 
 public class ReceiptViewActivity extends AppCompatActivity
-        implements AssignUserDialogFragment.AssignUserDialogListener, PopupMenu.OnMenuItemClickListener{
+        implements AssignUserDialogFragment.AssignUserDialogListener, ModifyItemFragment.ModifyItemFragmentListener, PopupMenu.OnMenuItemClickListener{
     private static final String TAG = "ReceiptViewActivity";
     private DatabaseReference mDatabaseReference;
     private RecyclerView itemRV;
@@ -91,7 +91,7 @@ public class ReceiptViewActivity extends AppCompatActivity
                         currItemId = item.getItemId();
                         Log.d(TAG, "Accessing item with description " + item.getDescription());
                         if (receipt.getCreator().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            showDialog();
+                            showDialogAssignUser();
                         } else {
                             assignToSelf(item);
                         }
@@ -108,6 +108,8 @@ public class ReceiptViewActivity extends AppCompatActivity
                     public void onClick(View view) {
                         itemRV.findViewHolderForAdapterPosition(currItemIndex).itemView.setSelected(false);
                         currItemIndex = itemRV.getChildAdapterPosition(temp);
+                        Item item = (Item) adapter.getItem(currItemIndex);
+                        currItemId = item.getItemId();
                         view.setSelected(true);
                         PopupMenu popup = new PopupMenu(view.getContext(), view);
                         popup.setOnMenuItemClickListener(ReceiptViewActivity.this);
@@ -179,7 +181,29 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
     }
 
-    public void showDialog() {
+    @Override
+    public void onDialogEditItem(DialogFragment dialog, String description, float price) {
+        Log.d(TAG, "edited " + description + price);
+        mDatabaseReference.child("items").child(currItemId).child("description").setValue(description, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        mDatabaseReference.child("items").child(currItemId).child("price").setValue(price, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void showDialogAssignUser() {
         DialogFragment dialog = new AssignUserDialogFragment();
         Bundle args = new Bundle();
         args.putString("receiptId", receiptId);
@@ -254,29 +278,34 @@ public class ReceiptViewActivity extends AppCompatActivity
         }
     }
 
-    private void modifyItem()
-    {
+    private void modifyItem() {
         //TODO: create a dialog with description and price and allow user to input new value or convert textview to edittext and allow user to edit on the same screen inside the item
+        DialogFragment dialog = new ModifyItemFragment();
+        Bundle args = new Bundle();
+        args.putString("itemId", currItemId);
+        dialog.setArguments(args);
+        dialog.show(getFragmentManager(), "ModifyItemFragment");
     }
 
     private void deleteItem() {
         final Item item = (Item) adapter.getItem(currItemIndex);
         final DatabaseReference removeItemFromItemList = FirebaseDatabase.getInstance().getReference("items").child(item.getItemId());
-
-        //TODO: This not accessing element in DB correctly and it is not getting properly deleted
         final DatabaseReference removeItemFromReceipt = FirebaseDatabase.getInstance().getReference("receipts").child(receipt.getReceiptId()).child("items").child(item.getItemId());
 
         removeItemFromItemList.removeValue();
         removeItemFromReceipt.removeValue();
 
-        receipt.setPrice(receipt.getPrice() - item.getPrice());
-        Currency currency = Currency.getInstance(Locale.getDefault());
-        receiptPriceView.setText(String.format("%s: %s%s", getString(R.string.price), currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", receipt.getPrice())));
+        float newPrice = receipt.getPrice() - item.getPrice();
+        //receipt.setPrice(newPrice);
 
-
-        //TODO: Price not updated in DB
-        //final DatabaseReference receiptRef = FirebaseDatabase.getInstance().getReference("receipts").child(receipt.getReceiptId());
-        //receiptRef.setValue((float) receipt.getPrice() - item.getPrice());
+        mDatabaseReference.child("receipts").child(receiptId).child("price").setValue(newPrice, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         Toast.makeText(ReceiptViewActivity.this, item.getDescription() + " deleted", Toast.LENGTH_LONG).show();
     }
@@ -285,7 +314,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_modify_item:
-                //modifyItem();
+                modifyItem();
                 return true;
             case R.id.menu_delete_item:
                 deleteItem();

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -65,21 +66,23 @@ public class SelectGroupDialogFragment extends DialogFragment {
                         String groupId = adapter.getItem(i).getGroupId();
                         mListener.onDialogSelectGroup(SelectGroupDialogFragment.this, groupId);
                     }
+                })
+                .setPositiveButton("Create Group", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent createGroupIntent = new Intent(getActivity(), CreateGroupActivity.class);
+                        getActivity().startActivity(createGroupIntent);
+                    }
                 });
 
-                //No need for these buttons currently (saved for possible future use)
+                //No need for this button currently (saved for possible future use)
                 /*.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mListener.onDialogNegativeClick(SelectGroupDialogFragment.this);
                     }
-                });
-                .setPositiveButton("Add Group", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mListener.onDialogPositiveClick(SelectGroupDialogFragment.this);
-                    }
-                })*/
+                });*/
+
                 return builder.create();
     }
 

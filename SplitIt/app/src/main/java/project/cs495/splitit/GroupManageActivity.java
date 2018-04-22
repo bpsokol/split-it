@@ -109,6 +109,7 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
         final DatabaseReference removeGroup = FirebaseDatabase.getInstance().getReference("groups").child(group.getGroupId());
         if (auth.getCurrentUser().getUid().equals(group.getManagerUID())) {
             removeGroup.removeValue();
+            currGroupIndex = 0;
             Toast.makeText(getView().getContext(), group.getGroupName() + " deleted", Toast.LENGTH_LONG).show();
         }
         else {
