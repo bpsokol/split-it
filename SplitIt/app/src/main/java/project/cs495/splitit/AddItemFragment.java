@@ -42,7 +42,7 @@ public class AddItemFragment extends DialogFragment {
         builder
                 .setView(inflater.inflate(R.layout.edit_item_dialog, null))
                 .setTitle(R.string.add_item)
-                .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.add_item, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Log.d(ModifyItemFragment.class.getSimpleName(), "Accepted");

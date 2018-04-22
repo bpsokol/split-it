@@ -223,7 +223,14 @@ public class ReceiptViewActivity extends AppCompatActivity
         item.commitToDB(mDatabaseReference);
         receipt.addItem(item.getItemId());
         receipt.commitToDB(mDatabaseReference);
-        Toast.makeText(ReceiptViewActivity.this, "Item Added", Toast.LENGTH_SHORT).show();
+        mDatabaseReference.child("receipts").child(receiptId).child("price").setValue(receipt.getPrice() + price, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "Item Added", Toast.LENGTH_SHORT);
+                }
+            }
+        });
     }
 
     public void showDialogAssignUser() {
@@ -334,7 +341,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError == null) {
-                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ReceiptViewActivity.this, "Item Updated", Toast.LENGTH_SHORT);
                 }
             }
         });
