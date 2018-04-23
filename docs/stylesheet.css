@@ -146,8 +146,9 @@ td.narrow {
 
 
 #links {
-    text-align: center;
+    text-align:left;
     color: black;
+    padding-bottom:5px;
 }
 
 a:link, a:visited {
@@ -168,4 +169,41 @@ div.extensions p {
 
 .indent {
     padding-left: 30px;
+}
+
+.aboutcontainer1 {
+    width: 50%;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2%;
+    float: left;
+    text-align: center;
+}
+
+.aboutcontainer1 p {
+    padding: 0 10% 0 10%;
+}
+
+.name {
+    background-color: transparent;
+    color: black;
+}
+
+.center {
+    margin: auto;
+    width: 100%;
+    padding: 10px;
+}
+
+.centeralign {
+    text-align: center;
+    color: black;
+    margin: 0;
+}
+
+.centeralign_top {
+    text-align: center;
+    color: black;
+    margin-bottom: 5px;
 }
