@@ -27,6 +27,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.User;
@@ -203,13 +206,17 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
 
     public void assignManager() {
         User user = (User) adapter.getItem(currGroupIndex);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         if (user.getUid().equals(group.getManagerUID())) {
             Toast.makeText(GroupViewActivity.this, user.getName() + " " + getString(R.string.manager_verify), Toast.LENGTH_SHORT).show();
         }
         else {
             Utils.getDatabaseReference().child("groups").child(groupId).child("managerUID").setValue(user.getUid());
             Utils.getDatabaseReference().child("groups").child(groupId).child("managerName").setValue(user.getName());
-            Utils.getDatabaseReference().child("users").child(user.getUid()).child("groupsOwned").child(groupId).removeValue();
+            Utils.getDatabaseReference().child("users").child(auth.getCurrentUser().getUid()).child("groupsOwned").child(groupId).removeValue();
+            Map<String,Boolean> newGroup = new HashMap<>();
+            newGroup.put(groupId,true);
+            Utils.getDatabaseReference().child("users").child(user.getUid()).child("groupsOwned").setValue(newGroup);
             Toast.makeText(GroupViewActivity.this, user.getName() + " " + getString(R.string.new_manager), Toast.LENGTH_SHORT).show();;
             Utils.getDatabaseReference().child("groups").orderByChild("groupId").equalTo(groupId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
