@@ -20,10 +20,12 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.Item;
@@ -39,7 +41,7 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
     private Group group;
     private ImageButton fab_plus;
     private View view;
-    private static int currGroupIndex;
+    private static int currGroupIndex = 0;
     private String currGroupId;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,20 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         Intent intent = getIntent();
         groupId = intent.getStringExtra(EXTRA_GROUP_ID);
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    group = snapshot.getValue(Group.class);
+                    if (group.getGroupId().equals(groupId))
+                        break;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
         Query query = mDatabase.child("users").orderByChild(getString(R.string.groups_path)+groupId).equalTo(true);
         groupRV = (RecyclerView) findViewById(R.id.group_rv);
         FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
@@ -106,7 +122,7 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
                 openDialog(groupId);
             }
         });
-            }
+    }
 
     public void openDialog(String groupId) {
         MemberAddDialog memberAddDialog = new MemberAddDialog(this,groupId);
@@ -139,15 +155,22 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
     }
 
     private void deleteItem() {
-        Group group = (Group) adapter.getItem(currGroupIndex);
+        User user = (User) adapter.getItem(currGroupIndex);
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        final DatabaseReference removeUserFromGroup = FirebaseDatabase.getInstance().getReference("groups").child(group.getGroupId()).child("members").child(auth.getCurrentUser().getDisplayName());
-        final DatabaseReference removeGroupFromUser = FirebaseDatabase.getInstance().getReference("users").child(auth.getCurrentUser().getUid()).child("groups").child(group.getGroupId());
+        if (auth.getCurrentUser().getUid().equals(group.getManagerUID())) {
+            final DatabaseReference removeUserFromGroup = FirebaseDatabase.getInstance().getReference("groups").child(groupId).child("members").child(user.getName());
+            final DatabaseReference removeUIDFromGroup = FirebaseDatabase.getInstance().getReference("groups").child(groupId).child("memberID").child(user.getUid());
+            final DatabaseReference removeGroupFromUser = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("groups").child(groupId);
 
-        removeUserFromGroup.removeValue();
-        removeGroupFromUser.removeValue();
+            removeUserFromGroup.removeValue();
+            removeUIDFromGroup.removeValue();
+            removeGroupFromUser.removeValue();
 
-        Toast.makeText(GroupViewActivity.this, auth.getCurrentUser().getDisplayName() + " deleted from " + group.getGroupName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(GroupViewActivity.this, user.getName() + " deleted from " + group.getGroupName(), Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(GroupViewActivity.this,R.string.not_group_owner,Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -161,4 +184,3 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         }
     }
 }
-
