@@ -20,10 +20,14 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import project.cs495.splitit.models.Group;
+import project.cs495.splitit.models.User;
 
 public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuItemClickListener{
     private static final String TAG = "GroupManageActivity";
@@ -111,10 +115,22 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
     }
 
     private void deleteGroup() {
-        Group removedGroup = (Group) adapter.getItem(currGroupIndex);
+        final Group removedGroup = (Group) adapter.getItem(currGroupIndex);
         if (auth.getCurrentUser().getUid().equals(removedGroup.getManagerUID())) {
+            Query query = database.child("users").orderByChild(getString(R.string.groups_path)+removedGroup.getGroupId()).equalTo(true);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        database.child("users").child(user.getUid()).child("groups").child(removedGroup.getGroupId()).removeValue();
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
             database.child("groups").child(removedGroup.getGroupId()).removeValue();
-            database.child("users").child(auth.getCurrentUser().getUid()).child("groups").child(removedGroup.getGroupId()).removeValue();
             database.child("users").child(auth.getCurrentUser().getUid()).child("groupsOwned").child(removedGroup.getGroupId()).removeValue();
             currGroupIndex = 0;
             Toast.makeText(getView().getContext(), removedGroup.getGroupName() + " deleted", Toast.LENGTH_LONG).show();

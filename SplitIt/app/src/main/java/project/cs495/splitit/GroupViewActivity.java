@@ -56,18 +56,16 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         Intent intent = getIntent();
         groupId = intent.getStringExtra(EXTRA_GROUP_ID);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("groups").orderByChild("groupId").equalTo(groupId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren())
                     group = snapshot.getValue(Group.class);
-                    if (group.getGroupId().equals(groupId))
-                        break;
-                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
             }
         });
         Query query = mDatabase.child("users").orderByChild(getString(R.string.groups_path)+groupId).equalTo(true);
@@ -205,18 +203,16 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
             Utils.getDatabaseReference().child("groups").child(groupId).child("managerUID").setValue(user.getUid());
             Utils.getDatabaseReference().child("groups").child(groupId).child("managerName").setValue(user.getName());
             Utils.getDatabaseReference().child("users").child(user.getUid()).child("groupsOwned").child(groupId).removeValue();
-            Utils.getDatabaseReference().child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+            Utils.getDatabaseReference().child("groups").orderByChild("groupId").equalTo(groupId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren())
                         group = snapshot.getValue(Group.class);
-                        if (group.getGroupId().equals(groupId))
-                            break;
-                    }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
+
                 }
             });
         }
