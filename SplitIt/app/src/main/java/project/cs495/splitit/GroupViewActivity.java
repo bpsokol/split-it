@@ -40,6 +40,7 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
     private String groupId;
     private Group group;
     private ImageButton fab_plus;
+    private ImageButton fab_leave;
     private View view;
     private static int currGroupIndex;
     private String currGroupId;
@@ -120,14 +121,36 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         fab_plus.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 openDialog(groupId);
+                }
+        });
+
+        fab_leave = (ImageButton) findViewById(R.id.leave_group);
+        fab_leave.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                leaveGroup(groupId);
             }
         });
-            }
+    }
 
     public void openDialog(String groupId) {
         MemberAddDialog memberAddDialog = new MemberAddDialog(this,groupId);
         memberAddDialog.show();
     }
+
+    public void leaveGroup(String groupId) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser().getUid().equals(group.getManagerUID()))
+            Toast.makeText(GroupViewActivity.this, getString(R.string.owner_leave), Toast.LENGTH_SHORT).show();
+        else {
+            Utils.getDatabaseReference().child("groups").child(groupId).child("memberID").child(auth.getCurrentUser().getUid()).removeValue();
+            Utils.getDatabaseReference().child("groups").child(groupId).child("members").child(auth.getCurrentUser().getDisplayName()).removeValue();
+            Utils.getDatabaseReference().child("users").child(auth.getCurrentUser().getUid()).child("groups").child(groupId).removeValue();
+            Intent intent = new Intent(GroupViewActivity.this,MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -169,7 +192,33 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
             Toast.makeText(GroupViewActivity.this, user.getName() + " deleted from " + group.getGroupName(), Toast.LENGTH_LONG).show();
         }
         else {
-            Toast.makeText(GroupViewActivity.this,R.string.not_group_owner,Toast.LENGTH_LONG).show();
+            Toast.makeText(GroupViewActivity.this,getString(R.string.not_group_owner),Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void assignManager() {
+        User user = (User) adapter.getItem(currGroupIndex);
+        if (user.getUid().equals(group.getManagerUID())) {
+            Toast.makeText(GroupViewActivity.this, getString(R.string.manager_verify), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Utils.getDatabaseReference().child("groups").child(groupId).child("managerUID").setValue(user.getUid());
+            Utils.getDatabaseReference().child("groups").child(groupId).child("managerName").setValue(user.getName());
+            Utils.getDatabaseReference().child("users").child(user.getUid()).child("groupsOwned").child(groupId).removeValue();
+            Utils.getDatabaseReference().child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        group = snapshot.getValue(Group.class);
+                        if (group.getGroupId().equals(groupId))
+                            break;
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
         }
     }
 
@@ -178,6 +227,9 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         switch (item.getItemId()) {
             case R.id.delete_group_member:
                 deleteItem();
+                return true;
+            case R.id.assign_manager:
+                assignManager();
                 return true;
             default:
                 return false;

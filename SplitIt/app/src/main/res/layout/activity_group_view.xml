@@ -33,5 +33,16 @@
         android:scaleType="fitXY"
         app:srcCompat="@drawable/plus_button_blue" />
 
+    <ImageButton
+        android:id="@+id/leave_group"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="290dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/delete_button_red" />
+
 
 </android.support.design.widget.CoordinatorLayout>

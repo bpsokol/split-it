@@ -83,4 +83,7 @@
     <string name="add_member_error">Email not found</string>
     <string name="adding_empty">Please enter an email</string>
     <string name="not_group_owner">You are not group owner</string>
+    <string name="owner_leave">Group Owner cannot leave group</string>
+    <string name="assign_manager">Assign Manager</string>
+    <string name="manager_verify">You are already a manager</string>
 </resources>

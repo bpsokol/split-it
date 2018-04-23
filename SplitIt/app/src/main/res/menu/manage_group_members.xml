@@ -4,5 +4,7 @@
     <group android:id="@+id/manage_group_members">
         <item android:id="@+id/delete_group_member"
             android:title="@string/menu_delete" />
+        <item android:id="@+id/assign_manager"
+            android:title="@string/assign_manager" />
     </group>
 </menu>
