@@ -39,7 +39,7 @@ import project.cs495.splitit.models.Receipt;
 public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "ManageReceiptActivity";
     private DatabaseReference database;
-    private static int currReceiptIndex;
+    private static int currReceiptIndex = 0;
     private FirebaseRecyclerAdapter adapter;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

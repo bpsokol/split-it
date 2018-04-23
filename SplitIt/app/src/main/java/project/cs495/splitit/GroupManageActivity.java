@@ -35,7 +35,7 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
     private FirebaseAuth auth;
     private DatabaseReference database;
     private FirebaseRecyclerAdapter adapter;
-    private static int currGroupIndex;
+    private static int currGroupIndex = 0;
     private View view;
     RecyclerView groupList;
 

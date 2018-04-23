@@ -40,9 +40,8 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
     private String groupId;
     private Group group;
     private ImageButton fab_plus;
-    private ImageButton fab_leave;
     private View view;
-    private static int currGroupIndex;
+    private static int currGroupIndex = 0;
     private String currGroupId;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,8 +102,17 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
                         view.setSelected(true);
                         PopupMenu popup = new PopupMenu(view.getContext(), view);
                         popup.setOnMenuItemClickListener(GroupViewActivity.this);
-                        MenuInflater inflater = popup.getMenuInflater();
-                        inflater.inflate(R.menu.manage_group_members, popup.getMenu());
+
+                        FirebaseAuth auth = FirebaseAuth.getInstance();
+                        User user = (User) adapter.getItem(currGroupIndex);
+                        if(auth.getCurrentUser().getUid().equals(user.getUid())) {
+                            MenuInflater inflater = popup.getMenuInflater();
+                            inflater.inflate(R.menu.manage_group_members_manager, popup.getMenu());
+                        }
+                        else {
+                            MenuInflater inflater = popup.getMenuInflater();
+                            inflater.inflate(R.menu.manage_group_members, popup.getMenu());
+                        }
                         popup.show();
                     }
                 });
@@ -119,13 +127,6 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         fab_plus.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 openDialog(groupId);
-                }
-        });
-
-        fab_leave = (ImageButton) findViewById(R.id.leave_group);
-        fab_leave.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                leaveGroup(groupId);
             }
         });
     }
@@ -143,6 +144,7 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
             Utils.getDatabaseReference().child("groups").child(groupId).child("memberID").child(auth.getCurrentUser().getUid()).removeValue();
             Utils.getDatabaseReference().child("groups").child(groupId).child("members").child(auth.getCurrentUser().getDisplayName()).removeValue();
             Utils.getDatabaseReference().child("users").child(auth.getCurrentUser().getUid()).child("groups").child(groupId).removeValue();
+            Toast.makeText(GroupViewActivity.this, getString(R.string.left_group), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(GroupViewActivity.this,MainActivity.class);
             startActivity(intent);
             finish();
@@ -175,10 +177,10 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         }
     }
 
-    private void deleteItem() {
+    private void deleteMember() {
         User user = (User) adapter.getItem(currGroupIndex);
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser().getUid().equals(group.getManagerUID())) {
+        if (auth.getCurrentUser().getUid().equals(group.getManagerUID()) && !auth.getCurrentUser().getUid().equals(user.getUid())) {
             final DatabaseReference removeUserFromGroup = FirebaseDatabase.getInstance().getReference("groups").child(groupId).child("members").child(user.getName());
             final DatabaseReference removeUIDFromGroup = FirebaseDatabase.getInstance().getReference("groups").child(groupId).child("memberID").child(user.getUid());
             final DatabaseReference removeGroupFromUser = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("groups").child(groupId);
@@ -190,19 +192,25 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
             Toast.makeText(GroupViewActivity.this, user.getName() + " deleted from " + group.getGroupName(), Toast.LENGTH_LONG).show();
         }
         else {
-            Toast.makeText(GroupViewActivity.this,getString(R.string.not_group_owner),Toast.LENGTH_LONG).show();
+            if (!auth.getCurrentUser().getUid().equals(group.getManagerUID())) {
+                Toast.makeText(GroupViewActivity.this,getString(R.string.not_group_owner),Toast.LENGTH_LONG).show();
+            }
+            else {
+                Toast.makeText(GroupViewActivity.this,getString(R.string.owner_delete),Toast.LENGTH_LONG).show();
+            }
         }
     }
 
     public void assignManager() {
         User user = (User) adapter.getItem(currGroupIndex);
         if (user.getUid().equals(group.getManagerUID())) {
-            Toast.makeText(GroupViewActivity.this, getString(R.string.manager_verify), Toast.LENGTH_SHORT).show();
+            Toast.makeText(GroupViewActivity.this, user.getName() + " " + getString(R.string.manager_verify), Toast.LENGTH_SHORT).show();
         }
         else {
             Utils.getDatabaseReference().child("groups").child(groupId).child("managerUID").setValue(user.getUid());
             Utils.getDatabaseReference().child("groups").child(groupId).child("managerName").setValue(user.getName());
             Utils.getDatabaseReference().child("users").child(user.getUid()).child("groupsOwned").child(groupId).removeValue();
+            Toast.makeText(GroupViewActivity.this, user.getName() + " " + getString(R.string.new_manager), Toast.LENGTH_SHORT).show();;
             Utils.getDatabaseReference().child("groups").orderByChild("groupId").equalTo(groupId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -222,11 +230,14 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete_group_member:
-                deleteItem();
+                deleteMember();
                 return true;
             case R.id.assign_manager:
                 assignManager();
                 return true;
+            case R.id.leave_group:
+                leaveGroup(groupId);
+            return true;
             default:
                 return false;
         }

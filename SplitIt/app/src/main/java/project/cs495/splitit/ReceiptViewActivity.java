@@ -48,7 +48,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     private String currItemId;
     private TextView receiptPriceView;
     private TextView receiptCreatorView;
-    private static int currItemIndex;
+    private static int currItemIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
