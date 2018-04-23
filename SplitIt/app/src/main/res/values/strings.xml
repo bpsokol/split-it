@@ -31,7 +31,7 @@
     <string name="enter_password">Enter password</string>
     <string name="full_name">Full name</string>
     <string name="group">Group</string>
-    <string name="group_management">Group Management</string>
+    <string name="group_management">Groups</string>
     <string name="group_members">Group Members</string>
     <string name="group_name">Group Name: </string>
     <string name="home">Home</string>
@@ -40,7 +40,7 @@
     <string name="items">items</string>
     <string name="login_button">Login</string>
     <string name="logout">LOGOUT</string>
-    <string name="manage_receipts">Manage Receipts</string>
+    <string name="manage_receipts">Receipts</string>
     <string name="manager_first_name">Your First Name: </string>
     <string name="manager_last_name">Your Last Name: </string>
     <string name="menu_archive">Archive</string>
@@ -83,4 +83,11 @@
     <string name="add_member_error">Email not found</string>
     <string name="adding_empty">Please enter an email</string>
     <string name="not_group_owner">Only the owner of this group can delete users</string>
+    <string name="owner_leave">Group manager cannot leave group</string>
+    <string name="owner_delete">Cannot delete group manager</string>
+    <string name="assign_manager">Make Manager</string>
+    <string name="manager_verify">is already the manager of this group</string>
+    <string name="new_manager">is now the manager of this group</string>
+    <string name="leave_group">Leave Group</string>
+    <string name="left_group">Left Group</string>
 </resources>
