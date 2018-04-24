@@ -1,4 +1,4 @@
-# README #
+# Split-It #
 
 ### Purpose ###
 Split-It is an Android app that will allow users to easily split costs with their friends,
