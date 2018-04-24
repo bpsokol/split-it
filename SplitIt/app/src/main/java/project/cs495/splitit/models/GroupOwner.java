@@ -1,23 +1,35 @@
 package project.cs495.splitit.models;
 
-public class GroupOwner {
-    private String managerUID;
-    private String managerName;
+import java.util.HashMap;
+import java.util.Map;
+
+import project.cs495.splitit.Utils;
+
+public class GroupOwner extends User {
+
+    private Map<String, Boolean> groupsOwned;
 
     public GroupOwner() {
-
+        super();
     }
-
     public GroupOwner(String managerUID, String managerName) {
-        this.managerUID = managerUID;
-        this.managerName = managerName;
+        super(managerUID, managerName);
     }
 
-    public String getManagerUID() {
-        return managerUID;
+    public Map<String, Boolean> getGroupsOwned() {
+        return groupsOwned;
     }
 
-    public String getManagerName() {
-        return managerName;
+    public void setGroupsOwned(Map<String, Boolean> groupsOwned) {
+        this.groupsOwned = groupsOwned;
+    }
+
+    public void addGroupOwned(String groupId) {
+        if (this.groupsOwned == null) {
+            this.groupsOwned = new HashMap<>();
+        }
+        this.groupsOwned.put(groupId, true);
+        Utils.getDatabaseReference().child("users").child(this.getUid())
+                .child("groupsOwned").child(groupId).setValue(true);
     }
 }
