@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Receipt implements EntityInterface {
-    private String receiptId;
+    protected String receiptId;
     private String vendor;
     private String datePurchased;
     private String creator;
