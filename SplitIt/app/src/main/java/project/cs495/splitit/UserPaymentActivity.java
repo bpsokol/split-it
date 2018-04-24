@@ -2,10 +2,13 @@ package project.cs495.splitit;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -15,21 +18,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserPaymentActivity extends Fragment {
     private DatabaseReference database;
-    private ListView listView;
+    private RecyclerView recyclerView;
     private BillAdapter adapter;
 
-    protected View onCreate(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_user_payment, container, false);
         super.onCreate(savedInstanceState);
 
-        listView = (ListView) rootView.findViewById(R.id.bill_listview);
-        final ArrayList<Bill> billList = new ArrayList<>();
-        adapter = new BillAdapter(getView().getContext(),billList);
-        listView.setAdapter(adapter);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.bill_list);
+        final List billList = new ArrayList<>();
+        adapter = new BillAdapter(billList,rootView.getContext());
 
         database = FirebaseDatabase
                 .getInstance()
@@ -41,7 +44,8 @@ public class UserPaymentActivity extends Fragment {
         database.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                billList.add(new Bill(dataSnapshot.child("name").getValue(String.class)
+                adapter.insert(new Bill (
+                        dataSnapshot.child("name").getValue(String.class)
                         ,dataSnapshot.child("email").getValue(String.class)
                         ,dataSnapshot.child("amount").getValue(String.class)));
 
@@ -55,7 +59,10 @@ public class UserPaymentActivity extends Fragment {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                billList.remove(dataSnapshot.getValue(Bill.class));
+                adapter.remove(new Bill (
+                        dataSnapshot.child("name").getValue(String.class)
+                        ,dataSnapshot.child("email").getValue(String.class)
+                        ,dataSnapshot.child("amount").getValue(String.class)));
 
                 adapter.notifyDataSetChanged();
             }
@@ -71,6 +78,13 @@ public class UserPaymentActivity extends Fragment {
             }
         });
 
+        recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        recyclerView.setAdapter(adapter);
+
         return rootView;
+    }
+
+    private void displayMessage(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 }
