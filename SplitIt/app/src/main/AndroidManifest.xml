@@ -84,10 +84,6 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".UserPaymentActivity"
-            android:exported="true">
-        </activity>
-        <activity
             android:name=".GroupModifyActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -96,5 +92,4 @@
                 android:value=".MainActivity" />
         </activity>
     </application>
-
 </manifest>

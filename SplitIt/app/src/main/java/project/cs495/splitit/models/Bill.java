@@ -1,4 +1,4 @@
-package project.cs495.splitit;
+package project.cs495.splitit.models;
 
 
 public class Bill {

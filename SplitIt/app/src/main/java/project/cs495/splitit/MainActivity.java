@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import com.scandit.barcodepicker.ScanditLicense;
 
 import org.jetbrains.annotations.NotNull;
 
+import project.cs495.splitit.models.Bill;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.ReceiptBuilder;
@@ -184,6 +186,7 @@ public class MainActivity extends AppCompatActivity
                                 });
 
                 final AlertDialog alertDialog = builder.create();
+                alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
                 alertDialog.show();
                 alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
