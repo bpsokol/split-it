@@ -1,5 +1,8 @@
 package project.cs495.splitit.models;
 
+import android.support.v7.util.SortedList;
+
+import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.HashMap;
@@ -7,7 +10,7 @@ import java.util.Map;
 
 import project.cs495.splitit.Utils;
 
-public class User implements EntityInterface {
+public class User implements EntityInterface, SortedListAdapter.ViewModel{
     private String uid;
     private String name;
     private String email;
@@ -90,5 +93,23 @@ public class User implements EntityInterface {
         } else {
             this.groups.remove(groupId);
         }
+    }
+
+    @Override
+    public <T> boolean isSameModelAs(T item) {
+        if (item instanceof User) {
+            final User other = (User) item;
+            return other.uid == uid;
+        }
+        return false;
+    }
+
+    @Override
+    public <T> boolean isContentTheSameAs(T item) {
+        if (item instanceof User) {
+            final User other = (User) item;
+            return name != null ? name.equals(other.name) : other.name == null;
+        }
+        return false;
     }
 }

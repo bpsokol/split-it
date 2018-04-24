@@ -240,7 +240,7 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
 
         @Override
         protected memberHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
-            final View itemView = inflater.inflate(R.layout.group_list_item, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.group_list_item, parent, false);
             view.setOnClickListener(view -> {
                 currGroupIndex = groupRV.getChildAdapterPosition(view);
                 User member = (User) adapter.getItem(currGroupIndex);
@@ -268,7 +268,7 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
                 }
                 popup.show();
             });
-            return new memberHolder(itemView);
+            return new memberHolder(view);
         }
     }
 
