@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
     private String selectedGroupIdForReceipt;
     private ImageButton fab_plus;
     private ImageButton fab_scan_receipt;
-    private ImageButton fab_add_group;
+    private ImageButton fab_add_bill;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity
 
         fab_plus = (ImageButton) findViewById(R.id.plus_button);
         fab_scan_receipt = (ImageButton) findViewById(R.id.scan_receipt);
-        fab_add_group = (ImageButton) findViewById(R.id.add_bill_button);
+        fab_add_bill = (ImageButton) findViewById(R.id.add_bill_button);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity
 
         final Context context = this;
 
-        fab_add_group.setOnClickListener(new View.OnClickListener() {
+        fab_add_bill.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LayoutInflater li = LayoutInflater.from(context);
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity
                             alertDialog.show();
                         }
                         else {
-                            addBillToDatabase(newName, newEmail, "$" + newAmount);
+                            addBillToDatabase(newName, newEmail, newAmount);
                             alertDialog.dismiss();
                         }
                     }
@@ -440,20 +440,21 @@ public class MainActivity extends AppCompatActivity
             case 0:
                 fab_scan_receipt.setVisibility(View.VISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
-                fab_add_group.setVisibility(View.INVISIBLE);
+                fab_add_bill.setVisibility(View.INVISIBLE);
                 break;
             case 1:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.VISIBLE);
-                fab_add_group.setVisibility(View.INVISIBLE);
+                fab_add_bill.setVisibility(View.INVISIBLE);
                 break;
             case 2:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
-                fab_add_group.setVisibility(View.VISIBLE);
+                fab_add_bill.setVisibility(View.VISIBLE);
             default:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
+                fab_add_bill.setVisibility(View.VISIBLE);
                 break;
         }
     }
