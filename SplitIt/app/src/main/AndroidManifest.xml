@@ -84,7 +84,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".GroupModifyActivity"
+            android:name=".GroupViewActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

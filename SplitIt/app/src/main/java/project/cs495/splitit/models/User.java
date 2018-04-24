@@ -10,6 +10,7 @@ import project.cs495.splitit.Utils;
 public class User implements EntityInterface {
     private String uid;
     private String name;
+    private String email;
     private Map<String, Boolean> groups;
     private Map<String, Boolean> userReceipts;
 
@@ -17,14 +18,15 @@ public class User implements EntityInterface {
 
     }
 
-    public User(String uid, String name) {
+    public User(String uid, String name, String email) {
         this.uid = uid;
         this.name = name;
     }
 
-    public User(String uid, String name, Map<String, Boolean> groups, Map<String, Boolean> userReceipts) {
+    public User(String uid, String name, String email, Map<String, Boolean> groups, Map<String, Boolean> userReceipts) {
         this.uid = uid;
         this.name = name;
+        this.email = email;
         this.groups = groups;
         this.userReceipts = userReceipts;
     }
@@ -48,6 +50,14 @@ public class User implements EntityInterface {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Map<String, Boolean> getGroups() {
