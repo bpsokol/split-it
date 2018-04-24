@@ -408,12 +408,15 @@ public class ReceiptViewActivity extends AppCompatActivity
         mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                float totalPrice = 0;
                 for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
                     Item item = itemSnapshot.getValue(Item.class);
                     if (item.getAssignedUser() != null && item.getAssignedUser().equals(userId)) {
                         userReceipt.addItem(item.getItemId());
+                        totalPrice += item.getPrice();
                     }
                 }
+                userReceipt.setPrice(totalPrice);
                 userReceipt.commitToDB(mDatabaseReference);
                 Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
             }
