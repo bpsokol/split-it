@@ -3,7 +3,7 @@
     <!-- menu group -->
     <group android:id="@+id/manage_group_members">
         <item android:id="@+id/delete_group_member"
-            android:title="@string/menu_delete" />
+            android:title="@string/menu_remove" />
         <item android:id="@+id/leave_group"
             android:title="@string/leave_group" />
     </group>

@@ -90,4 +90,5 @@
     <string name="new_manager">is now the manager of this group</string>
     <string name="leave_group">Leave Group</string>
     <string name="left_group">Left Group</string>
+    <string name="menu_remove">Remove</string>
 </resources>

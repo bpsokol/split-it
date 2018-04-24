@@ -76,7 +76,6 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
                 menu_options.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
                         currGroupIndex = groupList.getChildAdapterPosition(temp);
                         view.setSelected(true);
                         PopupMenu popup = new PopupMenu(getView().getContext(), view);
@@ -141,14 +140,11 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
     }
 
     private void modifyGroup() {
-        groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
         currGroupIndex = groupList.getChildAdapterPosition(view);
         view.setSelected(true);
         Log.d(TAG,String.format("%s: %d", "Current Index", currGroupIndex));
         Group group = (Group) adapter.getItem(currGroupIndex);
         final Group modifyGroup = (Group)group;
-        Intent groupViewIntent = new Intent(getContext(),GroupViewActivity.class);
-        getContext().startActivity(groupViewIntent);
         Intent intent = buildGroupViewIntent(modifyGroup.getGroupId());
         getContext().startActivity(intent);
     }
