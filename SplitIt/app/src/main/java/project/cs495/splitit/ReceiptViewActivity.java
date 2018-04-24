@@ -399,7 +399,6 @@ public class ReceiptViewActivity extends AppCompatActivity
                 .setReceiptId(receiptId)
                 .setCreator(receipt.getCreator())
                 .setDatePurchased(receipt.getDatePurchased())
-                .setPrice(receipt.getPrice())
                 .setVendor(receipt.getVendor());
         final UserReceipt userReceipt = userReceiptBuilder.setUserId(userId)
                 .createReceipt();
@@ -408,15 +407,18 @@ public class ReceiptViewActivity extends AppCompatActivity
         mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                float totalPrice = 0;
+                float subtotal = 0;
                 for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
                     Item item = itemSnapshot.getValue(Item.class);
                     if (item.getAssignedUser() != null && item.getAssignedUser().equals(userId)) {
                         userReceipt.addItem(item.getItemId());
-                        totalPrice += item.getPrice();
+                        subtotal += item.getPrice();
                     }
                 }
-                userReceipt.setPrice(totalPrice);
+                userReceipt.setSubtotal(subtotal);
+                float percentOfSubtotal = subtotal / receipt.getSubtotal();
+                userReceipt.setTax(receipt.getTax() * percentOfSubtotal);
+                userReceipt.setPrice(subtotal + userReceipt.getTax());
                 userReceipt.commitToDB(mDatabaseReference);
                 Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
             }

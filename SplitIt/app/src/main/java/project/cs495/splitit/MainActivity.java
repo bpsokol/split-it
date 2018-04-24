@@ -280,6 +280,8 @@ public class MainActivity extends AppCompatActivity
                 .setVendor(brScanResults.merchantName().value() == null ? "Unknown" : brScanResults.merchantName().value())
                 .setDatePurchased(brScanResults.receiptDate().value())
                 .setPrice(brScanResults.total().value())
+                .setSubtotal(brScanResults.subtotal().value())
+                .setTax(brScanResults.taxes().value())
                 .setItems(null)
                 .createReceipt();
         for (Product product : brScanResults.products()) {

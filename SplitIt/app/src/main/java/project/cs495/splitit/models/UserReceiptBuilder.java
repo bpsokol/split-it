@@ -18,6 +18,6 @@ public class UserReceiptBuilder extends ReceiptBuilder {
     }
 
     public UserReceipt createReceipt() {
-        return new UserReceipt(super.receiptId, super.creator, super.vendor, super.datePurchased, super.price, super.items, super.groupId, userId);
+        return new UserReceipt(super.receiptId, super.creator, super.vendor, super.datePurchased, super.price, super.subtotal, super.tax, super.items, super.groupId, userId);
     }
 }
