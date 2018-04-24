@@ -70,7 +70,7 @@ public class SigninActivity extends AppCompatActivity {
 
     private void updateUseInDB() {
         final FirebaseUser firebaseUser = auth.getCurrentUser();
-        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference database = Utils.getDatabaseReference();
         database.child("users").child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -11,17 +11,20 @@ public class Receipt implements EntityInterface {
     private String datePurchased;
     private String creator;
     private float price;
+    private String groupId;
     private Map<String, Boolean> items;
 
     public Receipt() {
         this.items = new HashMap<>();
     }
 
-    public Receipt(String receiptId, String vendor, String datePurchased, float price, Map<String, Boolean> items) {
+    public Receipt(String receiptId, String creator, String vendor, String datePurchased, float price, Map<String, Boolean> items, String groupId) {
         this.receiptId = receiptId;
+        this.creator = creator;
         this.vendor = vendor;
         this.datePurchased = datePurchased;
         this.price = price;
+        this.groupId = groupId;
         if (items != null) {
             this.items = items;
         } else {
@@ -88,5 +91,13 @@ public class Receipt implements EntityInterface {
 
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }
