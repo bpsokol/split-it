@@ -3,6 +3,7 @@ package project.cs495.splitit;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -13,11 +14,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +42,7 @@ import com.scandit.barcodepicker.ScanditLicense;
 
 import org.jetbrains.annotations.NotNull;
 
+import project.cs495.splitit.models.Bill;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.ReceiptBuilder;
@@ -54,6 +60,7 @@ public class MainActivity extends AppCompatActivity
     private String selectedGroupIdForReceipt;
     private ImageButton fab_plus;
     private ImageButton fab_scan_receipt;
+    private ImageButton fab_add_group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +109,7 @@ public class MainActivity extends AppCompatActivity
 
         fab_plus = (ImageButton) findViewById(R.id.plus_button);
         fab_scan_receipt = (ImageButton) findViewById(R.id.scan_receipt);
+        fab_add_group = (ImageButton) findViewById(R.id.add_bill_button);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -143,6 +151,82 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+        final Context context = this;
+
+        fab_add_group.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater li = LayoutInflater.from(context);
+                View billPrompt = li.inflate(R.layout.add_bill_prompt,null);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                builder.setView(billPrompt);
+
+                final EditText nameText = (EditText) billPrompt.findViewById(R.id.input_manager_name);
+                final EditText emailText = (EditText) billPrompt.findViewById(R.id.input_manager_email);
+                final EditText amountText = (EditText) billPrompt.findViewById(R.id.input_cost);
+
+                builder
+                        .setCancelable(false)
+                        .setPositiveButton("Save",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                final AlertDialog alertDialog = builder.create();
+                alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+                alertDialog.show();
+                alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String newName = nameText.getText().toString();
+                        String newEmail = emailText.getText().toString();
+                        String newAmount = amountText.getText().toString();
+
+                        if (isEmpty(newName)) {
+                            displayMessage("Enter a name");
+                            alertDialog.show();
+                        }
+                        else if (isEmpty(newEmail)) {
+                            displayMessage("Enter an email address");
+                            alertDialog.show();
+                        }
+                        else if (isEmpty(newAmount)) {
+                            displayMessage("Enter an amount owed");
+                            alertDialog.show();
+                        }
+                        else {
+                            addBillToDatabase(newName, newEmail, "$" + newAmount);
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void addBillToDatabase (String name, String email, String amount) {
+        DatabaseReference ref = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("bills").push();
+        Bill newBill = new Bill(name, email, amount);
+        ref.setValue(newBill);
     }
 
     private void assignGroup() {
@@ -225,6 +309,7 @@ public class MainActivity extends AppCompatActivity
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
     private void scanReceipt() {
         ScanOptions scanOptions = ScanOptions.newBuilder()
                 .retailer( Retailer.UNKNOWN )
@@ -246,11 +331,13 @@ public class MainActivity extends AppCompatActivity
     private boolean isUserLogin(){
          return auth.getCurrentUser() != null;
     }
+
     private void signOut(){
         Intent signOutIntent = new Intent(this, SigninActivity.class);
         startActivity(signOutIntent);
         finish();
     }
+
     private void displayMessage(String message){
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
@@ -273,7 +360,6 @@ public class MainActivity extends AppCompatActivity
         Intent accountSetingsIntent = new Intent(MainActivity.this,ReauthenticateActivity.class);
         startActivity(accountSetingsIntent);
     }
-
 
     //Tabbed activity implementation
     /**
@@ -334,6 +420,9 @@ public class MainActivity extends AppCompatActivity
                 case 1:
                     GroupManageActivity tab2 = new GroupManageActivity();
                     return tab2;
+                case 2:
+                    UserPaymentActivity tab3 = new UserPaymentActivity();
+                    return tab3;
                 default:
                     return null;
             }
@@ -342,7 +431,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public int getCount() {
             // Show 2 total pages. Must match number of items or app will crash on hitting null
-            return 2;
+            return 3;
         }
     }
 
@@ -351,16 +440,28 @@ public class MainActivity extends AppCompatActivity
             case 0:
                 fab_scan_receipt.setVisibility(View.VISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
+                fab_add_group.setVisibility(View.INVISIBLE);
                 break;
             case 1:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.VISIBLE);
+                fab_add_group.setVisibility(View.INVISIBLE);
                 break;
-
+            case 2:
+                fab_scan_receipt.setVisibility(View.INVISIBLE);
+                fab_plus.setVisibility(View.INVISIBLE);
+                fab_add_group.setVisibility(View.VISIBLE);
             default:
-                fab_scan_receipt.setVisibility(View.VISIBLE);
+                fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
                 break;
         }
+    }
+
+    private boolean isEmpty(String str) {
+        if (str == null || str.trim().length() == 0)
+            return true;
+        else
+            return false;
     }
 }
