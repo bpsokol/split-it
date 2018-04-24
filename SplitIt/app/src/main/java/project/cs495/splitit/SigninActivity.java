@@ -78,6 +78,7 @@ public class SigninActivity extends AppCompatActivity {
                     User user = new UserBuilder()
                             .setUid(firebaseUser.getUid())
                             .setName(firebaseUser.getDisplayName())
+                            .setEmail(firebaseUser.getEmail())
                             .createUser();
                     user.commitToDB(database);
                 }
