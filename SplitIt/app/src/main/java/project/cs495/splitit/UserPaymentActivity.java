@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.wallet.PaymentsClient;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +32,8 @@ public class UserPaymentActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_user_payment, container, false);
         super.onCreate(savedInstanceState);
+
+
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.bill_list);
         final List billList = new ArrayList<>();
@@ -84,7 +89,4 @@ public class UserPaymentActivity extends Fragment {
         return rootView;
     }
 
-    private void displayMessage(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-    }
 }
