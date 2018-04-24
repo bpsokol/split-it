@@ -3,6 +3,7 @@ package project.cs495.splitit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,6 +37,8 @@ import java.util.Locale;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.User;
+import project.cs495.splitit.models.UserReceipt;
+import project.cs495.splitit.models.UserReceiptBuilder;
 
 public class ReceiptViewActivity extends AppCompatActivity
         implements AssignUserDialogFragment.AssignUserDialogListener, ModifyItemFragment.ModifyItemFragmentListener, AddItemFragment.AddItemFragmentListener, PopupMenu.OnMenuItemClickListener{
@@ -52,15 +55,15 @@ public class ReceiptViewActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_receipt_view);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle(R.string.receipt);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_receipt_view);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.receipt);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            Intent intent = getIntent();
-            receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
+        Intent intent = getIntent();
+        receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
 
         mDatabaseReference = Utils.getDatabaseReference();
         Query query = mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true);
@@ -122,6 +125,8 @@ public class ReceiptViewActivity extends AppCompatActivity
         itemRV.setAdapter(adapter);
         itemRV.setLayoutManager(new LinearLayoutManager(this));
 
+        setupFab();
+
         receiptPriceView = findViewById(R.id.receipt_price);
         receiptCreatorView = findViewById(R.id.receipt_creator);
         Utils.getDatabaseReference().child(getString(R.string.receipts_path)+receiptId).addValueEventListener(new ValueEventListener() {
@@ -140,6 +145,27 @@ public class ReceiptViewActivity extends AppCompatActivity
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "loadReceipt:onCancelled", databaseError.toException());
+            }
+        });
+    }
+
+    private void setupFab() {
+        final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.addFab);
+        itemRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && addFab.getVisibility() == View.VISIBLE) {
+                    addFab.hide();
+                } else if (dy < 0 && addFab.getVisibility() != View.VISIBLE) {
+                    addFab.show();
+                }
+            }
+        });
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addItem();
             }
         });
     }
@@ -352,7 +378,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     // create an action bar button
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add, menu);
+        getMenuInflater().inflate(R.menu.user_receipt, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -361,10 +387,45 @@ public class ReceiptViewActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.add_item) {
-            addItem();
+        if (id == R.id.create_user_receipt) {
+            createUserReceipt();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createUserReceipt() {
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        UserReceiptBuilder userReceiptBuilder = (UserReceiptBuilder) new UserReceiptBuilder()
+                .setReceiptId(receiptId)
+                .setCreator(receipt.getCreator())
+                .setDatePurchased(receipt.getDatePurchased())
+                .setPrice(receipt.getPrice())
+                .setVendor(receipt.getVendor());
+        final UserReceipt userReceipt = userReceiptBuilder.setUserId(userId)
+                .createReceipt();
+
+
+        mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float totalPrice = 0;
+                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                    Item item = itemSnapshot.getValue(Item.class);
+                    if (item.getAssignedUser() != null && item.getAssignedUser().equals(userId)) {
+                        userReceipt.addItem(item.getItemId());
+                        totalPrice += item.getPrice();
+                    }
+                }
+                userReceipt.setPrice(totalPrice);
+                userReceipt.commitToDB(mDatabaseReference);
+                Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
