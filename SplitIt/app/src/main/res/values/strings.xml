@@ -77,4 +77,5 @@
     <string name="view_receipts">View Receipts</string>
     <string name="welcome">Welcome!</string>
     <string name="your_groups">Your Groups</string>
+    <string name="empty_field_warning">Please fill out all fields</string>
 </resources>
