@@ -18,15 +18,12 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
     <TextView
-        android:id="@+id/pay_bill_text"
-        android:layout_width="88dp"
+        android:id="@+id/manager_email"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:layout_alignStart="@+id/pay_bill"
+        android:layout_alignStart="@+id/manager_name"
         android:layout_below="@+id/manager_name"
-        android:gravity="center"
-        android:text="Pay Bill"
-        android:textSize="12sp" />
+        android:text="TextView" />
 
     <Button
         android:id="@+id/pay_bill"
@@ -41,13 +38,15 @@
         android:text="Button" />
 
     <TextView
-        android:id="@+id/manager_email"
-        android:layout_width="wrap_content"
+        android:id="@+id/pay_bill_text"
+        android:layout_width="88dp"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/manager_name"
+        android:layout_marginTop="6dp"
+        android:layout_alignStart="@+id/pay_bill"
+        android:layout_alignEnd="@+id/pay_bill"
         android:layout_below="@+id/manager_name"
-        android:text="TextView" />
-
-
+        android:gravity="center"
+        android:text="Pay Bill"
+        android:textSize="12sp" />
 
 </RelativeLayout>
