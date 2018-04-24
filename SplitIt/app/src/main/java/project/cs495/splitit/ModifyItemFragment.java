@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +53,8 @@ public class ModifyItemFragment extends DialogFragment {
                 }
             });
         dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
         itemDescription = dialog.findViewById(R.id.edit_item_description);
         itemPrice = dialog.findViewById(R.id.edit_item_price);
 
