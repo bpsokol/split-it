@@ -3,7 +3,6 @@ package project.cs495.splitit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,14 +32,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.User;
-import project.cs495.splitit.models.UserReceipt;
-import project.cs495.splitit.models.UserReceiptBuilder;
 
 public class ReceiptViewActivity extends AppCompatActivity
         implements AssignUserDialogFragment.AssignUserDialogListener, ModifyItemFragment.ModifyItemFragmentListener, AddItemFragment.AddItemFragmentListener, PopupMenu.OnMenuItemClickListener{
@@ -51,19 +52,20 @@ public class ReceiptViewActivity extends AppCompatActivity
     private String currItemId;
     private TextView receiptPriceView;
     private TextView receiptCreatorView;
-    private static int currItemIndex = 0;
+    private static int currItemIndex;
+    private ArrayList<String> billKeys = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_receipt_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.receipt);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_receipt_view);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(R.string.receipt);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
+            Intent intent = getIntent();
+            receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
 
         mDatabaseReference = Utils.getDatabaseReference();
         Query query = mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true);
@@ -125,8 +127,6 @@ public class ReceiptViewActivity extends AppCompatActivity
         itemRV.setAdapter(adapter);
         itemRV.setLayoutManager(new LinearLayoutManager(this));
 
-        setupFab();
-
         receiptPriceView = findViewById(R.id.receipt_price);
         receiptCreatorView = findViewById(R.id.receipt_creator);
         Utils.getDatabaseReference().child(getString(R.string.receipts_path)+receiptId).addValueEventListener(new ValueEventListener() {
@@ -145,27 +145,6 @@ public class ReceiptViewActivity extends AppCompatActivity
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "loadReceipt:onCancelled", databaseError.toException());
-            }
-        });
-    }
-
-    private void setupFab() {
-        final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.addFab);
-        itemRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0 && addFab.getVisibility() == View.VISIBLE) {
-                    addFab.hide();
-                } else if (dy < 0 && addFab.getVisibility() != View.VISIBLE) {
-                    addFab.show();
-                }
-            }
-        });
-        addFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addItem();
             }
         });
     }
@@ -199,9 +178,44 @@ public class ReceiptViewActivity extends AppCompatActivity
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError == null) {
                     Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
+                    //updateBill();
+                    updateBillList("Logan Skinner");
+                    //System.out.println(billKeys);
                 }
             }
         });
+    }
+
+    public void updateBillList(final String name){
+        //billKeys.clear();
+        final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currentUserId);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        for (DataSnapshot bills: snapshot.child("bills").getChildren()) {
+                            String nameFound = bills.child("name").getValue(String.class);
+                            //System.out.println("Name Found = " + nameFound);
+                            //System.out.println("Name = " + name);
+                            billKeys.add(nameFound);
+                            display();
+                            }
+                        }
+                    }
+                }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void display(){
+        System.out.println(billKeys);
     }
 
     @Override
@@ -378,7 +392,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     // create an action bar button
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.user_receipt, menu);
+        getMenuInflater().inflate(R.menu.add, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -387,45 +401,10 @@ public class ReceiptViewActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.create_user_receipt) {
-            createUserReceipt();
+        if (id == R.id.add_item) {
+            addItem();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void createUserReceipt() {
-        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        UserReceiptBuilder userReceiptBuilder = (UserReceiptBuilder) new UserReceiptBuilder()
-                .setReceiptId(receiptId)
-                .setCreator(receipt.getCreator())
-                .setDatePurchased(receipt.getDatePurchased())
-                .setPrice(receipt.getPrice())
-                .setVendor(receipt.getVendor());
-        final UserReceipt userReceipt = userReceiptBuilder.setUserId(userId)
-                .createReceipt();
-
-
-        mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                float totalPrice = 0;
-                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
-                    Item item = itemSnapshot.getValue(Item.class);
-                    if (item.getAssignedUser() != null && item.getAssignedUser().equals(userId)) {
-                        userReceipt.addItem(item.getItemId());
-                        totalPrice += item.getPrice();
-                    }
-                }
-                userReceipt.setPrice(totalPrice);
-                userReceipt.commitToDB(mDatabaseReference);
-                Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
