@@ -33,8 +33,6 @@ public class UserPaymentActivity extends Fragment {
         View rootView = inflater.inflate(R.layout.activity_user_payment, container, false);
         super.onCreate(savedInstanceState);
 
-
-
         recyclerView = (RecyclerView) rootView.findViewById(R.id.bill_list);
         final List billList = new ArrayList<>();
         adapter = new BillAdapter(billList,rootView.getContext());

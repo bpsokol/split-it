@@ -1,5 +1,6 @@
 package project.cs495.splitit;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
 import com.google.android.gms.wallet.CardRequirements;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
 import com.google.android.gms.wallet.PaymentDataRequest;
@@ -55,7 +57,7 @@ public class BillAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final Bill bill = (Bill) list.get(position);
 
         ((MyViewHolder) holder).name.setText(bill.getName());
@@ -65,7 +67,15 @@ public class BillAdapter extends RecyclerView.Adapter {
         ((MyViewHolder) holder).pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Google pay
+                PaymentDataRequest request = createPaymentDataRequest(bill.getAmount());
+                if (request != null) {
+                    AutoResolveHelper.resolveTask(
+                            mPaymentsClient.loadPaymentData(request),
+                            (Activity) context,
+                            // LOAD_PAYMENT_DATA_REQUEST_CODE is a constant value
+                            // you define.
+                            0);
+                }
             }
         });
     }
@@ -131,13 +141,13 @@ public class BillAdapter extends RecyclerView.Adapter {
                 });
     }
 
-    private PaymentDataRequest createPaymentDataRequest() {
+    private PaymentDataRequest createPaymentDataRequest(String price) {
         PaymentDataRequest.Builder request =
                 PaymentDataRequest.newBuilder()
                         .setTransactionInfo(
                                 TransactionInfo.newBuilder()
                                         .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                                        .setTotalPrice("10.00")
+                                        .setTotalPrice(price)
                                         .setCurrencyCode("USD")
                                         .build())
                         .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
