@@ -179,7 +179,7 @@ public class ReceiptViewActivity extends AppCompatActivity
                 if (databaseError == null) {
                     Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
                     //updateBill();
-                    updateBillList("Logan Skinner");
+                    updateBillList("test");
                     //System.out.println(billKeys);
                 }
             }

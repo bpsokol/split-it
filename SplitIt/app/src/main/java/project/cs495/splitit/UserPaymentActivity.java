@@ -47,7 +47,8 @@ public class UserPaymentActivity extends Fragment {
                 adapter.insert(new Bill (
                         dataSnapshot.child("name").getValue(String.class)
                         ,dataSnapshot.child("email").getValue(String.class)
-                        ,dataSnapshot.child("amount").getValue(String.class)));
+                        ,dataSnapshot.child("amount").getValue(String.class)
+                        ,dataSnapshot.child("uid").getValue(String.class)));
 
                 adapter.notifyDataSetChanged();
             }
@@ -62,7 +63,8 @@ public class UserPaymentActivity extends Fragment {
                 adapter.remove(new Bill (
                         dataSnapshot.child("name").getValue(String.class)
                         ,dataSnapshot.child("email").getValue(String.class)
-                        ,dataSnapshot.child("amount").getValue(String.class)));
+                        ,dataSnapshot.child("amount").getValue(String.class)
+                        ,dataSnapshot.child("uid").getValue(String.class)));
 
                 adapter.notifyDataSetChanged();
             }
