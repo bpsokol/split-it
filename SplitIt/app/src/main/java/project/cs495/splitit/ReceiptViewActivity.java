@@ -3,6 +3,7 @@ package project.cs495.splitit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -136,6 +137,8 @@ public class ReceiptViewActivity extends AppCompatActivity
         itemRV.setAdapter(adapter);
         itemRV.setLayoutManager(new LinearLayoutManager(this));
 
+        setupFab();
+
         receiptPriceView = findViewById(R.id.receipt_price);
         receiptCreatorView = findViewById(R.id.receipt_creator);
         Utils.getDatabaseReference().child(getString(R.string.receipts_path)+receiptId).addValueEventListener(new ValueEventListener() {
@@ -154,6 +157,27 @@ public class ReceiptViewActivity extends AppCompatActivity
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "loadReceipt:onCancelled", databaseError.toException());
+            }
+        });
+    }
+
+    private void setupFab() {
+        final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.addFab);
+        itemRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && addFab.getVisibility() == View.VISIBLE) {
+                    addFab.hide();
+                } else if (dy < 0 && addFab.getVisibility() != View.VISIBLE) {
+                    addFab.show();
+                }
+            }
+        });
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addItem();
             }
         });
     }
