@@ -28,12 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.microblink.EdgeDetectionConfiguration;
 import com.microblink.FrameCharacteristics;
 import com.microblink.IntentUtils;
@@ -65,8 +61,6 @@ public class MainActivity extends AppCompatActivity
     private ImageButton fab_plus;
     private ImageButton fab_scan_receipt;
     private ImageButton fab_add_group;
-    private DatabaseReference mDatabaseReference;
-    private String uidFromEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,7 +209,7 @@ public class MainActivity extends AppCompatActivity
                             alertDialog.show();
                         }
                         else {
-                            createBillForDatabase(newName, newEmail, "$" + newAmount);
+                            addBillToDatabase(newName, newEmail, "$" + newAmount);
                             alertDialog.dismiss();
                         }
                     }
@@ -224,36 +218,15 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void addBillToDatabase (String name, String email, String amount, String uid) {
+    private void addBillToDatabase (String name, String email, String amount) {
         DatabaseReference ref = FirebaseDatabase
                 .getInstance()
                 .getReference()
                 .child("users")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child("bills").push();
-        Bill newBill = new Bill(name, email, amount, uid);
+        Bill newBill = new Bill(name, email, amount);
         ref.setValue(newBill);
-    }
-
-    private void createBillForDatabase(final String name, final String email, final String amount){
-        mDatabaseReference = Utils.getDatabaseReference();
-        Query query = mDatabaseReference.child("users").orderByChild("email").equalTo(email);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-                        String uid = snapshot.getKey();
-                        System.out.println(uid);
-                        addBillToDatabase(name, email, amount, uid);
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private void assignGroup() {
