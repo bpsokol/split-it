@@ -284,6 +284,7 @@ public class MainActivity extends AppCompatActivity
                 .setTax(brScanResults.taxes() != null ? brScanResults.taxes().value() : 0)
                 .setItems(null)
                 .createReceipt();
+        float subTotal = 0;
         for (Product product : brScanResults.products()) {
             String itemId = database.child("items").push().getKey();
             Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(), (int) product.quantity().value(), product.unitPrice().value());
