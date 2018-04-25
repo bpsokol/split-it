@@ -3,6 +3,7 @@ package project.cs495.splitit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -92,6 +93,18 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
 
         groupList.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         groupList.setAdapter(adapter);
+        final FloatingActionButton addFab = ((ViewGroup) container.getParent()).findViewById(R.id.plus_button);
+        groupList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && addFab.getVisibility() == View.VISIBLE) {
+                    addFab.hide();
+                } else if (dy < 0 && addFab.getVisibility() != View.VISIBLE) {
+                    addFab.show();
+                }
+            }
+        });
         return rootView;
     }
 
