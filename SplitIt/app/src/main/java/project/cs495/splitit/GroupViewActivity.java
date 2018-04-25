@@ -45,7 +45,9 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
     public static final String EXTRA_GROUP_ID = "project.cs495.splitit.GROUP_ID";
     private DatabaseReference mDatabase;
     private RecyclerView groupRV;
+    private RecyclerView memberRV;
     private MemberAdapter adapter;
+    private FirebaseRecyclerAdapter mAdapter;
     private String groupId;
     private Group group;
     private ImageButton fab_plus;
@@ -79,27 +81,26 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         });
         Query query = mDatabase.child("users").orderByChild(getString(R.string.groups_path)+groupId).equalTo(true);
         groupRV = (RecyclerView) findViewById(R.id.group_rv);
-        /*FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
+        memberRV = (RecyclerView) findViewById(R.id.group_rv);
+        FirebaseRecyclerOptions<User> cards = new FirebaseRecyclerOptions.Builder<User>()
                 .setQuery(query, User.class)
-                .build();*/
+                .build();
 
-
-        adapter = new MemberAdapter(this,alphabeticalComparator);
-        groupRV.setAdapter(adapter);
-        /*adapter = new FirebaseRecyclerAdapter<User, memberHolder>(options) {
+        memberRV.setAdapter(mAdapter);
+        mAdapter = new FirebaseRecyclerAdapter<User, regularHolder>(cards) {
             @Override
-            protected void onBindViewHolder(@NonNull memberHolder holder, int position, @NonNull User model) {
-                holder.performBind(model);
+            protected void onBindViewHolder(@NonNull regularHolder holder, int position, @NonNull User model) {
+                holder.bindData(model);
             }
 
             @Override
-            public memberHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public regularHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.group_list_item,parent,false);
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         currGroupIndex = groupRV.getChildAdapterPosition(view);
-                        User member = (User) adapter.getItem(currGroupIndex);
+                        User member = (User) mAdapter.getItem(currGroupIndex);
                     }
                 });
 
@@ -130,12 +131,9 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
                     }
                 });
 
-                return new memberHolder(view);
+                return new regularHolder(view);
             }
-        };*/
-        groupRV.setAdapter(adapter);
-        groupRV.setLayoutManager(new LinearLayoutManager(this));
-
+        };
         options = new ArrayList<>();
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -150,9 +148,10 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
 
             }
         });
-        adapter.edit()
-                .add(options)
-                .commit();
+
+        memberRV.setAdapter(mAdapter);
+        memberRV.setLayoutManager(new LinearLayoutManager(this));
+
         fab_plus = (ImageButton) findViewById(R.id.add_member);
         fab_plus.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -200,7 +199,13 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
-
+        groupRV.setAdapter(adapter);
+        adapter = new MemberAdapter(this,alphabeticalComparator);
+        adapter.edit()
+                .add(options)
+                .commit();
+        groupRV.setAdapter(adapter);
+        groupRV.setLayoutManager(new LinearLayoutManager(this));
         return true;
     }
 
@@ -286,6 +291,18 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         }
     }
 
+    private class regularHolder extends RecyclerView.ViewHolder {
+        private TextView memberName;
+
+        regularHolder (View view) {
+            super(view);
+            memberName = (TextView) view.findViewById(R.id.txt);
+        }
+
+        public void bindData(final User user) {
+            memberName.setText(user.getName());
+        }
+    }
     private void deleteMember() {
         User user = (User) adapter.getItem(currGroupIndex);
         FirebaseAuth auth = FirebaseAuth.getInstance();
