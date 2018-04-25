@@ -51,7 +51,12 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
         createAdapter(receiptRV);
         receiptRV.setAdapter(adapter);
         receiptRV.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-        final FloatingActionButton add_receipt_fab = (FloatingActionButton) ((ViewGroup) container.getParent()).findViewById(R.id.scan_receipt);
+        setFabHideOnScroll(container, receiptRV);
+        return rootView;
+    }
+
+    private void setFabHideOnScroll(ViewGroup container, RecyclerView receiptRV) {
+        final FloatingActionButton add_receipt_fab = ((ViewGroup) container.getParent()).findViewById(R.id.scan_receipt);
         receiptRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -64,7 +69,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
 
             }
         });
-        return rootView;
     }
 
     private void createAdapter(final RecyclerView receiptRV) {
