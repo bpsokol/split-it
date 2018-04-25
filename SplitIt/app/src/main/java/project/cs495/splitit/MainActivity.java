@@ -280,6 +280,8 @@ public class MainActivity extends AppCompatActivity
                 .setVendor(brScanResults.merchantName().value() == null ? "Unknown" : brScanResults.merchantName().value())
                 .setDatePurchased(brScanResults.receiptDate().value())
                 .setPrice(brScanResults.total().value())
+                .setSubtotal(brScanResults.subtotal() != null ? brScanResults.subtotal().value(): 0)
+                .setTax(brScanResults.taxes() != null ? brScanResults.taxes().value() : 0)
                 .setItems(null)
                 .createReceipt();
         for (Product product : brScanResults.products()) {
@@ -288,7 +290,9 @@ public class MainActivity extends AppCompatActivity
             item.addReceiptId(receiptId);
             item.commitToDB(database);
             receipt.addItem(item.getItemId());
+            subTotal += item.getPrice();
         }
+        if (receipt.getTax() == 0) receipt.setTax(receipt.getPrice() - subTotal);
         receipt.commitToDB(database);
         return receiptId;
     }
