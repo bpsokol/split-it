@@ -211,8 +211,6 @@ public class ReceiptViewActivity extends AppCompatActivity
                 if (databaseError == null) {
                     Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
                     clearAllBillData();
-                    //System.out.println("CURR USER ID: " + userId);
-                    //System.out.println("PREV USER ID: " + prevUserId);
                     if(!userId.equals(prevUserId))
                         updateBillList(userId, prevUserId, currentUserId);
                 }
@@ -233,7 +231,6 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
     //get data from each bill list (current user bills, previous assignees bills and new assignees bills)
     public void updateBillList(final String currUID, final String prevUID, final String currentUserId){
-        //billKeys.clear();
         mDatabaseReference = Utils.getDatabaseReference();
         Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currUID);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -245,7 +242,6 @@ public class ReceiptViewActivity extends AppCompatActivity
                             String uidFound = bills.child("uid").getValue(String.class);
                             String billAmountFound = bills.child("amount").getValue(String.class);
                             String billId = bills.getKey();
-                            //System.out.println("BILL KEY FOUND: " + uidFound);
                             billKeys.add(uidFound);
                             billAmounts.add(billAmountFound);
                             billIds.add(billId);
@@ -313,11 +309,9 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     public void updateUserBill(final String currentUserId, final String currUID, final float price, final String prevUID){
-        //System.out.println(billKeys);
         //item is being assigned to receipt owner but was assigned to a different user
         //need to update prev user bill (decrease amount owed to currentUserId)
         if(prevUID!=null && currentUserId.equals(currUID)){
-            //System.out.println("update prev user bill");
             int index = prevBillKeys.indexOf(currentUserId);
             float origAmount = Float.parseFloat(prevBillAmounts.get(index));
             String currBillId = prevBillIds.get(index);
@@ -333,13 +327,11 @@ public class ReceiptViewActivity extends AppCompatActivity
         }
         // assigning unassigned item to self --> no bills need to be updated
         else if(prevUID==null && currentUserId.equals(currUID)){
-            //System.out.println("do nothing");
         }
         // item is being assigned to a user who is not the receipt owner
         else {
             // billKeys are UIDs of bills in assignee's bill list
             //we must increment currUID and decrement prevUID bill amounts for currentUserId
-            //System.out.println("BILL KEYS:" + billKeys);
             if(billKeys.contains(currentUserId) && prevUID!=null && !currentUserId.equals(prevUID)){
                 int index = prevBillKeys.indexOf(currentUserId);
                 float origAmount = Float.parseFloat(prevBillAmounts.get(index));
@@ -356,13 +348,10 @@ public class ReceiptViewActivity extends AppCompatActivity
             }
             // when the user who has been assigned an item already has a bill for the current user, increment that bill
             if(billKeys.contains(currentUserId)){
-                //System.out.println(" assignee has a bill owed to current user ");
-                //System.out.println("CURR PRICE IS " + price);
                 int index = billKeys.indexOf(currentUserId);
                 float origAmount = Float.parseFloat(billAmounts.get(index));
                 String currBillId = billIds.get(index);
                 String newAmount = Float.toString(origAmount + price);
-                //System.out.println("ORIG AMOUNT = " + origAmount + " ADD AMOUNT = " + price);
                 mDatabaseReference.child("users").child(currUID).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -374,7 +363,6 @@ public class ReceiptViewActivity extends AppCompatActivity
             }
             // when the user who has been assigned an item does not have a bill for the current user, create a bill
             else {
-                //System.out.println(" need bill to be created for currentUserId ");
                 mDatabaseReference = Utils.getDatabaseReference();
                 Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currentUserId);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -429,8 +417,6 @@ public class ReceiptViewActivity extends AppCompatActivity
         // when the user who has been assigned an item already has a bill for the current user, increment that bill
         System.out.println("CURR USER BILLS: " + currUserBillKeys);
         if(currUserBillKeys.contains(currUID) && !currentUserId.equals(currUID)){
-            //System.out.println(" assignee has a bill owed to current user ");
-            //System.out.println("CURR PRICE IS " + price);
             System.out.println("YES");
             int index = currUserBillKeys.indexOf(currUID);
             float origAmount = Float.parseFloat(currUserBillAmounts.get(index));
@@ -484,7 +470,6 @@ public class ReceiptViewActivity extends AppCompatActivity
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     uid = snapshot.child("uid").getValue(String.class);
                 }
-                //updateUserBill(currentUserId, currUID, price);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -570,7 +555,6 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        //private TextView itemCode;
         private TextView itemDescription;
         private TextView itemPrice;
         private TextView itemAssignee;
