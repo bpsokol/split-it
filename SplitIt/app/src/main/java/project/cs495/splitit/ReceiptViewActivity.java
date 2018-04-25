@@ -54,6 +54,8 @@ public class ReceiptViewActivity extends AppCompatActivity
     private TextView receiptCreatorView;
     private static int currItemIndex;
     private ArrayList<String> billKeys = new ArrayList<String>();
+    private ArrayList<String> billAmounts = new ArrayList<String>();
+    private ArrayList<String> billIds = new ArrayList<String>();
     private String currPrice;
 
     @Override
@@ -180,6 +182,8 @@ public class ReceiptViewActivity extends AppCompatActivity
                 if (databaseError == null) {
                     Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
                     billKeys.clear();
+                    billAmounts.clear();
+                    billIds.clear();
                     updateBillList(userId);
                 }
             }
@@ -198,10 +202,14 @@ public class ReceiptViewActivity extends AppCompatActivity
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()){
                         for (DataSnapshot bills: snapshot.child("bills").getChildren()) {
                             String uidFound = bills.child("uid").getValue(String.class);
+                            String billAmountFound = bills.child("amount").getValue(String.class);
+                            String billId = bills.getKey();
                             billKeys.add(uidFound);
+                            billAmounts.add(billAmountFound);
+                            billIds.add(billId);
                             }
                         }
-                    updateUserBill(currentUserId);
+                    updateUserBill(currentUserId, currUID);
                     }
                 }
 
@@ -212,13 +220,26 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
     }
 
-    public void updateUserBill(String currentUserId){
+    public void updateUserBill(String currentUserId, String currUID){
         System.out.println(billKeys);
         // when the user who has been assigned an item already has a bill for the current user, increment that bill
         if(billKeys.contains(currentUserId)){
             System.out.println(" assignee has a bill owed to current user ");
             System.out.println("CURR PRICE IS " + currPrice);
-
+            int index = billKeys.indexOf(currentUserId);
+            float origAmount = Float.parseFloat(billAmounts.get(index));
+            String currBillId = billIds.get(index);
+            float addAmount = Float.parseFloat(currPrice.replace("$",""));
+            String newAmount = Float.toString(origAmount + addAmount);
+            System.out.println("ORIG AMOUNT = " + origAmount + " ADD AMOUNT = " + addAmount);
+            mDatabaseReference.child("users").child(currUID).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
         // when the user who has been assigned an item does not have a bill for the current user, create a bill
         else {
