@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity
             receipt.addItem(item.getItemId());
             subTotal += item.getPrice();
         }
-        if (receipt.getTax() == 0) receipt.setTax((receipt.getPrice() / subTotal) - 1);
+        if (receipt.getTax() == 0) receipt.setTax(receipt.getPrice() - subTotal);
         receipt.commitToDB(database);
         return receiptId;
     }

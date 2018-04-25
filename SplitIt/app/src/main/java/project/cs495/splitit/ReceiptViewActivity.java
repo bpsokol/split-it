@@ -420,7 +420,8 @@ public class ReceiptViewActivity extends AppCompatActivity
                 if (masterReceiptSubtotal == 0) {
                     masterReceiptSubtotal = receipt.getPrice();
                 }
-                userReceipt.setTax(receipt.getTax());
+                float percentOfSubtotal = subtotal / masterReceiptSubtotal;
+                userReceipt.setTax(masterReceiptTax * percentOfSubtotal);
                 userReceipt.setPrice(subtotal + userReceipt.getTax());
                 userReceipt.commitToDB(mDatabaseReference);
                 Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
