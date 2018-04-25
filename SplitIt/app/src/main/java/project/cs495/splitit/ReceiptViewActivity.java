@@ -416,8 +416,13 @@ public class ReceiptViewActivity extends AppCompatActivity
                     }
                 }
                 userReceipt.setSubtotal(subtotal);
-                float percentOfSubtotal = subtotal / receipt.getSubtotal();
-                userReceipt.setTax(receipt.getTax() * percentOfSubtotal);
+                float masterReceiptSubtotal = receipt.getSubtotal();
+                float masterReceiptTax = receipt.getTax();
+                if (masterReceiptSubtotal == 0) {
+                    masterReceiptSubtotal = receipt.getPrice();
+                }
+                float percentOfSubtotal = subtotal / masterReceiptSubtotal;
+                userReceipt.setTax(masterReceiptTax * percentOfSubtotal);
                 userReceipt.setPrice(subtotal + userReceipt.getTax());
                 userReceipt.commitToDB(mDatabaseReference);
                 Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
