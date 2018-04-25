@@ -41,6 +41,6 @@ public class Bill {
 
     public void setUid(String uid) { this.uid = uid; }
 
-    public String getUid(String uid) { return uid; }
+    public String getUid() { return uid; }
 
 }

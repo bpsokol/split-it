@@ -54,6 +54,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     private TextView receiptCreatorView;
     private static int currItemIndex;
     private ArrayList<String> billKeys = new ArrayList<String>();
+    private String currPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +179,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError == null) {
                     Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
+                    billKeys.clear();
                     updateBillList(userId);
                 }
             }
@@ -215,10 +217,12 @@ public class ReceiptViewActivity extends AppCompatActivity
         // when the user who has been assigned an item already has a bill for the current user, increment that bill
         if(billKeys.contains(currentUserId)){
             System.out.println(" assignee has a bill owed to current user ");
+            System.out.println("CURR PRICE IS " + currPrice);
+
         }
         // when the user who has been assigned an item does not have a bill for the current user, create a bill
         else {
-
+            System.out.println(" need bill must be created ");
         }
     }
 
@@ -320,6 +324,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             //uses the default locale of the user
             Currency currency = Currency.getInstance(Locale.getDefault());
             itemPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice())));
+            currPrice = String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice()));
 
             //Displays assigned user
             if (item.getAssignedUser() != null) {
