@@ -171,39 +171,35 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDialogSelectUser(DialogFragment dialog, String userId) {
+    public void onDialogSelectUser(DialogFragment dialog, final String userId) {
         Log.d(TAG, "selected " + userId);
         mDatabaseReference.child("items").child(currItemId).child("assignedUser").setValue(userId, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError == null) {
                     Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
-                    //updateBill();
-                    updateBillList("test");
-                    //System.out.println(billKeys);
+                    updateBillList(userId);
                 }
             }
         });
     }
 
-    public void updateBillList(final String name){
+    public void updateBillList(final String currUID){
         //billKeys.clear();
         final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mDatabaseReference = Utils.getDatabaseReference();
-        Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currentUserId);
+        Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currUID);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()){
                         for (DataSnapshot bills: snapshot.child("bills").getChildren()) {
-                            String nameFound = bills.child("name").getValue(String.class);
-                            //System.out.println("Name Found = " + nameFound);
-                            //System.out.println("Name = " + name);
-                            billKeys.add(nameFound);
-                            display();
+                            String uidFound = bills.child("uid").getValue(String.class);
+                            billKeys.add(uidFound);
                             }
                         }
+                    updateUserBill(currentUserId);
                     }
                 }
 
@@ -214,8 +210,16 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
     }
 
-    public void display(){
+    public void updateUserBill(String currentUserId){
         System.out.println(billKeys);
+        // when the user who has been assigned an item already has a bill for the current user, increment that bill
+        if(billKeys.contains(currentUserId)){
+            System.out.println(" assignee has a bill owed to current user ");
+        }
+        // when the user who has been assigned an item does not have a bill for the current user, create a bill
+        else {
+
+        }
     }
 
     @Override
