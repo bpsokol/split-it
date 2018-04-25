@@ -453,14 +453,11 @@ public class ReceiptViewActivity extends AppCompatActivity
             });
         }
         // when the user who has been assigned an item already has a bill for the current user, increment that bill
-        System.out.println("CURR USER BILLS: " + currUserBillKeys);
         if(currUserBillKeys.contains(currUID) && !currentUserId.equals(currUID)){
-            System.out.println("YES");
             int index = currUserBillKeys.indexOf(currUID);
             float origAmount = Float.parseFloat(currUserBillAmounts.get(index));
             String currBillId = currUserBillIds.get(index);
             String newAmount = Float.toString(origAmount - price);
-            System.out.println("ORIG AMOUNT = " + origAmount + " ADD AMOUNT = " + price);
             mDatabaseReference.child("users").child(currentUserId).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -469,10 +466,6 @@ public class ReceiptViewActivity extends AppCompatActivity
                     }
                 }
             });
-        }
-        // when the user who has been assigned an item does not have a bill for the current user, create a bill
-        else {
-            System.out.println(" need bill to be created ");
         }
     }
     // get the price of the item that is being assigned to add to bill

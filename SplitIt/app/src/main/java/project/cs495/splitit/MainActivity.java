@@ -243,7 +243,6 @@ public class MainActivity extends AppCompatActivity
                 if (dataSnapshot.exists()){
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()){
                         String uid = snapshot.getKey();
-                        System.out.println(uid);
                         addBillToDatabase(name, email, amount, uid);
                     }
                 }
