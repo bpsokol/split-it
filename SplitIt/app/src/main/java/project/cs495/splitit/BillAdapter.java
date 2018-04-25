@@ -23,9 +23,7 @@ import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
 import java.util.Arrays;
-import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
 
 import project.cs495.splitit.models.Bill;
 
@@ -61,11 +59,10 @@ public class BillAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final Bill bill = (Bill) list.get(position);
-        Currency currency = Currency.getInstance(Locale.getDefault());
 
         ((MyViewHolder) holder).name.setText(bill.getName());
         ((MyViewHolder) holder).email.setText(bill.getEmail());
-        ((MyViewHolder) holder).pay.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", bill.getAmount())));
+        ((MyViewHolder) holder).pay.setText('$' + bill.getAmount());
 
         ((MyViewHolder) holder).pay.setOnClickListener(new View.OnClickListener() {
             @Override
