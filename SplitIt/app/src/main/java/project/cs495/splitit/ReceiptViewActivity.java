@@ -106,7 +106,6 @@ public class ReceiptViewActivity extends AppCompatActivity
                 menu_options.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        itemRV.findViewHolderForAdapterPosition(currItemIndex).itemView.setSelected(false);
                         currItemIndex = itemRV.getChildAdapterPosition(temp);
                         Item item = (Item) adapter.getItem(currItemIndex);
                         currItemId = item.getItemId();
@@ -421,8 +420,7 @@ public class ReceiptViewActivity extends AppCompatActivity
                 if (masterReceiptSubtotal == 0) {
                     masterReceiptSubtotal = receipt.getPrice();
                 }
-                float percentOfSubtotal = subtotal / masterReceiptSubtotal;
-                userReceipt.setTax(masterReceiptTax * percentOfSubtotal);
+                userReceipt.setTax(receipt.getTax());
                 userReceipt.setPrice(subtotal + userReceipt.getTax());
                 userReceipt.commitToDB(mDatabaseReference);
                 Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);

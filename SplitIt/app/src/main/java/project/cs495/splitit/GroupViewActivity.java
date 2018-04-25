@@ -100,7 +100,6 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
                 menu_options.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        groupRV.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
                         currGroupIndex = groupRV.getChildAdapterPosition(temp);
                         view.setSelected(true);
                         PopupMenu popup = new PopupMenu(view.getContext(), view);

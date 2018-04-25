@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity
     private ImageButton fab_plus;
     private ImageButton fab_scan_receipt;
     private ImageButton fab_add_group;
+    private float subTotal = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,7 +291,9 @@ public class MainActivity extends AppCompatActivity
             item.addReceiptId(receiptId);
             item.commitToDB(database);
             receipt.addItem(item.getItemId());
+            subTotal += item.getPrice();
         }
+        if (receipt.getTax() == 0) receipt.setTax((receipt.getPrice() / subTotal) - 1);
         receipt.commitToDB(database);
         return receiptId;
     }
