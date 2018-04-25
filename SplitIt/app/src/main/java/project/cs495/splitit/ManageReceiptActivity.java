@@ -3,6 +3,7 @@ package project.cs495.splitit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -50,6 +51,19 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
         createAdapter(receiptRV);
         receiptRV.setAdapter(adapter);
         receiptRV.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        final FloatingActionButton add_receipt_fab = (FloatingActionButton) ((ViewGroup) container.getParent()).findViewById(R.id.scan_receipt);
+        receiptRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && add_receipt_fab.getVisibility() == View.VISIBLE) {
+                    add_receipt_fab.hide();
+                } else if (dy < 0 && add_receipt_fab.getVisibility() != View.VISIBLE) {
+                    add_receipt_fab.show();
+                }
+
+            }
+        });
         return rootView;
     }
 
@@ -203,7 +217,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    receiptRV.findViewHolderForAdapterPosition(currReceiptIndex).itemView.setSelected(false);
                     currReceiptIndex = receiptRV.getChildAdapterPosition(view);
                     view.setSelected(true);
                     viewReceipt();
@@ -217,7 +230,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
             menu_options.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    receiptRV.findViewHolderForAdapterPosition(currReceiptIndex).itemView.setSelected(false);
                     currReceiptIndex = receiptRV.getChildAdapterPosition(temp);
                     view.setSelected(true);
                     PopupMenu popup = new PopupMenu(getView().getContext(), view);

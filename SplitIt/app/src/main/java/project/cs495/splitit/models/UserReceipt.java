@@ -11,8 +11,8 @@ public class UserReceipt extends Receipt {
         super();
     }
 
-    public UserReceipt(String receiptId, String creator, String vendor, String datePurchased, float price, Map<String, Boolean> items, String groupId, String userId) {
-        super(receiptId, creator, vendor, datePurchased, price, items, groupId);
+    public UserReceipt(String receiptId, String creator, String vendor, String datePurchased, float price, float subtotal, float tax, Map<String, Boolean> items, String groupId, String userId) {
+        super(receiptId, creator, vendor, datePurchased, price, subtotal, tax, items, groupId);
         this.userId = userId;
     }
 
