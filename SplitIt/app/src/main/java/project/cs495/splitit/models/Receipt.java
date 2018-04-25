@@ -11,6 +11,8 @@ public class Receipt implements EntityInterface {
     private String datePurchased;
     private String creator;
     private float price;
+    private float subtotal;
+    private float tax;
     private String groupId;
     private Map<String, Boolean> items;
 
@@ -18,12 +20,14 @@ public class Receipt implements EntityInterface {
         this.items = new HashMap<>();
     }
 
-    public Receipt(String receiptId, String creator, String vendor, String datePurchased, float price, Map<String, Boolean> items, String groupId) {
+    public Receipt(String receiptId, String creator, String vendor, String datePurchased, float price, float subtotal, float tax, Map<String, Boolean> items, String groupId) {
         this.receiptId = receiptId;
         this.creator = creator;
         this.vendor = vendor;
         this.datePurchased = datePurchased;
         this.price = price;
+        this.subtotal = subtotal;
+        this.tax = tax;
         this.groupId = groupId;
         if (items != null) {
             this.items = items;
@@ -75,6 +79,22 @@ public class Receipt implements EntityInterface {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public float getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(float subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public float getTax() {
+        return tax;
+    }
+
+    public void setTax(float tax) {
+        this.tax = tax;
     }
 
     public Map<String, Boolean> getItems() {

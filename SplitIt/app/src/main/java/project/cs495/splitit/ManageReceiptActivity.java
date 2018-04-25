@@ -189,9 +189,19 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
             case R.id.manage_menu_archive_receipt:
                 archiveReceipt();
                 return true;
+            case R.id.manage_menu_show_user_receipt:
+                viewUserReceipt();
+                return true;
             default:
                 return false;
         }
+    }
+
+    private void viewUserReceipt() {
+        Receipt receipt = (Receipt) adapter.getItem(currReceiptIndex);
+        Intent intent = new Intent(getContext(), UserReceiptViewActivity.class);
+        intent.putExtra(MainActivity.EXTRA_RECEIPT_ID, receipt.getReceiptId());
+        startActivity(intent);
     }
 
     private class ReceiptAdapter extends RecyclerView.Adapter<ReceiptHolder>{
@@ -217,7 +227,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    receiptRV.findViewHolderForAdapterPosition(currReceiptIndex).itemView.setSelected(false);
                     currReceiptIndex = receiptRV.getChildAdapterPosition(view);
                     view.setSelected(true);
                     viewReceipt();
@@ -231,7 +240,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
             menu_options.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    receiptRV.findViewHolderForAdapterPosition(currReceiptIndex).itemView.setSelected(false);
                     currReceiptIndex = receiptRV.getChildAdapterPosition(temp);
                     view.setSelected(true);
                     PopupMenu popup = new PopupMenu(getView().getContext(), view);
