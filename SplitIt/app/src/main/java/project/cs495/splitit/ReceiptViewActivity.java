@@ -56,7 +56,6 @@ public class ReceiptViewActivity extends AppCompatActivity
     private ArrayList<String> billKeys = new ArrayList<String>();
     private ArrayList<String> billAmounts = new ArrayList<String>();
     private ArrayList<String> billIds = new ArrayList<String>();
-    //private String currPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,8 +173,30 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDialogSelectUser(DialogFragment dialog, final String userId) {
+    public void onDialogSelectUser(final DialogFragment dialog, final String userId) {
+        final Item selectedItem = (Item) adapter.getItem(currItemIndex);
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("items").orderByChild("itemId").equalTo(selectedItem.getItemId());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uid = "";
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    uid = snapshot.child("assignedUser").getValue(String.class);
+                }
+                onDialogSelectUserResponse(dialog, userId, uid);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void onDialogSelectUserResponse(DialogFragment dialog, final String userId, final String prevUserId){
         Log.d(TAG, "selected " + userId);
+        mDatabaseReference = Utils.getDatabaseReference();
         mDatabaseReference.child("items").child(currItemId).child("assignedUser").setValue(userId, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -184,11 +205,15 @@ public class ReceiptViewActivity extends AppCompatActivity
                     billKeys.clear();
                     billAmounts.clear();
                     billIds.clear();
-                    updateBillList(userId);
+                    System.out.println("CURR USER ID: " + userId);
+                    System.out.println("PREV USER ID: " + prevUserId);
+                    if(!userId.equals(prevUserId))
+                        updateBillList(userId);
                 }
             }
         });
     }
+
 
     public void updateBillList(final String currUID){
         //billKeys.clear();
@@ -224,13 +249,13 @@ public class ReceiptViewActivity extends AppCompatActivity
         System.out.println(billKeys);
         // when the user who has been assigned an item already has a bill for the current user, increment that bill
         if(billKeys.contains(currentUserId)){
-            System.out.println(" assignee has a bill owed to current user ");
-            System.out.println("CURR PRICE IS " + price);
+            //System.out.println(" assignee has a bill owed to current user ");
+            //System.out.println("CURR PRICE IS " + price);
             int index = billKeys.indexOf(currentUserId);
             float origAmount = Float.parseFloat(billAmounts.get(index));
             String currBillId = billIds.get(index);
             String newAmount = Float.toString(origAmount + price);
-            System.out.println("ORIG AMOUNT = " + origAmount + " ADD AMOUNT = " + price);
+            //System.out.println("ORIG AMOUNT = " + origAmount + " ADD AMOUNT = " + price);
             mDatabaseReference.child("users").child(currUID).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -258,6 +283,26 @@ public class ReceiptViewActivity extends AppCompatActivity
                     price = snapshot.child("price").getValue(Float.class);
                 }
                 updateUserBill(currentUserId, currUID, price);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getCurrentAssignee(){
+        final Item selectedItem = (Item) adapter.getItem(currItemIndex);
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("items").orderByChild("itemId").equalTo(selectedItem.getItemId());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uid = "";
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    uid = snapshot.child("uid").getValue(String.class);
+                }
+                //updateUserBill(currentUserId, currUID, price);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -364,7 +409,6 @@ public class ReceiptViewActivity extends AppCompatActivity
             //uses the default locale of the user
             Currency currency = Currency.getInstance(Locale.getDefault());
             itemPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice())));
-            //currPrice = String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice()));
 
             //Displays assigned user
             if (item.getAssignedUser() != null) {
