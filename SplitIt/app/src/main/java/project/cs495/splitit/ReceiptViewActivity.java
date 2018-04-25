@@ -117,6 +117,7 @@ public class ReceiptViewActivity extends AppCompatActivity
                 menu_options.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        itemRV.findViewHolderForAdapterPosition(currItemIndex).itemView.setSelected(false);
                         currItemIndex = itemRV.getChildAdapterPosition(temp);
                         Item item = (Item) adapter.getItem(currItemIndex);
                         currItemId = item.getItemId();
@@ -158,28 +159,6 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     private ValueEventListener setCreatorNameDisplay() {
-    private void setupFab() {
-        final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.addFab);
-        itemRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0 && addFab.getVisibility() == View.VISIBLE) {
-                    addFab.hide();
-                } else if (dy < 0 && addFab.getVisibility() != View.VISIBLE) {
-                    addFab.show();
-                }
-            }
-        });
-        addFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addItem();
-            }
-        });
-    }
-
-    public ValueEventListener setCreatorNameDisplay() {
         return mDatabaseReference.child("users").child(receipt.getCreator()).addValueEventListener(new CreatorValueEventListener());
     }
 
@@ -334,7 +313,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     public void updateUserBill(final String currentUserId, final String currUID, final float price, final String prevUID){
-        System.out.println(billKeys);
+        //System.out.println(billKeys);
         //item is being assigned to receipt owner but was assigned to a different user
         //need to update prev user bill (decrease amount owed to currentUserId)
         if(prevUID!=null && currentUserId.equals(currUID)){
@@ -395,7 +374,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             }
             // when the user who has been assigned an item does not have a bill for the current user, create a bill
             else {
-                System.out.println(" need bill to be created for currentUserId ");
+                //System.out.println(" need bill to be created for currentUserId ");
                 mDatabaseReference = Utils.getDatabaseReference();
                 Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currentUserId);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -633,7 +612,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         }
     }
 
-    public class CreatorValueEventListener implements ValueEventListener {
+    private class CreatorValueEventListener implements ValueEventListener {
 
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -701,52 +680,6 @@ public class ReceiptViewActivity extends AppCompatActivity
             addItem();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void createUserReceipt() {
-        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        UserReceiptBuilder userReceiptBuilder = (UserReceiptBuilder) new UserReceiptBuilder()
-                .setReceiptId(receiptId)
-                .setCreator(receipt.getCreator())
-                .setDatePurchased(receipt.getDatePurchased())
-                .setVendor(receipt.getVendor());
-        final UserReceipt userReceipt = userReceiptBuilder.setUserId(userId)
-                .createReceipt();
-
-
-        mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                float subtotal = 0;
-                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
-                    Item item = itemSnapshot.getValue(Item.class);
-                    if (item.getAssignedUser() != null && item.getAssignedUser().equals(userId)) {
-                        userReceipt.addItem(item.getItemId());
-                        subtotal += item.getPrice();
-                    }
-                }
-                userReceipt.setSubtotal(subtotal);
-                float masterReceiptSubtotal = receipt.getSubtotal();
-                float masterReceiptTax = receipt.getTax();
-                if (masterReceiptSubtotal == 0) {
-                    masterReceiptSubtotal = receipt.getPrice();
-                }
-                float percentOfSubtotal = subtotal / masterReceiptSubtotal;
-                userReceipt.setTax(masterReceiptTax * percentOfSubtotal);
-                userReceipt.setPrice(subtotal + userReceipt.getTax());
-                userReceipt.commitToDB(mDatabaseReference);
-                Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
-
-                Intent intent = new Intent(ReceiptViewActivity.this, UserReceiptViewActivity.class);
-                intent.putExtra(MainActivity.EXTRA_RECEIPT_ID, userReceipt.getReceiptId());
-                startActivity(intent);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
