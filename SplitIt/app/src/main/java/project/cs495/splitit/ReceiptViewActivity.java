@@ -210,8 +210,8 @@ public class ReceiptViewActivity extends AppCompatActivity
                 if (databaseError == null) {
                     Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
                     clearAllBillData();
-                    System.out.println("CURR USER ID: " + userId);
-                    System.out.println("PREV USER ID: " + prevUserId);
+                    //System.out.println("CURR USER ID: " + userId);
+                    //System.out.println("PREV USER ID: " + prevUserId);
                     if(!userId.equals(prevUserId))
                         updateBillList(userId, prevUserId, currentUserId);
                 }
@@ -244,7 +244,7 @@ public class ReceiptViewActivity extends AppCompatActivity
                             String uidFound = bills.child("uid").getValue(String.class);
                             String billAmountFound = bills.child("amount").getValue(String.class);
                             String billId = bills.getKey();
-                            System.out.println("BILL KEY FOUND: " + uidFound);
+                            //System.out.println("BILL KEY FOUND: " + uidFound);
                             billKeys.add(uidFound);
                             billAmounts.add(billAmountFound);
                             billIds.add(billId);
@@ -316,18 +316,30 @@ public class ReceiptViewActivity extends AppCompatActivity
         //item is being assigned to receipt owner but was assigned to a different user
         //need to update prev user bill (decrease amount owed to currentUserId)
         if(prevUID!=null && currentUserId.equals(currUID)){
-            System.out.println("update prev user bill");
+            //System.out.println("update prev user bill");
+            int index = prevBillKeys.indexOf(currentUserId);
+            float origAmount = Float.parseFloat(prevBillAmounts.get(index));
+            String currBillId = prevBillIds.get(index);
+            String newAmount = Float.toString(origAmount - price);
+            mDatabaseReference.child("users").child(prevUID).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
         // assigning unassigned item to self --> no bills need to be updated
         else if(prevUID==null && currentUserId.equals(currUID)){
-            System.out.println("do nothing");
+            //System.out.println("do nothing");
         }
         // item is being assigned to a user who is not the receipt owner
         else {
             // billKeys are UIDs of bills in assignee's bill list
             //we must increment currUID and decrement prevUID bill amounts for currentUserId
-            System.out.println("BILL KEYS:" + billKeys);
-            if(billKeys.contains(currentUserId) && prevUID!=null){
+            //System.out.println("BILL KEYS:" + billKeys);
+            if(billKeys.contains(currentUserId) && prevUID!=null && !currentUserId.equals(prevUID)){
                 int index = prevBillKeys.indexOf(currentUserId);
                 float origAmount = Float.parseFloat(prevBillAmounts.get(index));
                 String currBillId = prevBillIds.get(index);
@@ -367,7 +379,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     public void updateCurrentUserBill(String currentUserId, String currUID, float price, final String prevUID){
-        if(currUserBillKeys.contains(prevUID) && prevUID!=null){
+        if(currUserBillKeys.contains(prevUID) && prevUID!=null && !currentUserId.equals(prevUID)){
             int index = currUserBillKeys.indexOf(prevUID);
             float origAmount = Float.parseFloat(currUserBillAmounts.get(index));
             String currBillId = currUserBillIds.get(index);
@@ -383,7 +395,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         }
         // when the user who has been assigned an item already has a bill for the current user, increment that bill
         System.out.println("CURR USER BILLS: " + currUserBillKeys);
-        if(currUserBillKeys.contains(currUID)){
+        if(currUserBillKeys.contains(currUID) && !currentUserId.equals(currUID)){
             //System.out.println(" assignee has a bill owed to current user ");
             //System.out.println("CURR PRICE IS " + price);
             System.out.println("YES");
