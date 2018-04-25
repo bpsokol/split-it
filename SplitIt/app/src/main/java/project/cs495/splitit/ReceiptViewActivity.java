@@ -3,6 +3,7 @@ package project.cs495.splitit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +42,8 @@ import project.cs495.splitit.models.Bill;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.User;
+import project.cs495.splitit.models.UserReceipt;
+import project.cs495.splitit.models.UserReceiptBuilder;
 
 public class ReceiptViewActivity extends AppCompatActivity
         implements AssignUserDialogFragment.AssignUserDialogListener, ModifyItemFragment.ModifyItemFragmentListener, AddItemFragment.AddItemFragmentListener, PopupMenu.OnMenuItemClickListener{
@@ -53,7 +56,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     private String currItemId;
     private TextView receiptPriceView;
     private TextView receiptCreatorView;
-    private static int currItemIndex;
+    private static int currItemIndex = 0;
     private ArrayList<String> billKeys = new ArrayList<String>();
     private ArrayList<String> billAmounts = new ArrayList<String>();
     private ArrayList<String> billIds = new ArrayList<String>();
@@ -66,15 +69,15 @@ public class ReceiptViewActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_receipt_view);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle(R.string.receipt);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_receipt_view);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.receipt);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            Intent intent = getIntent();
-            receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
+        Intent intent = getIntent();
+        receiptId = intent.getStringExtra(MainActivity.EXTRA_RECEIPT_ID);
 
         mDatabaseReference = Utils.getDatabaseReference();
         Query query = mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true);
@@ -117,7 +120,6 @@ public class ReceiptViewActivity extends AppCompatActivity
                 menu_options.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        itemRV.findViewHolderForAdapterPosition(currItemIndex).itemView.setSelected(false);
                         currItemIndex = itemRV.getChildAdapterPosition(temp);
                         Item item = (Item) adapter.getItem(currItemIndex);
                         currItemId = item.getItemId();
@@ -135,6 +137,8 @@ public class ReceiptViewActivity extends AppCompatActivity
         };
         itemRV.setAdapter(adapter);
         itemRV.setLayoutManager(new LinearLayoutManager(this));
+
+        setupFab();
 
         receiptPriceView = findViewById(R.id.receipt_price);
         receiptCreatorView = findViewById(R.id.receipt_creator);
@@ -158,7 +162,28 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
     }
 
-    private ValueEventListener setCreatorNameDisplay() {
+    private void setupFab() {
+        final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.addFab);
+        itemRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && addFab.getVisibility() == View.VISIBLE) {
+                    addFab.hide();
+                } else if (dy < 0 && addFab.getVisibility() != View.VISIBLE) {
+                    addFab.show();
+                }
+            }
+        });
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addItem();
+            }
+        });
+    }
+
+    public ValueEventListener setCreatorNameDisplay() {
         return mDatabaseReference.child("users").child(receipt.getCreator()).addValueEventListener(new CreatorValueEventListener());
     }
 
@@ -179,6 +204,19 @@ public class ReceiptViewActivity extends AppCompatActivity
         adapter.stopListening();
     }
 
+    /*@Override
+    public void onDialogSelectUser(DialogFragment dialog, String userId) {
+        Log.d(TAG, "selected " + userId);
+        mDatabaseReference.child("items").child(currItemId).child("assignedUser").setValue(userId, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }*/
+    
     @Override
     public void onDialogSelectUser(final DialogFragment dialog, final String userId) {
         final Item selectedItem = (Item) adapter.getItem(currItemIndex);
@@ -245,10 +283,10 @@ public class ReceiptViewActivity extends AppCompatActivity
                             billKeys.add(uidFound);
                             billAmounts.add(billAmountFound);
                             billIds.add(billId);
-                            }
                         }
                     }
                 }
+            }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -596,7 +634,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         }
     }
 
-    private class CreatorValueEventListener implements ValueEventListener {
+    public class CreatorValueEventListener implements ValueEventListener {
 
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -651,7 +689,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     // create an action bar button
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add, menu);
+        getMenuInflater().inflate(R.menu.user_receipt, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -660,10 +698,56 @@ public class ReceiptViewActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.add_item) {
-            addItem();
+        if (id == R.id.create_user_receipt) {
+            createUserReceipt();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createUserReceipt() {
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        UserReceiptBuilder userReceiptBuilder = (UserReceiptBuilder) new UserReceiptBuilder()
+                .setReceiptId(receiptId)
+                .setCreator(receipt.getCreator())
+                .setDatePurchased(receipt.getDatePurchased())
+                .setVendor(receipt.getVendor());
+        final UserReceipt userReceipt = userReceiptBuilder.setUserId(userId)
+                .createReceipt();
+
+
+        mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float subtotal = 0;
+                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                    Item item = itemSnapshot.getValue(Item.class);
+                    if (item.getAssignedUser() != null && item.getAssignedUser().equals(userId)) {
+                        userReceipt.addItem(item.getItemId());
+                        subtotal += item.getPrice();
+                    }
+                }
+                userReceipt.setSubtotal(subtotal);
+                float masterReceiptSubtotal = receipt.getSubtotal();
+                float masterReceiptTax = receipt.getTax();
+                if (masterReceiptSubtotal == 0) {
+                    masterReceiptSubtotal = receipt.getPrice();
+                }
+                float percentOfSubtotal = subtotal / masterReceiptSubtotal;
+                userReceipt.setTax(masterReceiptTax * percentOfSubtotal);
+                userReceipt.setPrice(subtotal + userReceipt.getTax());
+                userReceipt.commitToDB(mDatabaseReference);
+                Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
+
+                Intent intent = new Intent(ReceiptViewActivity.this, UserReceiptViewActivity.class);
+                intent.putExtra(MainActivity.EXTRA_RECEIPT_ID, userReceipt.getReceiptId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
