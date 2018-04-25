@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
     private String selectedGroupIdForReceipt;
     private FloatingActionButton fab_plus;
     private FloatingActionButton fab_scan_receipt;
-    private FloatingActionButton fab_add_group;
+    private FloatingActionButton fab_add_bill;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity
 
         fab_plus = (FloatingActionButton) findViewById(R.id.plus_button);
         fab_scan_receipt = (FloatingActionButton) findViewById(R.id.scan_receipt);
-        fab_add_group = (FloatingActionButton) findViewById(R.id.add_bill_button);
+        fab_add_bill = (FloatingActionButton) findViewById(R.id.add_bill_button);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
