@@ -169,7 +169,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
     }
 
-    private ValueEventListener setCreatorNameDisplay() {
+    public ValueEventListener setCreatorNameDisplay() {
         return mDatabaseReference.child("users").child(receipt.getCreator()).addValueEventListener(new CreatorValueEventListener());
     }
 
@@ -279,7 +279,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         return s;
     }
 
-    private class ItemHolder extends RecyclerView.ViewHolder {
+    public static class ItemHolder extends RecyclerView.ViewHolder {
         //private TextView itemCode;
         private TextView itemDescription;
         private TextView itemPrice;
@@ -304,7 +304,7 @@ public class ReceiptViewActivity extends AppCompatActivity
 
             //Displays assigned user
             if (item.getAssignedUser() != null) {
-                mDatabaseReference.child("users").child(item.getAssignedUser()).addValueEventListener(new ValueEventListener() {
+                Utils.getDatabaseReference().child("users").child(item.getAssignedUser()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         User user = dataSnapshot.getValue(User.class);
@@ -322,7 +322,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         }
     }
 
-    private class CreatorValueEventListener implements ValueEventListener {
+    public class CreatorValueEventListener implements ValueEventListener {
 
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -425,6 +425,10 @@ public class ReceiptViewActivity extends AppCompatActivity
                 userReceipt.setPrice(subtotal + userReceipt.getTax());
                 userReceipt.commitToDB(mDatabaseReference);
                 Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
+
+                Intent intent = new Intent(ReceiptViewActivity.this, UserReceiptViewActivity.class);
+                intent.putExtra(MainActivity.EXTRA_RECEIPT_ID, userReceipt.getReceiptId());
+                startActivity(intent);
             }
 
             @Override
