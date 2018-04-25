@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
@@ -24,12 +23,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.microblink.EdgeDetectionConfiguration;
 import com.microblink.FrameCharacteristics;
 import com.microblink.IntentUtils;
@@ -58,10 +62,11 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth auth;
     private int fabState = 0;
     private String selectedGroupIdForReceipt;
-    private FloatingActionButton fab_plus;
-    private FloatingActionButton fab_scan_receipt;
-    private FloatingActionButton fab_add_bill;
-    
+    private ImageButton fab_plus;
+    private ImageButton fab_scan_receipt;
+    private ImageButton fab_add_group;
+    private DatabaseReference mDatabaseReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,9 +112,9 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        fab_plus = (FloatingActionButton) findViewById(R.id.plus_button);
-        fab_scan_receipt = (FloatingActionButton) findViewById(R.id.scan_receipt);
-        fab_add_bill = (FloatingActionButton) findViewById(R.id.add_bill_button);
+        fab_plus = (ImageButton) findViewById(R.id.plus_button);
+        fab_scan_receipt = (ImageButton) findViewById(R.id.scan_receipt);
+        fab_add_group = (ImageButton) findViewById(R.id.add_bill_button);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -154,7 +159,7 @@ public class MainActivity extends AppCompatActivity
 
         final Context context = this;
 
-        fab_add_bill.setOnClickListener(new View.OnClickListener() {
+        fab_add_group.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LayoutInflater li = LayoutInflater.from(context);
@@ -209,7 +214,7 @@ public class MainActivity extends AppCompatActivity
                             alertDialog.show();
                         }
                         else {
-                            addBillToDatabase(newName, newEmail, newAmount);
+                            createBillForDatabase(newName, newEmail, "$" + newAmount);
                             alertDialog.dismiss();
                         }
                     }
@@ -218,15 +223,36 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void addBillToDatabase (String name, String email, String amount) {
+    private void addBillToDatabase (String name, String email, String amount, String uid) {
         DatabaseReference ref = FirebaseDatabase
                 .getInstance()
                 .getReference()
                 .child("users")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child("bills").push();
-        Bill newBill = new Bill(name, email, amount);
+        Bill newBill = new Bill(name, email, amount, uid);
         ref.setValue(newBill);
+    }
+
+    private void createBillForDatabase(final String name, final String email, final String amount){
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("users").orderByChild("email").equalTo(email);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        String uid = snapshot.getKey();
+                        System.out.println(uid);
+                        addBillToDatabase(name, email, amount, uid);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void assignGroup() {
@@ -280,20 +306,15 @@ public class MainActivity extends AppCompatActivity
                 .setVendor(brScanResults.merchantName().value() == null ? "Unknown" : brScanResults.merchantName().value())
                 .setDatePurchased(brScanResults.receiptDate().value())
                 .setPrice(brScanResults.total().value())
-                .setSubtotal(brScanResults.subtotal() != null ? brScanResults.subtotal().value(): 0)
-                .setTax(brScanResults.taxes() != null ? brScanResults.taxes().value() : 0)
                 .setItems(null)
                 .createReceipt();
-        float subTotal = 0;
         for (Product product : brScanResults.products()) {
             String itemId = database.child("items").push().getKey();
             Item item = new Item(itemId, product.productNumber().value(), product.description().value(), product.totalPrice(), (int) product.quantity().value(), product.unitPrice().value());
             item.addReceiptId(receiptId);
             item.commitToDB(database);
             receipt.addItem(item.getItemId());
-            subTotal += item.getPrice();
         }
-        if (receipt.getTax() == 0) receipt.setTax(receipt.getPrice() - subTotal);
         receipt.commitToDB(database);
         return receiptId;
     }
@@ -445,22 +466,20 @@ public class MainActivity extends AppCompatActivity
             case 0:
                 fab_scan_receipt.setVisibility(View.VISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
-                fab_add_bill.setVisibility(View.INVISIBLE);
+                fab_add_group.setVisibility(View.INVISIBLE);
                 break;
             case 1:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.VISIBLE);
-                fab_add_bill.setVisibility(View.INVISIBLE);
+                fab_add_group.setVisibility(View.INVISIBLE);
                 break;
             case 2:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
-                fab_add_bill.setVisibility(View.VISIBLE);
-                break;
+                fab_add_group.setVisibility(View.VISIBLE);
             default:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
-                fab_add_bill.setVisibility(View.VISIBLE);
                 break;
         }
     }

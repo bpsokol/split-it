@@ -6,11 +6,13 @@ public class Bill {
     private String name = "";
     private String email = "";
     private String amount = "";
+    private String uid = "";
 
-    public Bill(String name, String email, String amount) {
+    public Bill(String name, String email, String amount, String uid) {
         this.name = name;
         this.email = email;
         this.amount = amount;
+        this.uid = uid;
     }
 
     public void setName(String name) {
@@ -36,5 +38,9 @@ public class Bill {
     public String getAmount() {
         return amount;
     }
+
+    public void setUid(String uid) { this.uid = uid; }
+
+    public String getUid() { return uid; }
 
 }
