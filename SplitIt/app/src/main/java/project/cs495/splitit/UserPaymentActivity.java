@@ -1,7 +1,8 @@
 package project.cs495.splitit;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -80,6 +81,18 @@ public class UserPaymentActivity extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         recyclerView.setAdapter(adapter);
+        final FloatingActionButton addFab = ((ViewGroup)container.getParent()).findViewById(R.id.add_bill_button);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && addFab.getVisibility() == View.VISIBLE) {
+                    addFab.hide();
+                } else if (dy < 0 && addFab.getVisibility() != View.VISIBLE) {
+                    addFab.show();
+                }
+            }
+        });
 
         return rootView;
     }
