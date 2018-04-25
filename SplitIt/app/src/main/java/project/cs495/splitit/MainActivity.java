@@ -231,7 +231,6 @@ public class MainActivity extends AppCompatActivity
                 .child("users")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child("bills").push();
-        System.out.println("IN THE BILL: " + uid);
         Bill newBill = new Bill(name, email, amount, uid);
         ref.setValue(newBill);
     }

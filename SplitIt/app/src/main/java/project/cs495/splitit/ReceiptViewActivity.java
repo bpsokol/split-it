@@ -37,6 +37,7 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import project.cs495.splitit.models.Bill;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.User;
@@ -311,7 +312,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         getPriceForBill(currentUserId, currUID, prevUID);
     }
 
-    public void updateUserBill(String currentUserId, String currUID, float price, final String prevUID){
+    public void updateUserBill(final String currentUserId, final String currUID, final float price, final String prevUID){
         System.out.println(billKeys);
         //item is being assigned to receipt owner but was assigned to a different user
         //need to update prev user bill (decrease amount owed to currentUserId)
@@ -373,9 +374,41 @@ public class ReceiptViewActivity extends AppCompatActivity
             }
             // when the user who has been assigned an item does not have a bill for the current user, create a bill
             else {
-                System.out.println(" need bill to be created ");
+                System.out.println(" need bill to be created for currentUserId ");
+                mDatabaseReference = Utils.getDatabaseReference();
+                Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currentUserId);
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            String name="";
+                            String email="";
+                            for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                                name = snapshot.child("name").getValue(String.class);
+                                email = snapshot.child("email").getValue(String.class);
+                            }
+                            addBillToDatabase (name, email, Float.toString(price), currentUserId, currUID);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         }
+    }
+
+    private void addBillToDatabase (String name, String email, String amount, String currentUserid, String currUID) {
+        DatabaseReference ref = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("users")
+                .child(currUID)
+                .child("bills").push();
+        Bill newBill = new Bill(name, email, amount, currentUserid);
+        ref.setValue(newBill);
     }
 
     public void updateCurrentUserBill(String currentUserId, String currUID, float price, final String prevUID){
