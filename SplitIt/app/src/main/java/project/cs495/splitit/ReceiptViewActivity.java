@@ -117,7 +117,6 @@ public class ReceiptViewActivity extends AppCompatActivity
                 menu_options.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        itemRV.findViewHolderForAdapterPosition(currItemIndex).itemView.setSelected(false);
                         currItemIndex = itemRV.getChildAdapterPosition(temp);
                         Item item = (Item) adapter.getItem(currItemIndex);
                         currItemId = item.getItemId();
@@ -159,6 +158,28 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     private ValueEventListener setCreatorNameDisplay() {
+    private void setupFab() {
+        final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.addFab);
+        itemRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && addFab.getVisibility() == View.VISIBLE) {
+                    addFab.hide();
+                } else if (dy < 0 && addFab.getVisibility() != View.VISIBLE) {
+                    addFab.show();
+                }
+            }
+        });
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addItem();
+            }
+        });
+    }
+
+    public ValueEventListener setCreatorNameDisplay() {
         return mDatabaseReference.child("users").child(receipt.getCreator()).addValueEventListener(new CreatorValueEventListener());
     }
 
@@ -569,7 +590,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         return s;
     }
 
-    private class ItemHolder extends RecyclerView.ViewHolder {
+    public static class ItemHolder extends RecyclerView.ViewHolder {
         //private TextView itemCode;
         private TextView itemDescription;
         private TextView itemPrice;
@@ -594,7 +615,7 @@ public class ReceiptViewActivity extends AppCompatActivity
 
             //Displays assigned user
             if (item.getAssignedUser() != null) {
-                mDatabaseReference.child("users").child(item.getAssignedUser()).addValueEventListener(new ValueEventListener() {
+                Utils.getDatabaseReference().child("users").child(item.getAssignedUser()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         User user = dataSnapshot.getValue(User.class);
@@ -612,7 +633,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         }
     }
 
-    private class CreatorValueEventListener implements ValueEventListener {
+    public class CreatorValueEventListener implements ValueEventListener {
 
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -680,6 +701,52 @@ public class ReceiptViewActivity extends AppCompatActivity
             addItem();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createUserReceipt() {
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        UserReceiptBuilder userReceiptBuilder = (UserReceiptBuilder) new UserReceiptBuilder()
+                .setReceiptId(receiptId)
+                .setCreator(receipt.getCreator())
+                .setDatePurchased(receipt.getDatePurchased())
+                .setVendor(receipt.getVendor());
+        final UserReceipt userReceipt = userReceiptBuilder.setUserId(userId)
+                .createReceipt();
+
+
+        mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float subtotal = 0;
+                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                    Item item = itemSnapshot.getValue(Item.class);
+                    if (item.getAssignedUser() != null && item.getAssignedUser().equals(userId)) {
+                        userReceipt.addItem(item.getItemId());
+                        subtotal += item.getPrice();
+                    }
+                }
+                userReceipt.setSubtotal(subtotal);
+                float masterReceiptSubtotal = receipt.getSubtotal();
+                float masterReceiptTax = receipt.getTax();
+                if (masterReceiptSubtotal == 0) {
+                    masterReceiptSubtotal = receipt.getPrice();
+                }
+                float percentOfSubtotal = subtotal / masterReceiptSubtotal;
+                userReceipt.setTax(masterReceiptTax * percentOfSubtotal);
+                userReceipt.setPrice(subtotal + userReceipt.getTax());
+                userReceipt.commitToDB(mDatabaseReference);
+                Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
+
+                Intent intent = new Intent(ReceiptViewActivity.this, UserReceiptViewActivity.class);
+                intent.putExtra(MainActivity.EXTRA_RECEIPT_ID, userReceipt.getReceiptId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

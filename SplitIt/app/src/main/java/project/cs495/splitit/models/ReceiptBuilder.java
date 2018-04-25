@@ -7,6 +7,8 @@ public class ReceiptBuilder {
     protected String vendor;
     protected String datePurchased;
     protected float price;
+    protected float subtotal;
+    protected float tax;
     protected String groupId;
     protected Map<String, Boolean> items;
     protected String creator;
@@ -31,6 +33,16 @@ public class ReceiptBuilder {
         return this;
     }
 
+    public ReceiptBuilder setSubtotal(float subtotal) {
+        this.subtotal = subtotal;
+        return this;
+    }
+
+    public ReceiptBuilder setTax(float tax) {
+        this.tax = tax;
+        return this;
+    }
+
     public ReceiptBuilder setItems(Map<String, Boolean> items) {
         this.items = items;
         return this;
@@ -42,7 +54,7 @@ public class ReceiptBuilder {
     }
 
     public Receipt createReceipt() {
-        return new Receipt(receiptId, creator, vendor, datePurchased, price, items, groupId);
+        return new Receipt(receiptId, creator, vendor, datePurchased, price, subtotal, tax, items, groupId);
     }
 
     public ReceiptBuilder setCreator(String creator) {
