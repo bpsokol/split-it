@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton fab_plus;
     private FloatingActionButton fab_scan_receipt;
     private FloatingActionButton fab_add_group;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity
 
         final Context context = this;
 
-        fab_add_group.setOnClickListener(new View.OnClickListener() {
+        fab_add_bill.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LayoutInflater li = LayoutInflater.from(context);
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity
                             alertDialog.show();
                         }
                         else {
-                            addBillToDatabase(newName, newEmail, "$" + newAmount);
+                            addBillToDatabase(newName, newEmail, newAmount);
                             alertDialog.dismiss();
                         }
                     }
@@ -444,21 +444,22 @@ public class MainActivity extends AppCompatActivity
             case 0:
                 fab_scan_receipt.setVisibility(View.VISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
-                fab_add_group.setVisibility(View.INVISIBLE);
+                fab_add_bill.setVisibility(View.INVISIBLE);
                 break;
             case 1:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.VISIBLE);
-                fab_add_group.setVisibility(View.INVISIBLE);
+                fab_add_bill.setVisibility(View.INVISIBLE);
                 break;
             case 2:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
-                fab_add_group.setVisibility(View.VISIBLE);
+                fab_add_bill.setVisibility(View.VISIBLE);
                 break;
             default:
                 fab_scan_receipt.setVisibility(View.INVISIBLE);
                 fab_plus.setVisibility(View.INVISIBLE);
+                fab_add_bill.setVisibility(View.VISIBLE);
                 break;
         }
     }
