@@ -56,7 +56,7 @@ public class ReceiptViewActivity extends AppCompatActivity
     private ArrayList<String> billKeys = new ArrayList<String>();
     private ArrayList<String> billAmounts = new ArrayList<String>();
     private ArrayList<String> billIds = new ArrayList<String>();
-    private String currPrice;
+    //private String currPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,7 +209,7 @@ public class ReceiptViewActivity extends AppCompatActivity
                             billIds.add(billId);
                             }
                         }
-                    updateUserBill(currentUserId, currUID);
+                    getPriceForBill(currentUserId, currUID);
                     }
                 }
 
@@ -220,18 +220,17 @@ public class ReceiptViewActivity extends AppCompatActivity
         });
     }
 
-    public void updateUserBill(String currentUserId, String currUID){
+    public void updateUserBill(String currentUserId, String currUID, float price){
         System.out.println(billKeys);
         // when the user who has been assigned an item already has a bill for the current user, increment that bill
         if(billKeys.contains(currentUserId)){
             System.out.println(" assignee has a bill owed to current user ");
-            System.out.println("CURR PRICE IS " + currPrice);
+            System.out.println("CURR PRICE IS " + price);
             int index = billKeys.indexOf(currentUserId);
             float origAmount = Float.parseFloat(billAmounts.get(index));
             String currBillId = billIds.get(index);
-            float addAmount = Float.parseFloat(currPrice.replace("$",""));
-            String newAmount = Float.toString(origAmount + addAmount);
-            System.out.println("ORIG AMOUNT = " + origAmount + " ADD AMOUNT = " + addAmount);
+            String newAmount = Float.toString(origAmount + price);
+            System.out.println("ORIG AMOUNT = " + origAmount + " ADD AMOUNT = " + price);
             mDatabaseReference.child("users").child(currUID).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -245,6 +244,26 @@ public class ReceiptViewActivity extends AppCompatActivity
         else {
             System.out.println(" need bill must be created ");
         }
+    }
+
+    public void getPriceForBill(final String currentUserId, final String currUID){
+        final Item selectedItem = (Item) adapter.getItem(currItemIndex);
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("items").orderByChild("itemId").equalTo(selectedItem.getItemId());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float price = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    price = snapshot.child("price").getValue(Float.class);
+                }
+                updateUserBill(currentUserId, currUID, price);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -345,7 +364,7 @@ public class ReceiptViewActivity extends AppCompatActivity
             //uses the default locale of the user
             Currency currency = Currency.getInstance(Locale.getDefault());
             itemPrice.setText(String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice())));
-            currPrice = String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice()));
+            //currPrice = String.format("%s%s", currency.getSymbol(), String.format(Locale.getDefault(), "%.2f", item.getPrice()));
 
             //Displays assigned user
             if (item.getAssignedUser() != null) {
