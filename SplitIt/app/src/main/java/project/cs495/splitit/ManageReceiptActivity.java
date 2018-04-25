@@ -189,9 +189,19 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
             case R.id.manage_menu_archive_receipt:
                 archiveReceipt();
                 return true;
+            case R.id.manage_menu_show_user_receipt:
+                viewUserReceipt();
+                return true;
             default:
                 return false;
         }
+    }
+
+    private void viewUserReceipt() {
+        Receipt receipt = (Receipt) adapter.getItem(currReceiptIndex);
+        Intent intent = new Intent(getContext(), UserReceiptViewActivity.class);
+        intent.putExtra(MainActivity.EXTRA_RECEIPT_ID, receipt.getReceiptId());
+        startActivity(intent);
     }
 
     private class ReceiptAdapter extends RecyclerView.Adapter<ReceiptHolder>{
