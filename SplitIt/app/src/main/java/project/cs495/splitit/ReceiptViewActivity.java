@@ -42,6 +42,8 @@ import project.cs495.splitit.models.Bill;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.User;
+import project.cs495.splitit.models.UserReceipt;
+import project.cs495.splitit.models.UserReceiptBuilder;
 
 public class ReceiptViewActivity extends AppCompatActivity
         implements AssignUserDialogFragment.AssignUserDialogListener, ModifyItemFragment.ModifyItemFragmentListener, AddItemFragment.AddItemFragmentListener, PopupMenu.OnMenuItemClickListener{
@@ -685,9 +687,55 @@ public class ReceiptViewActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.add_item) {
-            addItem();
+            createUserReceipt();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createUserReceipt() {
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        UserReceiptBuilder userReceiptBuilder = (UserReceiptBuilder) new UserReceiptBuilder()
+                .setReceiptId(receiptId)
+                .setCreator(receipt.getCreator())
+                .setDatePurchased(receipt.getDatePurchased())
+                .setVendor(receipt.getVendor());
+        final UserReceipt userReceipt = userReceiptBuilder.setUserId(userId)
+                .createReceipt();
+
+
+        mDatabaseReference.child(getString(R.string.items)).orderByChild(getString(R.string.receipt_ids_path)+receiptId).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float subtotal = 0;
+                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                    Item item = itemSnapshot.getValue(Item.class);
+                    if (item.getAssignedUser() != null && item.getAssignedUser().equals(userId)) {
+                        userReceipt.addItem(item.getItemId());
+                        subtotal += item.getPrice();
+                    }
+                }
+                userReceipt.setSubtotal(subtotal);
+                float masterReceiptSubtotal = receipt.getSubtotal();
+                float masterReceiptTax = receipt.getTax();
+                if (masterReceiptSubtotal == 0) {
+                    masterReceiptSubtotal = receipt.getPrice();
+                }
+                float percentOfSubtotal = subtotal / masterReceiptSubtotal;
+                userReceipt.setTax(masterReceiptTax * percentOfSubtotal);
+                userReceipt.setPrice(subtotal + userReceipt.getTax());
+                userReceipt.commitToDB(mDatabaseReference);
+                Toast.makeText(getApplicationContext(), "User Receipt created", Toast.LENGTH_SHORT);
+
+                Intent intent = new Intent(ReceiptViewActivity.this, UserReceiptViewActivity.class);
+                intent.putExtra(MainActivity.EXTRA_RECEIPT_ID, userReceipt.getReceiptId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
