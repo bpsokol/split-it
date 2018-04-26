@@ -5,6 +5,8 @@
         <item android:id="@+id/manage_menu_archive_receipt"
             android:title="@string/menu_archive" />
         <item android:id="@+id/manage_menu_show_user_receipt"
-            android:title="Show User Receipt" />
+            android:title="@string/show_user_receipt" />
+        <item android:id="@+id/manage_menu_generate_bill"
+            android:title="@string/generate_bill" />
     </group>
 </menu>

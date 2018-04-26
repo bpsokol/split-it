@@ -92,4 +92,6 @@
     <string name="left_group">Left Group</string>
     <string name="menu_remove">Remove</string>
     <string name="empty_field_warning">Please fill out all fields</string>
+    <string name="generate_bill">Generate Bill</string>
+    <string name="show_user_receipt">Show User Receipt</string>
 </resources>
