@@ -64,6 +64,13 @@ public class MemberAddActivity extends AppCompatActivity implements PopupMenu.On
         getSupportActionBar().setTitle(R.string.group);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         auth = FirebaseAuth.getInstance();
         database = Utils.getDatabaseReference();
         groupRV = (RecyclerView) findViewById(R.id.search_rv);
@@ -96,12 +103,18 @@ public class MemberAddActivity extends AppCompatActivity implements PopupMenu.On
                     }
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+        adapter = new MemberAdapter(this,alphabeticalComparator);
+        groupRV.setLayoutManager(new LinearLayoutManager(this));
+        groupRV.setAdapter(adapter);
+
+        adapter.edit()
+                .add(options)
+                .commit();
     }
 
     public void addMember(final String groupId) {
@@ -147,12 +160,12 @@ public class MemberAddActivity extends AppCompatActivity implements PopupMenu.On
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
-        adapter = new MemberAdapter(this,alphabeticalComparator);
+        /*adapter = new MemberAdapter(this,alphabeticalComparator);
         adapter.edit()
                 .add(options)
                 .commit();
         groupRV.setAdapter(adapter);
-        groupRV.setLayoutManager(new LinearLayoutManager(this));
+        groupRV.setLayoutManager(new LinearLayoutManager(this));*/
         return true;
     }
 
