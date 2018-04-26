@@ -36,6 +36,8 @@ import java.util.Map;
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.Receipt;
 
+import static project.cs495.splitit.BillHandler.adjustBillsForSingleReceipt;
+
 public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "ManageReceiptActivity";
     private DatabaseReference database;
@@ -148,6 +150,7 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
 
     public void archiveReceipt(){
         Receipt receipt = (Receipt) adapter.getItem(currReceiptIndex);
+        adjustBillsForSingleReceipt(receipt);
         moveToArchive(receipt);
     }
 
