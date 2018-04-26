@@ -67,10 +67,8 @@ public class MemberAddActivity extends AppCompatActivity implements PopupMenu.On
         auth = FirebaseAuth.getInstance();
         database = Utils.getDatabaseReference();
         groupRV = (RecyclerView) findViewById(R.id.search_rv);
-        final String id = groupId;
         Intent intent = getIntent();
         groupId = intent.getStringExtra(EXTRA_GROUP_ID);
-        groupRV.setAdapter(adapter);
         options = new ArrayList<>();
         database.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -104,12 +102,6 @@ public class MemberAddActivity extends AppCompatActivity implements PopupMenu.On
 
             }
         });
-        adapter = new MemberAdapter(this,alphabeticalComparator);
-        adapter.edit()
-                .add(options)
-                .commit();
-        groupRV.setAdapter(adapter);
-        groupRV.setLayoutManager(new LinearLayoutManager(this));
     }
 
     public void addMember(final String groupId) {
@@ -155,6 +147,12 @@ public class MemberAddActivity extends AppCompatActivity implements PopupMenu.On
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
+        adapter = new MemberAdapter(this,alphabeticalComparator);
+        adapter.edit()
+                .add(options)
+                .commit();
+        groupRV.setAdapter(adapter);
+        groupRV.setLayoutManager(new LinearLayoutManager(this));
         return true;
     }
 
