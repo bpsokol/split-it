@@ -190,6 +190,94 @@ public class ReceiptViewActivity extends AppCompatActivity
     private void assignToSelf(Item item) {
         item.setAssignedUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
         item.commitToDB(mDatabaseReference);
+        final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String creatorUID = receipt.getCreator();
+        searchBillAndCreate(item, currentUserId, creatorUID, true);
+        searchBillAndCreate(item, creatorUID, currentUserId, false);
+    }
+
+    public void searchBillAndCreate(final Item item, final String queryId, final String comparisonId, final boolean add){
+        Float price = item.getPrice();
+        Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(queryId);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    boolean foundCreator = false;
+                    String billID = "";
+                    String billAmount = "";
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        for (DataSnapshot bills: snapshot.child("bills").getChildren()) {
+                            String uidFound = bills.child("uid").getValue(String.class);
+                            String billAmountFound = bills.child("amount").getValue(String.class);
+                            String uid = bills.getKey();
+                            if(uidFound.equals(comparisonId)){
+                                foundCreator = true;
+                                billID = uid;
+                                billAmount = billAmountFound;
+                            }
+                        }
+                    }
+                    createBill(item, queryId, comparisonId, foundCreator, billID, billAmount, add);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void createBill(final Item item, final String queryId, final String comparisonId, boolean found, String billID, String billAmount, final boolean add){
+        if (found == true){
+            String newAmount = "";
+            if(add == true){
+                newAmount = Float.toString(Float.parseFloat(billAmount) + item.getPrice());
+            }
+            else{
+                newAmount = Float.toString(Float.parseFloat(billAmount) - item.getPrice());
+            }
+            mDatabaseReference.child("users").child(queryId).child("bills").child(billID).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        else {
+            mDatabaseReference = Utils.getDatabaseReference();
+            Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(comparisonId);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        String name="";
+                        String email="";
+                        for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                            name = snapshot.child("name").getValue(String.class);
+                            email = snapshot.child("email").getValue(String.class);
+                        }
+                        String price ="";
+                        if(add==true){
+                            price = Float.toString(item.getPrice());
+                        }
+                        else{
+                            price = Float.toString(item.getPrice()*-1);
+                        }
+
+                        addBillToDatabase(name, email, price, comparisonId, queryId);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
     @Override
