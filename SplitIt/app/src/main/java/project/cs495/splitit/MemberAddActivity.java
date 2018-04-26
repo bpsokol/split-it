@@ -160,12 +160,6 @@ public class MemberAddActivity extends AppCompatActivity implements PopupMenu.On
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
-        /*adapter = new MemberAdapter(this,alphabeticalComparator);
-        adapter.edit()
-                .add(options)
-                .commit();
-        groupRV.setAdapter(adapter);
-        groupRV.setLayoutManager(new LinearLayoutManager(this));*/
         return true;
     }
 
@@ -174,6 +168,8 @@ public class MemberAddActivity extends AppCompatActivity implements PopupMenu.On
         final List<User> filteredUserList = filter(options,query);
         adapter.edit().replaceAll(filteredUserList).commit();
         groupRV.scrollToPosition(0);
+        groupRV.setAdapter(adapter);
+        groupRV.setLayoutManager(new LinearLayoutManager(this));
         return true;
     }
 
