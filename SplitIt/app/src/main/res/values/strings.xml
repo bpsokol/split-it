@@ -79,7 +79,7 @@
     <string name="your_groups">Your Groups</string>
     <string name="groups_path">groups/</string>
     <string name="enter_email">Enter Email</string>
-    <string name="add">ADD</string>
+    <string name="add">Add</string>
     <string name="add_member_error">Email not found</string>
     <string name="adding_empty">Please enter an email</string>
     <string name="not_group_owner">Only the owner of this group can delete users</string>

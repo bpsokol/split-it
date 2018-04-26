@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,30 +29,23 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.User;
 
-public class GroupViewActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener, SearchView.OnQueryTextListener {
+public class GroupViewActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "GroupViewActivity";
     public static final String EXTRA_GROUP_ID = "project.cs495.splitit.GROUP_ID";
     private DatabaseReference mDatabase;
     private RecyclerView groupRV;
-    private RecyclerView memberRV;
-    private MemberAdapter adapter;
-    private FirebaseRecyclerAdapter mAdapter;
+    private FirebaseRecyclerAdapter adapter;
     private String groupId;
     private Group group;
     private ImageButton fab_plus;
     private View view;
-    private List<User> options;
     private static int currGroupIndex = 0;
     private String currGroupId;
 
@@ -81,26 +74,24 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         });
         Query query = mDatabase.child("users").orderByChild(getString(R.string.groups_path)+groupId).equalTo(true);
         groupRV = (RecyclerView) findViewById(R.id.group_rv);
-        memberRV = (RecyclerView) findViewById(R.id.group_rv);
-        FirebaseRecyclerOptions<User> cards = new FirebaseRecyclerOptions.Builder<User>()
+        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
                 .setQuery(query, User.class)
                 .build();
 
-        memberRV.setAdapter(mAdapter);
-        mAdapter = new FirebaseRecyclerAdapter<User, regularHolder>(cards) {
+        adapter = new FirebaseRecyclerAdapter<User, memberHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull regularHolder holder, int position, @NonNull User model) {
+            protected void onBindViewHolder(@NonNull memberHolder holder, int position, @NonNull User model) {
                 holder.bindData(model);
             }
 
             @Override
-            public regularHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public memberHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.group_list_item,parent,false);
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         currGroupIndex = groupRV.getChildAdapterPosition(view);
-                        User member = (User) mAdapter.getItem(currGroupIndex);
+                        User member = (User) adapter.getItem(currGroupIndex);
                     }
                 });
 
@@ -111,7 +102,6 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
                 menu_options.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        groupRV.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
                         currGroupIndex = groupRV.getChildAdapterPosition(temp);
                         view.setSelected(true);
                         PopupMenu popup = new PopupMenu(view.getContext(), view);
@@ -131,38 +121,29 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
                     }
                 });
 
-                return new regularHolder(view);
+                return new memberHolder(view);
             }
         };
-        options = new ArrayList<>();
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                    options.add(snapshot.getValue(User.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        memberRV.setAdapter(mAdapter);
-        memberRV.setLayoutManager(new LinearLayoutManager(this));
+        groupRV.setAdapter(adapter);
+        groupRV.setLayoutManager(new LinearLayoutManager(this));
 
         fab_plus = (ImageButton) findViewById(R.id.add_member);
         fab_plus.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                openDialog(groupId);
+                addMember();
             }
         });
     }
 
-    public void openDialog(String groupId) {
-        MemberAddDialog memberAddDialog = new MemberAddDialog(this,groupId);
-        memberAddDialog.show();
+    public void addMember() {
+        Intent intent = buildGroupViewIntent(groupId);
+        startActivity(intent);
+    }
+
+    private Intent buildGroupViewIntent(String groupId) {
+        Intent intent = new Intent(this,MemberAddActivity.class);
+        intent.putExtra(EXTRA_GROUP_ID,groupId);
+        return intent;
     }
 
     public void leaveGroup(String groupId) {
@@ -180,7 +161,7 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
         }
     }
 
-    /*@Override
+    @Override
     protected void onStart() {
         super.onStart();
         adapter.startListening();
@@ -190,94 +171,9 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
-    }*/
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search_menu, menu);
-
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(this);
-        groupRV.setAdapter(adapter);
-        adapter = new MemberAdapter(this,alphabeticalComparator);
-        adapter.edit()
-                .add(options)
-                .commit();
-        groupRV.setAdapter(adapter);
-        groupRV.setLayoutManager(new LinearLayoutManager(this));
-        return true;
     }
 
-    @Override
-    public boolean onQueryTextChange(String query) {
-        final List<User> filteredUserList = filter(options,query);
-        adapter.edit().replaceAll(filteredUserList).commit();
-        groupRV.scrollToPosition(0);
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    private static List<User> filter(List<User> models, String query) {
-        final String lowerCaseQuery = query.toLowerCase();
-
-        final List<User> filteredModelList = new ArrayList<>();
-        for (User model : models) {
-            final String text = model.getName().toLowerCase();
-            if (text.contains(lowerCaseQuery)) {
-                filteredModelList.add(model);
-            }
-        }
-        return filteredModelList;
-    }
-
-    private static Comparator<User> alphabeticalComparator = (a, b) -> a.getName().compareTo(b.getName());
-
-    public class MemberAdapter extends SortedListAdapter<User> {
-
-        public MemberAdapter(Context context, Comparator<User> comparator) {
-            super(context, User.class, comparator);
-        }
-
-        @Override
-        protected memberHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.group_list_item, parent, false);
-            view.setOnClickListener(view -> {
-                currGroupIndex = groupRV.getChildAdapterPosition(view);
-                User member = (User) adapter.getItem(currGroupIndex);
-            });
-            final ImageButton menu_options = view.findViewById(R.id.group_list_options);
-
-            // Use temporary variable to capture value of View
-            final View temp = view;
-            menu_options.setOnClickListener(view -> {
-                groupRV.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
-                currGroupIndex = groupRV.getChildAdapterPosition(temp);
-                view.setSelected(true);
-                PopupMenu popup = new PopupMenu(view.getContext(), view);
-                popup.setOnMenuItemClickListener(GroupViewActivity.this);
-
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                User user = (User) adapter.getItem(currGroupIndex);
-                if(auth.getCurrentUser().getUid().equals(user.getUid())) {
-                    MenuInflater inflater1 = popup.getMenuInflater();
-                    inflater1.inflate(R.menu.manage_group_members_manager, popup.getMenu());
-                }
-                else {
-                    MenuInflater inflater1 = popup.getMenuInflater();
-                    inflater1.inflate(R.menu.manage_group_members, popup.getMenu());
-                }
-                popup.show();
-            });
-            return new memberHolder(view);
-        }
-    }
-
-    private class memberHolder extends SortedListAdapter.ViewHolder<User> {
+    private class memberHolder extends RecyclerView.ViewHolder {
         private TextView memberName;
 
         memberHolder(View view) {
@@ -285,22 +181,9 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
             memberName = (TextView) view.findViewById(R.id.txt);
         }
 
-        @Override
-        protected void performBind(User user) {
-            memberName.setText(user.getName());
-        }
-    }
-
-    private class regularHolder extends RecyclerView.ViewHolder {
-        private TextView memberName;
-
-        regularHolder (View view) {
-            super(view);
-            memberName = (TextView) view.findViewById(R.id.txt);
-        }
-
         public void bindData(final User user) {
-            memberName.setText(user.getName());
+            String name = user.getName();
+            memberName.setText(name);
         }
     }
     private void deleteMember() {
@@ -367,7 +250,7 @@ public class GroupViewActivity extends AppCompatActivity implements PopupMenu.On
                 return true;
             case R.id.leave_group:
                 leaveGroup(groupId);
-                return true;
+            return true;
             default:
                 return false;
         }

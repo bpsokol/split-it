@@ -108,7 +108,7 @@ public class User implements EntityInterface, SortedListAdapter.ViewModel{
     public <T> boolean isContentTheSameAs(T item) {
         if (item instanceof User) {
             final User other = (User) item;
-            return name != null ? name.equals(other.name) : other.name == null;
+            return name != null ? email.equals(other.email) : other.email == null;
         }
         return false;
     }

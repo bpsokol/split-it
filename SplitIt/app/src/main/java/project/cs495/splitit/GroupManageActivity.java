@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
 
 import project.cs495.splitit.models.Group;
 import project.cs495.splitit.models.User;
@@ -141,14 +142,11 @@ public class GroupManageActivity extends Fragment implements PopupMenu.OnMenuIte
     }
 
     private void modifyGroup() {
-        groupList.findViewHolderForAdapterPosition(currGroupIndex).itemView.setSelected(false);
         currGroupIndex = groupList.getChildAdapterPosition(view);
         view.setSelected(true);
         Log.d(TAG,String.format("%s: %d", "Current Index", currGroupIndex));
         Group group = (Group) adapter.getItem(currGroupIndex);
         final Group modifyGroup = (Group)group;
-        Intent groupViewIntent = new Intent(getContext(),GroupViewActivity.class);
-        getContext().startActivity(groupViewIntent);
         Intent intent = buildGroupViewIntent(modifyGroup.getGroupId());
         getContext().startActivity(intent);
     }
