@@ -43,7 +43,7 @@
     <string name="manage_receipts">Receipts</string>
     <string name="manager_first_name">Your First Name: </string>
     <string name="manager_last_name">Your Last Name: </string>
-    <string name="menu_archive">Archive</string>
+    <string name="menu_archive_bill">Generate Bill/Archive</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_modify">Modify</string>
     <string name="menu_view">View</string>

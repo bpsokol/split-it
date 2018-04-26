@@ -148,11 +148,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
         startActivity(intent);
     }
 
-    public void generateBill() {
-        Receipt receipt = (Receipt) adapter.getItem(currReceiptIndex);
-        adjustBillsForSingleReceipt(receipt);
-    }
-
     public void archiveReceipt(){
         Receipt receipt = (Receipt) adapter.getItem(currReceiptIndex);
         adjustBillsForSingleReceipt(receipt);
@@ -203,9 +198,6 @@ public class ManageReceiptActivity extends Fragment implements PopupMenu.OnMenuI
                 return true;
             case R.id.manage_menu_show_user_receipt:
                 viewUserReceipt();
-                return true;
-            case R.id.manage_menu_generate_bill:
-                generateBill();
                 return true;
             default:
                 return false;
