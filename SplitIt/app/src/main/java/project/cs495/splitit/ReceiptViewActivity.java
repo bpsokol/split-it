@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,9 +33,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
+import project.cs495.splitit.models.Bill;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
 import project.cs495.splitit.models.User;
@@ -52,6 +57,15 @@ public class ReceiptViewActivity extends AppCompatActivity
     private TextView receiptPriceView;
     private TextView receiptCreatorView;
     private static int currItemIndex = 0;
+    private ArrayList<String> billKeys = new ArrayList<String>();
+    private ArrayList<String> billAmounts = new ArrayList<String>();
+    private ArrayList<String> billIds = new ArrayList<String>();
+    private ArrayList<String> prevBillKeys = new ArrayList<String>();
+    private ArrayList<String> prevBillAmounts = new ArrayList<String>();
+    private ArrayList<String> prevBillIds = new ArrayList<String>();
+    private ArrayList<String> currUserBillKeys = new ArrayList<String>();
+    private ArrayList<String> currUserBillAmounts = new ArrayList<String>();
+    private ArrayList<String> currUserBillIds = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,6 +190,94 @@ public class ReceiptViewActivity extends AppCompatActivity
     private void assignToSelf(Item item) {
         item.setAssignedUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
         item.commitToDB(mDatabaseReference);
+        final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String creatorUID = receipt.getCreator();
+        searchBillAndCreate(item, currentUserId, creatorUID, true);
+        searchBillAndCreate(item, creatorUID, currentUserId, false);
+    }
+
+    public void searchBillAndCreate(final Item item, final String queryId, final String comparisonId, final boolean add){
+        Float price = item.getPrice();
+        Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(queryId);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    boolean foundCreator = false;
+                    String billID = "";
+                    String billAmount = "";
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        for (DataSnapshot bills: snapshot.child("bills").getChildren()) {
+                            String uidFound = bills.child("uid").getValue(String.class);
+                            String billAmountFound = bills.child("amount").getValue(String.class);
+                            String uid = bills.getKey();
+                            if(uidFound.equals(comparisonId)){
+                                foundCreator = true;
+                                billID = uid;
+                                billAmount = billAmountFound;
+                            }
+                        }
+                    }
+                    createBill(item, queryId, comparisonId, foundCreator, billID, billAmount, add);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void createBill(final Item item, final String queryId, final String comparisonId, boolean found, String billID, String billAmount, final boolean add){
+        if (found == true){
+            String newAmount = "";
+            if(add == true){
+                newAmount = Float.toString(Float.parseFloat(billAmount) + item.getPrice());
+            }
+            else{
+                newAmount = Float.toString(Float.parseFloat(billAmount) - item.getPrice());
+            }
+            mDatabaseReference.child("users").child(queryId).child("bills").child(billID).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        else {
+            mDatabaseReference = Utils.getDatabaseReference();
+            Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(comparisonId);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        String name="";
+                        String email="";
+                        for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                            name = snapshot.child("name").getValue(String.class);
+                            email = snapshot.child("email").getValue(String.class);
+                        }
+                        String price ="";
+                        if(add==true){
+                            price = Float.toString(item.getPrice());
+                        }
+                        else{
+                            price = Float.toString(item.getPrice()*-1);
+                        }
+
+                        addBillToDatabase(name, email, price, comparisonId, queryId);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
     @Override
@@ -190,7 +292,7 @@ public class ReceiptViewActivity extends AppCompatActivity
         adapter.stopListening();
     }
 
-    @Override
+    /*@Override
     public void onDialogSelectUser(DialogFragment dialog, String userId) {
         Log.d(TAG, "selected " + userId);
         mDatabaseReference.child("items").child(currItemId).child("assignedUser").setValue(userId, new DatabaseReference.CompletionListener() {
@@ -199,6 +301,298 @@ public class ReceiptViewActivity extends AppCompatActivity
                 if (databaseError == null) {
                     Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }*/
+    
+    @Override
+    public void onDialogSelectUser(final DialogFragment dialog, final String userId) {
+        final Item selectedItem = (Item) adapter.getItem(currItemIndex);
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("items").orderByChild("itemId").equalTo(selectedItem.getItemId());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uid = "";
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    uid = snapshot.child("assignedUser").getValue(String.class);
+                }
+                onDialogSelectUserResponse(dialog, userId, uid);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void onDialogSelectUserResponse(DialogFragment dialog, final String userId, final String prevUserId){
+        final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Log.d(TAG, "selected " + userId);
+        mDatabaseReference = Utils.getDatabaseReference();
+        mDatabaseReference.child("items").child(currItemId).child("assignedUser").setValue(userId, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(ReceiptViewActivity.this, "User assigned", Toast.LENGTH_SHORT).show();
+                    clearAllBillData();
+                    if(!userId.equals(prevUserId))
+                        updateBillList(userId, prevUserId, currentUserId);
+                }
+            }
+        });
+    }
+
+    public void clearAllBillData(){
+        billKeys.clear();
+        billAmounts.clear();
+        billIds.clear();
+        prevBillKeys.clear();
+        prevBillAmounts.clear();
+        prevBillIds.clear();
+        currUserBillKeys.clear();
+        currUserBillAmounts.clear();
+        currUserBillIds.clear();
+    }
+    //get data from each bill list (current user bills, previous assignees bills and new assignees bills)
+    public void updateBillList(final String currUID, final String prevUID, final String currentUserId){
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currUID);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        for (DataSnapshot bills: snapshot.child("bills").getChildren()) {
+                            String uidFound = bills.child("uid").getValue(String.class);
+                            String billAmountFound = bills.child("amount").getValue(String.class);
+                            String billId = bills.getKey();
+                            billKeys.add(uidFound);
+                            billAmounts.add(billAmountFound);
+                            billIds.add(billId);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        mDatabaseReference = Utils.getDatabaseReference();
+        query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currentUserId);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        for (DataSnapshot bills: snapshot.child("bills").getChildren()) {
+                            String uidFound = bills.child("uid").getValue(String.class);
+                            String billAmountFound = bills.child("amount").getValue(String.class);
+                            String billId = bills.getKey();
+                            currUserBillKeys.add(uidFound);
+                            currUserBillAmounts.add(billAmountFound);
+                            currUserBillIds.add(billId);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        if(prevUID!=null){
+            mDatabaseReference = Utils.getDatabaseReference();
+            query = mDatabaseReference.child("users").orderByChild("uid").equalTo(prevUID);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                            for (DataSnapshot bills: snapshot.child("bills").getChildren()) {
+                                String uidFound = bills.child("uid").getValue(String.class);
+                                String billAmountFound = bills.child("amount").getValue(String.class);
+                                String billId = bills.getKey();
+                                prevBillKeys.add(uidFound);
+                                prevBillAmounts.add(billAmountFound);
+                                prevBillIds.add(billId);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        getPriceForBill(currentUserId, currUID, prevUID);
+    }
+
+    public void updateUserBill(final String currentUserId, final String currUID, final float price, final String prevUID){
+        //item is being assigned to receipt owner but was assigned to a different user
+        //need to update prev user bill (decrease amount owed to currentUserId)
+        if(prevUID!=null && currentUserId.equals(currUID)){
+            int index = prevBillKeys.indexOf(currentUserId);
+            float origAmount = Float.parseFloat(prevBillAmounts.get(index));
+            String currBillId = prevBillIds.get(index);
+            String newAmount = Float.toString(origAmount - price);
+            mDatabaseReference.child("users").child(prevUID).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        // assigning unassigned item to self --> no bills need to be updated
+        else if(prevUID==null && currentUserId.equals(currUID)){
+        }
+        // item is being assigned to a user who is not the receipt owner
+        else {
+            // billKeys are UIDs of bills in assignee's bill list
+            //we must increment currUID and decrement prevUID bill amounts for currentUserId
+            if(billKeys.contains(currentUserId) && prevUID!=null && !currentUserId.equals(prevUID)){
+                int index = prevBillKeys.indexOf(currentUserId);
+                float origAmount = Float.parseFloat(prevBillAmounts.get(index));
+                String currBillId = prevBillIds.get(index);
+                String newAmount = Float.toString(origAmount - price);
+                mDatabaseReference.child("users").child(prevUID).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError == null) {
+                            Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+            // when the user who has been assigned an item already has a bill for the current user, increment that bill
+            if(billKeys.contains(currentUserId)){
+                int index = billKeys.indexOf(currentUserId);
+                float origAmount = Float.parseFloat(billAmounts.get(index));
+                String currBillId = billIds.get(index);
+                String newAmount = Float.toString(origAmount + price);
+                mDatabaseReference.child("users").child(currUID).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError == null) {
+                            Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+            // when the user who has been assigned an item does not have a bill for the current user, create a bill
+            else {
+                mDatabaseReference = Utils.getDatabaseReference();
+                Query query = mDatabaseReference.child("users").orderByChild("uid").equalTo(currentUserId);
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            String name="";
+                            String email="";
+                            for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                                name = snapshot.child("name").getValue(String.class);
+                                email = snapshot.child("email").getValue(String.class);
+                            }
+                            addBillToDatabase (name, email, Float.toString(price), currentUserId, currUID);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+    }
+
+    private void addBillToDatabase (String name, String email, String amount, String currentUserid, String currUID) {
+        DatabaseReference ref = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("users")
+                .child(currUID)
+                .child("bills").push();
+        Bill newBill = new Bill(name, email, amount, currentUserid);
+        ref.setValue(newBill);
+    }
+
+    public void updateCurrentUserBill(String currentUserId, String currUID, float price, final String prevUID){
+        if(currUserBillKeys.contains(prevUID) && prevUID!=null && !currentUserId.equals(prevUID)){
+            int index = currUserBillKeys.indexOf(prevUID);
+            float origAmount = Float.parseFloat(currUserBillAmounts.get(index));
+            String currBillId = currUserBillIds.get(index);
+            String newAmount = Float.toString(origAmount + price);
+            mDatabaseReference.child("users").child(currentUserId).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        // when the user who has been assigned an item already has a bill for the current user, increment that bill
+        if(currUserBillKeys.contains(currUID) && !currentUserId.equals(currUID)){
+            int index = currUserBillKeys.indexOf(currUID);
+            float origAmount = Float.parseFloat(currUserBillAmounts.get(index));
+            String currBillId = currUserBillIds.get(index);
+            String newAmount = Float.toString(origAmount - price);
+            mDatabaseReference.child("users").child(currentUserId).child("bills").child(currBillId).child("amount").setValue(newAmount, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        Toast.makeText(ReceiptViewActivity.this, "User Bill Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    }
+    // get the price of the item that is being assigned to add to bill
+    public void getPriceForBill(final String currentUserId, final String currUID, final String prevUID){
+        final Item selectedItem = (Item) adapter.getItem(currItemIndex);
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("items").orderByChild("itemId").equalTo(selectedItem.getItemId());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float price = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    price = snapshot.child("price").getValue(Float.class);
+                }
+                updateUserBill(currentUserId, currUID, price, prevUID);
+                updateCurrentUserBill(currentUserId, currUID, price, prevUID);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getCurrentAssignee(){
+        final Item selectedItem = (Item) adapter.getItem(currItemIndex);
+        mDatabaseReference = Utils.getDatabaseReference();
+        Query query = mDatabaseReference.child("items").orderByChild("itemId").equalTo(selectedItem.getItemId());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uid = "";
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    uid = snapshot.child("uid").getValue(String.class);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
@@ -280,7 +674,6 @@ public class ReceiptViewActivity extends AppCompatActivity
     }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        //private TextView itemCode;
         private TextView itemDescription;
         private TextView itemPrice;
         private TextView itemAssignee;
