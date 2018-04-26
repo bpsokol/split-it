@@ -7,4 +7,8 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/sync_bills"
+        android:title="Sync Bills"
+        app:showAsAction="never" />
 </menu>
