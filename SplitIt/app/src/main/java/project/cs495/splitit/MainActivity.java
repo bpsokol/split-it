@@ -42,8 +42,6 @@ import com.scandit.barcodepicker.ScanditLicense;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.Semaphore;
-
 import project.cs495.splitit.models.Bill;
 import project.cs495.splitit.models.Item;
 import project.cs495.splitit.models.Receipt;
@@ -63,12 +61,10 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton fab_plus;
     private FloatingActionButton fab_scan_receipt;
     private FloatingActionButton fab_add_bill;
-    private Semaphore semaphore;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        semaphore = new Semaphore(0);
         ScanditLicense.setAppKey(SCANDIT_KEY);
         auth = FirebaseAuth.getInstance();
         if (!isUserLogin()) {
