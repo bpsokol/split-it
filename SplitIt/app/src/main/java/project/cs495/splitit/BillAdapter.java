@@ -112,6 +112,7 @@ public class BillAdapter extends RecyclerView.Adapter {
 
     public void insert(Bill bill) {
         list.add(bill);
+        notifyItemInserted(getItemCount()-1);
     }
 
     public void remove(Bill bill) {
